@@ -43,6 +43,14 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 
   return (
     <svg className={`mn mn-modo-${modo}`} viewBox={viewBox(modo).join(" ")} role="img" aria-label={titulo ?? "Mapa do Nordeste"} preserveAspectRatio="xMidYMid meet">
+      {/* espessura da placa: cópias dos estados deslocadas para baixo, com sombra (pseudo-3D) */}
+      <g className="mn-placa" aria-hidden>
+        {[16, 12, 8, 4].map((d) => (
+          <g key={d} transform={`translate(0 ${d})`}>
+            {ESTADOS.map((e) => <path key={e.uf} d={e.path} />)}
+          </g>
+        ))}
+      </g>
       <g className="mn-estados">
         {ESTADOS.map((e) => {
           const intens = modo === "areas" && areaAtiva ? (porUf.get(e.uf)?.fatias.get(areaAtiva) ?? 0) / maxAreaUf : 0;

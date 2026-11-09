@@ -5,36 +5,35 @@
   --area-5: #e0912b; --area-6: #2aa7a0; --area-7: #b5473a; --area-8: #6b7a33; --area-9: #8a6d4b;
 }
 .mn {
+  /* tudo derivado dos tokens da paleta (app/tokens.css); claro e escuro vêm de lá */
   --mn-fundo: transparent;
-  --mn-estado: #e9efe9;
-  --mn-estado-borda: #ffffff;
-  --mn-estado-ativo: #d3e6dc;
-  --mn-estado-apagado-opacidade: 0.45;
-  --mn-estado-area: #0f6e5a;           /* cor do coroplético no modo áreas com área escolhida */
-  --mn-sigla: #8c9a93;
-  --mn-barra: #0f6e5a;
-  --mn-barra-hover: #e0672b;
-  --mn-arco: #0f6e5a;
-  --mn-arco-externo: #e0672b;
-  --mn-no: #0f6e5a;
-  --mn-origem: #e0672b;
-  --mn-ancora: #e0672b;
-  --mn-rotulo: #1d2321;
-  --mn-rotulo-halo: #fbfaf7;
+  --mn-estado: var(--seq-1, #dcefe9);
+  --mn-estado-borda: var(--map-edge, #ffffff);
+  --mn-estado-ativo: var(--seq-2, #b5e0d5);
+  --mn-estado-apagado-opacidade: 0.4;
+  --mn-estado-area: var(--accent-vivo, #0f6e5a);   /* coroplético no modo áreas com área escolhida */
+  --mn-placa: var(--map-side, #b8d1cb);             /* espessura da placa (pseudo-3D) */
+  --mn-placa-sombra: var(--map-shadow, rgb(0 0 0 / .2));
+  --mn-sigla: var(--muted, #5d6763);
+  --mn-barra: var(--accent-vivo, #0f6e5a);
+  --mn-barra-hover: var(--flow, #e0912b);
+  --mn-arco: var(--accent-vivo, #0f6e5a);
+  --mn-arco-externo: var(--flow, #e0912b);
+  --mn-no: var(--accent-vivo, #0f6e5a);
+  --mn-origem: var(--flow, #e0912b);
+  --mn-ancora: var(--flow, #e0912b);
+  --mn-rotulo: var(--fg, #1d2321);
+  --mn-rotulo-halo: var(--panel, #ffffff);
   width: 100%; height: 100%; display: block; background: var(--mn-fundo);
-  font-family: inherit;
+  font-family: var(--font-display, inherit);
 }
-@media (prefers-color-scheme: dark) {
-  .mn {
-    --mn-estado: #1f2724; --mn-estado-borda: #141816; --mn-estado-ativo: #26342e; --mn-sigla: #63716b;
-    --mn-barra: #4fc3a1; --mn-arco: #4fc3a1; --mn-no: #4fc3a1; --mn-rotulo: #e7ebe9; --mn-rotulo-halo: #141816; --mn-estado-area: #4fc3a1;
-  }
-}
+.mn-placa { filter: drop-shadow(0 22px 26px var(--mn-placa-sombra)); pointer-events: none; }
+.mn-placa path { fill: var(--mn-placa); stroke: var(--mn-placa); stroke-width: 2; stroke-linejoin: round; }
 .mn-estado { fill: var(--mn-estado); stroke: var(--mn-estado-borda); stroke-width: 2.5; stroke-linejoin: round; transition: fill .2s, opacity .2s; }
 .mn-estado-ativo { fill: var(--mn-estado-ativo); }
 .mn-estado-apagado { opacity: var(--mn-estado-apagado-opacidade); }
 .mn-modo-areas .mn-estado[style] { fill: color-mix(in srgb, var(--mn-estado-area) calc(var(--mn-intensidade) * 70%), var(--mn-estado)); }
-.mn-sigla { fill: var(--mn-sigla); font-size: 22px; font-weight: 700; text-anchor: middle; letter-spacing: .05em; pointer-events: none; }
+.mn-sigla { fill: var(--mn-sigla); font-size: 22px; font-weight: 600; opacity: .8; text-anchor: middle; letter-spacing: .05em; pointer-events: none; }
 .mn-modo-areas .mn-sigla { opacity: 0; }
 .mn-barra path { fill: var(--mn-barra); fill-opacity: .85; transition: fill .15s; }
 .mn-barra:hover path { fill: var(--mn-barra-hover); fill-opacity: 1; }
@@ -54,5 +53,6 @@
 .mn-area-4 { fill: var(--area-4); } .mn-area-5 { fill: var(--area-5); } .mn-area-6 { fill: var(--area-6); } .mn-area-7 { fill: var(--area-7); }
 .mn-area-8 { fill: var(--area-8); } .mn-area-9 { fill: var(--area-9); }
 /* legenda (HTML, fora do SVG) */
-.mn-legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--suave, #5d6763); }
+.mn-legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--muted, #5d6763); }
+
 .mn-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }

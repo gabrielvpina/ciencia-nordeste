@@ -267,3 +267,15 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - reduzir a imagem do `embed` com ONNX;
   - incluir resumos no texto;
   - perfil temático por pesquisador (média dos vetores) para "pesquisadores parecidos" e compatibilidade.
+
+## D-029 — Identidade visual: paleta Mangue derivada por tokens
+
+- **Decisão:** o app usa um sistema de tokens em `apps/web/app/tokens.css`. Cada paleta é definida por três números (matiz `--h`, saturação `--s`, matiz de destaque `--h2`), e todos os tons do tema claro e do escuro derivam deles em HSL. A paleta padrão é **Mangue** (verde-água 172°, âmbar 36° nos destaques). Atlântico, Lavanda e Sertão ficam prontas via `data-palette` no `<html>`.
+- **Papéis das cores:**
+  - `--accent` é a estrutura: barras, arcos internos e controles ativos;
+  - `--flow` (âmbar) fica reservado ao que merece atenção: a origem da rede, a coautoria fora do Nordeste e a busca por tema;
+  - o mapa (`mapa.css`) só referencia tokens.
+- **Mapa:** passa a ser uma "placa" com espessura (quatro cópias deslocadas) e sombra; no escuro, a sombra vira brilho.
+- **Contraste:** `--accent` do tema claro ficou mais escuro que o da inspiração (32% de luminosidade em vez de 47%) para links legíveis. Os preenchimentos usam `--accent-vivo`.
+- **Tipografia:** Sora (títulos e números) e Inter (texto), via `next/font`. As fontes são baixadas no build e servidas pelo próprio site, sem chamadas ao Google em tempo de execução (coerente com D-025).
+- **Tema:** segue o sistema; `data-theme="light|dark"` no `<html>` força um tema. Ainda não há botão de troca na interface.

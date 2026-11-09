@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
 import type { DadosMapa } from "@/components/mapa/tipos";
-import { fmt } from "@/lib/areas";
 
 type Rede = DadosMapa & { resumo: { works: number; parceiros: number; externos: number } };
 
@@ -22,7 +21,7 @@ export default function RedeEntidade({ tipo, id, nome }: { tipo: "pesquisador" |
         <b>Rede de colaboração</b>
         {rede && (
           <span className="meta">
-            {fmt(rede.resumo.works)} publicações · {rede.resumo.parceiros} instituições parceiras no NE · {rede.resumo.externos} destinos externos
+            {rede.resumo.parceiros} parceiras no Nordeste · {rede.resumo.externos} destinos externos · passe o mouse para ver os números
           </span>
         )}
       </div>

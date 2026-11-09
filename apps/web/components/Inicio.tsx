@@ -1,21 +1,21 @@
 "use client";
-// Tela inicial: barra lateral de busca + filtros (esquerda) e mapa do Nordeste (direita).
+// Tela inicial: busca em destaque no topo; abaixo, um painel em três colunas — filtros e áreas | mapa | ranking.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AREAS_ORDEM, rotuloArea } from "@/components/mapa/areas";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
-import type { DadosMapa, ModoMapa } from "@/components/mapa/tipos";
+import type { DadosMapa, ModoMapa, PontoInst } from "@/components/mapa/tipos";
 import type { ResultadoBusca } from "@/app/api/busca/route";
 import type { ResultadoTema } from "@/lib/vetorial";
-import { rotuloArea as nomeArea } from "@/components/mapa/areas";
 import { UFS, fmt } from "@/lib/areas";
 
 type Resumo = { pesquisadores: string; works: string; instituicoes: string; programas: string; teses: string };
 const ANOS = [2022, 2023, 2024, 2025, 2026];
-const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; ajuda: string }[] = [
-  { id: "densidade", rotulo: "Produção", ajuda: "Altura da barra = publicações da instituição no período e área escolhidos." },
-  { id: "ligacoes", rotulo: "Colaboração", ajuda: "Arcos = publicações em coautoria entre instituições do Nordeste (as 160 ligações mais fortes)." },
-  { id: "areas", rotulo: "Áreas", ajuda: "Cada rosca mostra como a produção do estado se divide entre as áreas. Escolha uma área para colorir os estados por ela." },
+const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; titulo: string; legenda: string }[] = [
+  { id: "densidade", rotulo: "Produção", titulo: "Publicações por instituição", legenda: "Altura da barra = publicações (escala de raiz, para as menores não sumirem). Número = posição no ranking. Anel tracejado = tem subunidades: clique para ver." },
+  { id: "ligacoes", rotulo: "Colaboração", titulo: "Coautoria entre instituições do Nordeste", legenda: "Espessura do arco = publicações em comum (as 160 ligações mais fortes). Passe o mouse numa instituição para isolar a rede dela." },
+  { id: "areas", rotulo: "Áreas", titulo: "Produção de cada estado por área", legenda: "Cada rosca divide a produção do estado entre as áreas. Escolha uma área à esquerda para colorir os estados por ela." },
 ];
+const EXEMPLOS = ["dengue e arboviroses", "UFPE", "melhoramento genético de caprinos", "saúde bucal", "plantas medicinais da caatinga"];
 
 export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: DadosMapa }) {
   const [modo, setModo] = useState<Exclude<ModoMapa, "rede">>("densidade");
@@ -25,11 +25,14 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
   const [ate, setAte] = useState(2026);
   const [dados, setDados] = useState<DadosMapa>(inicial);
   const [carregando, setCarregando] = useState(false);
+  const [selecionado, setSelecionado] = useState<string | null>(null);
+  const [destaque, setDestaque] = useState<string | null>(null);
   const [termo, setTermo] = useState("");
   const [res, setRes] = useState<ResultadoBusca | null>(null);
   const [tema, setTema] = useState<ResultadoTema | null>(null);
   const [buscandoTema, setBuscandoTema] = useState(false);
   const primeira = useRef(true);
+  const campo = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (primeira.current) { primeira.current = false; return; }
@@ -61,113 +64,186 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
     return () => { clearTimeout(t); ctl.abort(); };
   }, [termo]);
 
-  const total = useMemo(() => dados.pontos.reduce((s, p) => s + p.works, 0), [dados]);
-  const ajuda = MODOS.find((m) => m.id === modo)!.ajuda;
-  const vazioNome = res && !res.pesquisadores.length && !res.instituicoes.length && !res.programas.length;
+  // Ranking: só instituições principais (subunidades ficam dentro da principal, como no mapa).
+  const { ranking, subunidades, total } = useMemo(() => {
+    const ids = new Set(dados.pontos.map((p) => p.id));
+    const principais = dados.pontos.filter((p) => !(p.pai && ids.has(p.pai))).sort((a, b) => b.works - a.works);
+    const subunidades = new Map<string, PontoInst[]>();
+    for (const p of dados.pontos) if (p.pai && ids.has(p.pai)) subunidades.set(p.pai, [...(subunidades.get(p.pai) ?? []), p]);
+    return { ranking: principais, subunidades, total: principais.length };
+  }, [dados]);
+  const areasUf = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const a of dados.areas ?? []) if (!uf || a.uf === uf) m.set(a.field, (m.get(a.field) ?? 0) + a.works);
+    return AREAS_ORDEM.map((f, i) => ({ f, i, n: m.get(f) ?? 0 })).sort((a, b) => b.n - a.n);
+  }, [dados, uf]);
+
+  useEffect(() => { if (selecionado && !dados.pontos.some((p) => p.id === selecionado)) setSelecionado(null); }, [dados, selecionado]);
+  const sel = selecionado ? ranking.find((p) => p.id === selecionado) : undefined;
+  const m = MODOS.find((x) => x.id === modo)!;
+  const maxRank = Math.max(1, ranking[0]?.works ?? 1);
+  const maxArea = Math.max(1, areasUf[0]?.n ?? 1);
+  const temNome = res && (res.pesquisadores.length || res.instituicoes.length || res.programas.length);
   const temTema = tema && (tema.pesquisadores.length || tema.publicacoes.length);
-  const vazio = vazioNome && !temTema && !buscandoTema;
+  const mostrarResultados = termo.trim().length >= 2;
 
   return (
-    <div className="explorar">
-      <aside className="painel painel-busca">
-        <h1 className="painel-titulo">Ciência Nordeste</h1>
-        <p className="meta">Pesquisa em ciências da vida nos nove estados do Nordeste, {resumo ? "2022–2026" : ""}.</p>
-        <div className="mini-cards">
-          <span><b>{fmt(resumo.pesquisadores)}</b> pesquisadores</span>
-          <span><b>{fmt(resumo.works)}</b> publicações</span>
-          <a href="/instituicoes"><b>{fmt(resumo.instituicoes)}</b> instituições</a>
-          <a href="/programas"><b>{fmt(resumo.programas)}</b> programas</a>
+    <div className="inicio">
+      <section className="hero" aria-labelledby="hero-titulo">
+        <h1 id="hero-titulo">Quem pesquisa o quê no Nordeste</h1>
+        <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados, 2022–2026.</p>
+        <div className="busca-grande">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <input ref={campo} id="busca" type="search" value={termo} onChange={(e) => setTermo(e.target.value)} autoComplete="off"
+            onKeyDown={(e) => { if (e.key === "Escape") setTermo(""); }}
+            placeholder="Busque um pesquisador, instituição, programa ou tema de pesquisa" aria-label="Buscar" />
+          {termo && <button type="button" className="limpar" onClick={() => { setTermo(""); campo.current?.focus(); }} aria-label="Limpar busca">×</button>}
         </div>
-
-        <label className="rotulo-campo" htmlFor="busca">Buscar</label>
-        <input id="busca" className="campo" value={termo} onChange={(e) => setTermo(e.target.value)}
-          placeholder="Pesquisador, universidade, programa ou tema…" autoComplete="off" />
-        {res && (
-          <div className="resultados" aria-live="polite">
-            {vazio && <p className="meta">Nada encontrado.</p>}
-            <Grupo titulo="Pesquisadores" itens={res.pesquisadores} href={(id) => `/pesquisador/${id}`} />
-            <Grupo titulo="Instituições" itens={res.instituicoes} href={(id) => `/instituicao/${id}`} />
-            <Grupo titulo="Programas de pós-graduação" itens={res.programas} href={(id) => `/programa/${id}`} />
+        {!mostrarResultados && (
+          <p className="exemplos"><span>Experimente:</span>{EXEMPLOS.map((x) => <button key={x} type="button" className="chip" onClick={() => setTermo(x)}>{x}</button>)}</p>
+        )}
+        {mostrarResultados && (
+          <div className="resultados-grade" aria-live="polite">
+            {res && !temNome && !temTema && !buscandoTema && <p className="meta">Nada encontrado para “{termo}”.</p>}
+            <Coluna titulo="Pesquisadores" itens={res?.pesquisadores ?? []} href={(id) => `/pesquisador/${id}`} />
+            <Coluna titulo="Instituições" itens={res?.instituicoes ?? []} href={(id) => `/instituicao/${id}`} onFoco={setDestaque} />
+            <Coluna titulo="Programas de pós" itens={res?.programas ?? []} href={(id) => `/programa/${id}`} />
             {(temTema || buscandoTema) && (
-              <div className="bloco-tema">
-                <h3 className="titulo-tema">
-                  Por tema de pesquisa
-                  <span className="meta">{buscandoTema ? " · buscando…" : tema?.vetorial ? " · busca semântica (PT/EN)" : " · só texto (serviço semântico indisponível)"}</span>
-                </h3>
+              <div className="coluna coluna-tema">
+                <h3>Por tema <span className="meta">{buscandoTema ? "buscando…" : tema?.vetorial ? "busca semântica PT/EN" : "só texto"}</span></h3>
                 {tema && (
                   <>
-                    <Grupo titulo="Pesquisadores" href={(id) => `/pesquisador/${id}`}
-                      itens={tema.pesquisadores.map((p) => ({ id: p.id, nome: p.nome, detalhe: `${p.detalhe} · ${p.n} publicaç${p.n > 1 ? "ões" : "ão"} no tema` }))} />
-                    <div className="grupo">
-                      {tema.publicacoes.length > 0 && <h3>Publicações</h3>}
-                      <ul>{tema.publicacoes.map((w) => (
-                        <li key={w.id}>{w.doi ? <a href={`https://doi.org/${w.doi}`} rel="noopener">{w.titulo}</a> : <span>{w.titulo}</span>}
-                          <span className="meta">{w.ano}{w.area ? ` · ${nomeArea(w.area)}` : ""}</span></li>
-                      ))}</ul>
-                    </div>
-                    <Grupo titulo="Instituições" href={(id) => `/instituicao/${id}`}
-                      itens={tema.instituicoes.map((i) => ({ id: i.id, nome: i.nome, detalhe: `${i.detalhe} · ${i.n} publicações no tema` }))} />
-                    <Grupo titulo="Programas" href={(id) => `/programa/${id}`}
-                      itens={tema.programas.map((g) => ({ id: g.id, nome: g.nome, detalhe: g.detalhe }))} />
+                    <ul>{tema.pesquisadores.slice(0, 5).map((p) => (
+                      <li key={p.id}><a href={`/pesquisador/${p.id}`}>{p.nome}</a><span className="meta">{p.n} publicaç{p.n > 1 ? "ões" : "ão"} no tema</span></li>
+                    ))}</ul>
+                    <ul className="pubs">{tema.publicacoes.slice(0, 4).map((w) => (
+                      <li key={w.id}>{w.doi ? <a href={`https://doi.org/${w.doi}`} rel="noopener">{w.titulo}</a> : <span>{w.titulo}</span>}
+                        <span className="meta">{w.ano}{w.area ? ` · ${rotuloArea(w.area)}` : ""}</span></li>
+                    ))}</ul>
+                    {tema.instituicoes.length > 0 && (
+                      <p className="nuvem-mini">{tema.instituicoes.map((i) => (
+                        <a key={i.id} href={`/instituicao/${i.id}`} className="chip" onPointerEnter={() => setDestaque(i.id)} onPointerLeave={() => setDestaque(null)}>{i.nome} · {i.n}</a>
+                      ))}</p>
+                    )}
                   </>
                 )}
               </div>
             )}
           </div>
         )}
-
-        <div className="controles">
-          <div className="modos" role="tablist" aria-label="Modo do mapa">
-            {MODOS.map((m) => (
-              <button key={m.id} role="tab" aria-selected={modo === m.id} className={modo === m.id ? "ativo" : ""} onClick={() => setModo(m.id)}>{m.rotulo}</button>
-            ))}
-          </div>
-          <p className="meta ajuda">{ajuda}</p>
-          <label className="rotulo-campo">Área
-            <select className="campo" value={area} onChange={(e) => setArea(e.target.value)}>
-              <option value="">Todas as áreas</option>
-              {AREAS_ORDEM.map((a) => <option key={a} value={a}>{rotuloArea(a)}</option>)}
-            </select>
-          </label>
-          <label className="rotulo-campo">Estado
-            <select className="campo" value={uf} onChange={(e) => setUf(e.target.value)}>
-              <option value="">Todo o Nordeste</option>
-              {UFS.map(([s, n]) => <option key={s} value={s}>{n}</option>)}
-            </select>
-          </label>
-          <div className="linha-campos">
-            <label className="rotulo-campo">De
-              <select className="campo" value={de} onChange={(e) => setDe(Number(e.target.value))}>{ANOS.map((a) => <option key={a}>{a}</option>)}</select>
-            </label>
-            <label className="rotulo-campo">Até
-              <select className="campo" value={ate} onChange={(e) => setAte(Number(e.target.value))}>{ANOS.map((a) => <option key={a}>{a}</option>)}</select>
-            </label>
-          </div>
-          {modo === "areas" && (
-            <div className="mn-legenda">{AREAS_ORDEM.map((a, i) => <span key={a}><i style={{ background: `var(--area-${i})` }} />{rotuloArea(a)}</span>)}</div>
-          )}
-        </div>
-      </aside>
-
-      <section className="mapa-col" aria-busy={carregando}>
-        <div className="mapa-cabecalho">
-          <b>{MODOS.find((m) => m.id === modo)!.rotulo}</b>
-          <span className="meta">{dados.pontos.length} instituições · {fmt(total)} autorias institucionais (uma publicação conta para cada instituição envolvida){area ? ` · ${rotuloArea(area)}` : ""}{uf ? ` · ${uf}` : ""} · {de}–{ate}{carregando ? " · atualizando…" : ""}</span>
-        </div>
-        <div className="mapa-area">
-          <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined} />
-        </div>
       </section>
+
+      <div className="kpis">
+        <div className="kpi"><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
+        <div className="kpi"><b>{fmt(resumo.works)}</b><span>publicações</span></div>
+        <a className="kpi" href="/instituicoes"><b>{fmt(resumo.instituicoes)}</b><span>instituições →</span></a>
+        <a className="kpi" href="/programas"><b>{fmt(resumo.programas)}</b><span>programas de pós →</span></a>
+      </div>
+
+      <div className="cockpit">
+        <div className="col col-esq">
+          <section className="painel-card">
+            <h2>Filtros</h2>
+            <label className="rotulo-campo">Estado
+              <select className="campo" value={uf} onChange={(e) => setUf(e.target.value)}>
+                <option value="">Todo o Nordeste</option>
+                {UFS.map(([s, n]) => <option key={s} value={s}>{n}</option>)}
+              </select>
+            </label>
+            <div className="linha-campos">
+              <label className="rotulo-campo">De
+                <select className="campo" value={de} onChange={(e) => setDe(Number(e.target.value))}>{ANOS.map((a) => <option key={a}>{a}</option>)}</select>
+              </label>
+              <label className="rotulo-campo">Até
+                <select className="campo" value={ate} onChange={(e) => setAte(Number(e.target.value))}>{ANOS.map((a) => <option key={a}>{a}</option>)}</select>
+              </label>
+            </div>
+          </section>
+          <section className="painel-card">
+            <h2>Áreas <small>{uf || "Nordeste"} · clique para filtrar</small></h2>
+            <ul className="barras-area">
+              {areasUf.map(({ f, i, n }) => (
+                <li key={f}>
+                  <button type="button" className={area === f ? "ativa" : area ? "apagada" : ""} aria-pressed={area === f} onClick={() => setArea(area === f ? "" : f)}>
+                    <span className="nome"><i style={{ background: `var(--area-${i})` }} />{rotuloArea(f)}</span>
+                    <span className="val">{fmt(n)}</span>
+                    <span className="barra"><i style={{ width: `${(100 * n) / maxArea}%`, background: `var(--area-${i})` }} /></span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
+        <section className="painel-card mapa-card" aria-busy={carregando}>
+          <div className="mapa-topo">
+            <div className="mapa-titulo">
+              {m.titulo}
+              <small>{fmt(total)} instituições{area ? ` · ${rotuloArea(area)}` : ""}{uf ? ` · ${uf}` : ""} · {de}–{ate}{carregando ? " · atualizando…" : ""}</small>
+            </div>
+            <div className="seg" role="tablist" aria-label="Modo do mapa">
+              {MODOS.map((x) => (
+                <button key={x.id} role="tab" aria-selected={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)}>{x.rotulo}</button>
+              ))}
+            </div>
+          </div>
+          <div className="mapa-palco">
+            {sel && (
+              <div className="selbar" aria-live="polite">
+                <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
+                <span className="txt">
+                  <b>{sel.nome}</b>
+                  <span>{sel.uf} · {fmt(sel.works)} publicações · {ranking.indexOf(sel) + 1}ª posição</span>
+                  {subunidades.get(sel.id) && (
+                    <span className="subs">Subunidades: {subunidades.get(sel.id)!.map((s, k) => (
+                      <a key={s.id} href={`/instituicao/${s.id}`}>{k ? ", " : ""}{s.sigla ?? s.nome} ({fmt(s.works)})</a>
+                    ))}</span>
+                  )}
+                </span>
+                <a className="botao" href={`/instituicao/${sel.id}`}>Perfil e rede →</a>
+                <button type="button" className="x" onClick={() => setSelecionado(null)} aria-label="Limpar seleção">×</button>
+              </div>
+            )}
+            <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined}
+              selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} />
+          </div>
+          <p className="mapa-legenda">{m.legenda}</p>
+        </section>
+
+        <div className="col col-dir">
+          <section className="painel-card">
+            <h2>Ranking <small>publicações{area ? ` · ${rotuloArea(area).toLowerCase()}` : ""}</small></h2>
+            <ol className="ranking">
+              {ranking.slice(0, 12).map((p, i) => (
+                <li key={p.id} className={`${i < 3 ? "top" : ""}${p.id === selecionado ? " sel" : ""}`}
+                  onPointerEnter={() => setDestaque(p.id)} onPointerLeave={() => setDestaque(null)}>
+                  <button type="button" onClick={() => setSelecionado(p.id === selecionado ? null : p.id)} title={p.nome}>
+                    <span className="pos">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="nome">{p.sigla?.split(",")[0] ?? p.nome}<small>{p.uf}{subunidades.get(p.id) ? ` · +${subunidades.get(p.id)!.length} sub.` : ""}</small></span>
+                    <span className="val">{fmt(p.works)}</span>
+                    <span className="barra"><i style={{ width: `${(100 * p.works) / maxRank}%` }} /></span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+            <p className="meta mais"><a href="/instituicoes">Todas as instituições →</a></p>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
 
-function Grupo({ titulo, itens, href }: { titulo: string; itens: { id: string; nome: string; detalhe: string }[]; href: (id: string) => string }) {
+function Coluna({ titulo, itens, href, onFoco }: { titulo: string; itens: { id: string; nome: string; detalhe: string }[]; href: (id: string) => string; onFoco?: (id: string | null) => void }) {
   if (!itens.length) return null;
   return (
-    <div className="grupo">
+    <div className="coluna">
       <h3>{titulo}</h3>
-      <ul>{itens.map((i) => <li key={i.id}><a href={href(i.id)}>{i.nome}</a><span className="meta">{i.detalhe}</span></li>)}</ul>
+      <ul>{itens.map((i) => (
+        <li key={i.id} onPointerEnter={() => onFoco?.(i.id)} onPointerLeave={() => onFoco?.(null)}>
+          <a href={href(i.id)}>{i.nome}</a><span className="meta">{i.detalhe}</span>
+        </li>
+      ))}</ul>
     </div>
   );
 }

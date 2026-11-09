@@ -13,10 +13,12 @@ export async function dadosMapa(f: Filtros): Promise<DadosMapa> {
   let condArea = "";
   if (f.area) { args.push(f.area); condArea = ` AND field = $${args.length}`; }
   const pontos = await q<DadosMapa["pontos"][number]>(
-    `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, sum(m.works)::int AS works
+    `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, i.kind AS tipo, v.parent_id AS pai,
+            sum(m.works)::int AS works
        FROM mv_mapa_producao m JOIN institutions i ON i.id = m.institution_id
+       LEFT JOIN v_instituicao_vinculo v ON v.institution_id = i.id
       WHERE m.year BETWEEN $1 AND $2${condArea} AND i.latitude IS NOT NULL
-      GROUP BY i.id HAVING sum(m.works) > 0`, args);
+      GROUP BY i.id, v.parent_id HAVING sum(m.works) > 0`, args);
   const argsL = [...args];
   let condUf = "";
   if (f.uf) { argsL.push(f.uf); condUf = ` AND (ia.uf = $${argsL.length} OR ib.uf = $${argsL.length})`; }
@@ -76,7 +78,7 @@ export async function dadosRede(tipo: Tipo, id: string): Promise<DadosMapa & { r
   const ids = [...new Set([...origem, ...parceiros.map((p) => p.id)])];
   const pontos = ids.length
     ? await q<DadosMapa["pontos"][number]>(
-        `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, COALESCE(s.works, 0)::int AS works
+        `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, i.kind AS tipo, COALESCE(s.works, 0)::int AS works
            FROM institutions i LEFT JOIN mv_instituicao_stats s ON s.institution_id = i.id
           WHERE i.id = ANY($1::uuid[]) AND i.latitude IS NOT NULL`, [ids])
     : [];

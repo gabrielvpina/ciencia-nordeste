@@ -1,9 +1,5 @@
 /* Mapa próprio do Nordeste — toda a aparência vem destas variáveis. Para mudar o visual, altere só aqui. */
-/* Paleta das áreas: no :root para valer também nas legendas em HTML. */
-:root {
-  --area-0: #0f6e5a; --area-1: #8bb043; --area-2: #3f7fbf; --area-3: #c75b8f; --area-4: #7d5cc6;
-  --area-5: #e0912b; --area-6: #2aa7a0; --area-7: #b5473a; --area-8: #6b7a33; --area-9: #8a6d4b;
-}
+/* As cores das áreas (--area-0 … --area-9) ficam em app/tokens.css, junto com a paleta. */
 .mn {
   /* tudo derivado dos tokens da paleta (app/tokens.css); claro e escuro vêm de lá */
   --mn-fundo: transparent;
@@ -35,18 +31,41 @@
 .mn-modo-areas .mn-estado[style] { fill: color-mix(in srgb, var(--mn-estado-area) calc(var(--mn-intensidade) * 70%), var(--mn-estado)); }
 .mn-sigla { fill: var(--mn-sigla); font-size: 22px; font-weight: 600; opacity: .8; text-anchor: middle; letter-spacing: .05em; pointer-events: none; }
 .mn-modo-areas .mn-sigla { opacity: 0; }
-.mn-barra path { fill: var(--mn-barra); fill-opacity: .85; transition: fill .15s; }
-.mn-barra:hover path { fill: var(--mn-barra-hover); fill-opacity: 1; }
+.mn-barra { cursor: pointer; outline: none; }
+.mn-barra path { fill: var(--mn-barra); fill-opacity: .82; transition: fill .15s, fill-opacity .2s, opacity .2s; }
+.mn-barra-top path { fill-opacity: 1; }
+.mn-barra:hover path, .mn-barra:focus-visible path, .mn-barra-foco path { fill: var(--mn-barra-hover); fill-opacity: 1; }
+.mn-barra-sel path { fill: var(--mn-barra-hover); fill-opacity: 1; }
+.mn-barra-sub path { fill: var(--mn-barra-hover); fill-opacity: .7; }
+.mn-barra-apagada { opacity: .28; }
+.mn-barra-apagada:hover { opacity: 1; }
 .mn-base { fill: var(--mn-barra); }
+.mn-alvo { fill: transparent; }          /* área de clique/toque maior que o triângulo */
+.mn-sub-anel { fill: none; stroke: var(--mn-barra); stroke-width: 1.4; stroke-dasharray: 2 3; opacity: .7; }
+.mn-sub-linha { stroke: var(--mn-barra-hover); stroke-width: 1.4; stroke-dasharray: 3 3; }
+.mn-badge { fill: var(--mn-barra); stroke: var(--mn-rotulo-halo); stroke-width: 2; }
+.mn-etiqueta-top .mn-badge { fill: var(--mn-barra-hover); }
+.mn-badge-num { fill: var(--mn-rotulo-halo); font-size: 21px; font-weight: 700; text-anchor: middle; }
+.mn-rotulo.mn-rotulo-lado { text-anchor: start; font-size: 27px; }
+.mn-rotulo.mn-rotulo-sub { font-size: 20px; }
 .mn-arco { fill: none; stroke: var(--mn-arco); stroke-linecap: round; }
 .mn-arco-externo { stroke: var(--mn-arco-externo); stroke-dasharray: 6 5; opacity: .75; }
-.mn-no { fill: var(--mn-no); fill-opacity: .8; stroke: var(--mn-rotulo-halo); stroke-width: 1.5; }
-.mn-origem { fill: var(--mn-origem); stroke: var(--mn-rotulo-halo); stroke-width: 3; }
+.mn-no { fill: var(--mn-no); fill-opacity: .8; stroke: var(--mn-rotulo-halo); stroke-width: 1.5; cursor: pointer; transition: opacity .2s; outline: none; }
+.mn-no:hover, .mn-no:focus-visible, .mn-no-foco { fill: var(--mn-barra-hover); fill-opacity: 1; }
+.mn-no-apagado { opacity: .2; }
+.mn-com-foco .mn-arco { opacity: .07; transition: opacity .2s; }
+.mn-com-foco .mn-arco.mn-arco-foco { opacity: .9; stroke: var(--mn-barra-hover); }
+.mn-arco { transition: opacity .2s; }
+.mn-origem { fill: var(--mn-origem); stroke: var(--mn-rotulo-halo); stroke-width: 3; cursor: pointer; }
+.mn-pulso { fill: none; stroke: var(--mn-origem); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: mn-pulso 2.2s ease-out infinite; pointer-events: none; }
+@keyframes mn-pulso { from { transform: scale(.8); opacity: .9; } to { transform: scale(2.8); opacity: 0; } }
+.mn-externo { cursor: default; }
 .mn-ancora { fill: var(--mn-ancora); }
-.mn-rotulo { fill: var(--mn-rotulo); font-size: 19px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: var(--mn-rotulo-halo); stroke-width: 4px; pointer-events: none; }
-.mn-rotulo-ancora { font-size: 16px; }
-.mn-rotulo-origem { font-size: 18px; }
-.mn-fatia { stroke: var(--mn-rotulo-halo); stroke-width: 1.5; }
+.mn-rotulo { fill: var(--mn-rotulo); font-size: 23px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: var(--mn-rotulo-halo); stroke-width: 5px; stroke-linejoin: round; pointer-events: none; }
+.mn-rotulo.mn-rotulo-ancora { font-size: 19px; }
+.mn-rotulo.mn-rotulo-origem { font-size: 22px; }
+.mn-fatia { stroke: var(--mn-rotulo-halo); stroke-width: 1.5; transition: opacity .2s; }
+.mn-fatia:hover { opacity: .8; }
 .mn-fatia-apagada { opacity: .18; }
 .mn-rosca-total { fill: var(--mn-rotulo); font-size: 15px; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: var(--mn-rotulo-halo); stroke-width: 4px; }
 .mn-area-0 { fill: var(--area-0); } .mn-area-1 { fill: var(--area-1); } .mn-area-2 { fill: var(--area-2); } .mn-area-3 { fill: var(--area-3); }
@@ -56,3 +75,15 @@
 .mn-legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--muted, #5d6763); }
 
 .mn-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+/* caixa do mapa e dica (tooltip em HTML sobre o SVG) */
+.mn-caixa { position: relative; width: 100%; height: 100%; }
+.mn-dica { position: absolute; z-index: 5; pointer-events: none; min-width: 190px; max-width: 280px; padding: 10px 12px;
+  background: var(--panel, #fff); color: var(--fg, #1d2321); border: 1px solid var(--line, #ddd); border-radius: 10px;
+  box-shadow: var(--shadow-card, 0 8px 24px rgb(0 0 0 / .12)); font-size: .82rem; line-height: 1.35; }
+.mn-dica b { display: block; font-family: var(--font-display, inherit); font-size: .9rem; }
+.mn-dica-sub { display: block; color: var(--muted, #666); margin-bottom: 4px; }
+.mn-dica-linha { display: flex; justify-content: space-between; gap: 16px; color: var(--muted, #666); }
+.mn-dica-linha em { font-style: normal; color: var(--fg, #111); font-variant-numeric: tabular-nums; font-weight: 600; }
+.mn-dica-nota { display: block; margin-top: 6px; font-size: .75rem; color: var(--accent, #0f6e5a); }
+@media (prefers-reduced-motion: reduce) { .mn-pulso { animation: none; opacity: 0; } }

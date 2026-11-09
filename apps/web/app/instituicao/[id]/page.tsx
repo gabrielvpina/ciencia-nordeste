@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import CardPrograma from "@/components/CardPrograma";
+import { BarrasH, Nuvem } from "@/components/Graficos";
+import { AREAS_ORDEM } from "@/components/mapa/areas";
 import { TIPOS_INSTITUICAO, area, fmt } from "@/lib/areas";
+import { nomeArea } from "@/lib/programas";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
 
@@ -33,7 +37,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function Instituicao({ params }: { params: { id: string } }) {
   const i = await carregar(params.id);
   if (!i) notFound();
-  const [areas, pesquisadores, programas, parceiras] = await Promise.all([
+  const [areas, pesquisadores, programas, parceiras, vinculos] = await Promise.all([
     q<{ primary_field: string; n: string }>(
       `SELECT primary_field, works AS n FROM mv_instituicao_areas WHERE institution_id = $1 ORDER BY works DESC`, [i.id]),
     q<{ id: string; display_name: string; works: number; is_capes_faculty: boolean }>(
@@ -44,12 +48,23 @@ export default async function Instituicao({ params }: { params: { id: string } }
       `SELECT o.id, o.name, o.uf, c.shared_works_count AS n FROM institution_collaborations c
          JOIN institutions o ON o.id = CASE WHEN c.institution_a_id = $1 THEN c.institution_b_id ELSE c.institution_a_id END
         WHERE c.institution_a_id = $1 OR c.institution_b_id = $1 ORDER BY c.shared_works_count DESC LIMIT 15`, [i.id]),
+    // principal (se esta for subunidade) e subunidades (se for principal): D-030
+    q<{ id: string; name: string; acronym: string | null; papel: "pai" | "filho"; works: number | null }>(
+      `SELECT o.id, o.name, o.acronym, 'pai' AS papel, s.works FROM v_instituicao_vinculo v JOIN institutions o ON o.id = v.parent_id
+         LEFT JOIN mv_instituicao_stats s ON s.institution_id = o.id WHERE v.institution_id = $1
+       UNION ALL
+       SELECT o.id, o.name, o.acronym, 'filho', s.works FROM v_instituicao_vinculo v JOIN institutions o ON o.id = v.institution_id
+         LEFT JOIN mv_instituicao_stats s ON s.institution_id = o.id WHERE v.parent_id = $1
+       ORDER BY works DESC NULLS LAST`, [i.id]),
   ]);
+  const pai = vinculos.find((v) => v.papel === "pai");
+  const filhos = vinculos.filter((v) => v.papel === "filho");
   return (
     <div className="explorar invertido">
       <RedeEntidade tipo="instituicao" id={i.id} nome={i.name} />
       <aside className="painel painel-perfil">
       <h1>{i.name} {i.acronym && <span className="meta">({i.acronym})</span>}</h1>
+      {pai && <p className="vinculo">Subunidade de <a href={`/instituicao/${pai.id}`}>{pai.name}</a></p>}
       <p className="meta">
         {[i.municipio, i.uf].filter(Boolean).join(" · ")} · {TIPOS_INSTITUICAO[i.kind] ?? i.kind}
         {i.legal_nature ? ` · ${i.legal_nature}` : ""}{i.established ? ` · fundada em ${i.established}` : ""}
@@ -64,19 +79,27 @@ export default async function Instituicao({ params }: { params: { id: string } }
         <div className="card"><b>{fmt(i.pesquisadores)}</b><span>pesquisadores (vínculo principal)</span></div>
         <div className="card"><b>{fmt(i.programas)}</b><span>programas de pós</span></div>
       </div>
-      {areas.length > 0 && (<><h2>Publicações por área</h2><p>{areas.map((a) => <span key={a.primary_field} className="tag">{area(a.primary_field)} · {fmt(a.n)}</span>)}</p></>)}
+      {areas.length > 0 && (
+        <><h2>Publicações por área</h2>
+          <BarrasH unidade="publicações" itens={areas.map((a) => ({ id: a.primary_field, rotulo: area(a.primary_field), valor: Number(a.n), cor: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(a.primary_field))})` }))} /></>
+      )}
+      {filhos.length > 0 && (
+        <><h2>Subunidades <small className="meta">hospitais e institutos ligados a esta instituição</small></h2>
+          <BarrasH unidade="publicações" itens={filhos.map((f) => ({ id: f.id, rotulo: f.acronym ?? f.name, sub: f.acronym ? f.name : undefined, valor: f.works ?? 0, href: `/instituicao/${f.id}` }))} /></>
+      )}
       {programas.length > 0 && (
-        <><h2>Programas de pós-graduação</h2>
-          <ul className="lista">{programas.map((p) => <li key={p.id}><a href={`/programa/${p.id}`}>{p.name}</a><div className="meta">{p.degree?.toLowerCase()} · conceito {p.grade} · {p.evaluation_area?.toLowerCase()}</div></li>)}</ul></>
+        <><h2>Programas de pós-graduação <small className="meta">{programas.length}</small></h2>
+          <div className="grade-cards grade-prog grade-estreita">
+            {programas.map((p) => <CardPrograma key={p.id} id={p.id} nome={p.name} conceito={p.grade} nivel={p.degree} meta={nomeArea(p.evaluation_area)} />)}
+          </div></>
       )}
       {pesquisadores.length > 0 && (
         <><h2>Pesquisadores com mais publicações</h2>
-          <p>{pesquisadores.map((p) => <a key={p.id} className="tag" href={`/pesquisador/${p.id}`}>{p.display_name} ({p.works})</a>)}</p>
-          <p className="meta"><a href={`/?uf=${i.uf}`}>Buscar mais pesquisadores em {i.uf}</a></p></>
+          <Nuvem itens={pesquisadores.map((p) => ({ id: p.id, rotulo: p.display_name, peso: p.works, href: `/pesquisador/${p.id}`, detalhe: `${p.display_name}: ${p.works} publicações` }))} /></>
       )}
       {parceiras.length > 0 && (
-        <><h2>Rede: instituições do Nordeste que mais publicam com esta</h2>
-          <ul className="lista">{parceiras.map((p) => <li key={p.id}><a href={`/instituicao/${p.id}`}>{p.name}</a> <span className="meta">· {p.uf} · {fmt(p.n)} publicações em comum</span></li>)}</ul></>
+        <><h2>Parceiras no Nordeste <small className="meta">publicações em comum</small></h2>
+          <BarrasH unidade="publicações em comum" itens={parceiras.map((p) => ({ id: p.id, rotulo: p.name, sub: p.uf, valor: p.n, href: `/instituicao/${p.id}` }))} /></>
       )}
       </aside>
     </div>

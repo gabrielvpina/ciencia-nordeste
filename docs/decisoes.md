@@ -279,3 +279,35 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Contraste:** `--accent` do tema claro ficou mais escuro que o da inspiração (32% de luminosidade em vez de 47%) para links legíveis. Os preenchimentos usam `--accent-vivo`.
 - **Tipografia:** Sora (títulos e números) e Inter (texto), via `next/font`. As fontes são baixadas no build e servidas pelo próprio site, sem chamadas ao Google em tempo de execução (coerente com D-025).
 - **Tema:** segue o sistema; `data-theme="light|dark"` no `<html>` força um tema. Ainda não há botão de troca na interface.
+
+## D-030 — Interface: busca em destaque, mapa interativo com subunidades recolhidas, páginas em gráficos
+
+- **Tela inicial:**
+  - Busca no topo, com exemplos clicáveis. Os resultados aparecem em colunas: pesquisadores, instituições, programas e tema.
+  - Abaixo, um painel em três colunas:
+    - à esquerda, filtros e áreas (barras clicáveis, que também são a legenda do modo Áreas);
+    - no centro, o mapa;
+    - à direita, o ranking.
+  - **Retiradas por redundância:**
+    - o título repetido "Ciência Nordeste" e a descrição no cabeçalho;
+    - o número de publicações nos rótulos do mapa (está no ranking e na dica);
+    - o total de publicações no cabeçalho da rede (está no perfil).
+- **Mapa:**
+  - **Dica (tooltip) em HTML** em barras, nós, arcos, fatias e estados, com toque em celular.
+  - **Clique seleciona a instituição:** abre um cartão com o link para o perfil e esmaece as demais. Sem seleção possível (perfis), o clique abre o perfil.
+  - **Mouse sobre um nome:** no ranking ou nos resultados, realça a instituição no mapa. No modo Colaboração, isola a rede dela.
+  - **Altura das barras em escala de raiz quadrada** (antes, linear): diminui a diferença visual entre as grandes e as pequenas sem inverter a ordem.
+  - **Rótulos:** só sigla e posição no ranking (selo numerado; top 3 na cor de destaque).
+- **Subunidades recolhidas:**
+  - A migração 0008 cria `v_instituicao_vinculo` (subunidade → instituição principal) com três regras, em ordem de confiança: ROR parent/child; ROR related entre universidade e hospital/instituto; sigla ou nome da universidade dentro da subunidade, na mesma UF.
+  - Resultado atual: 12 vínculos (ex.: HC-UFPE → UFPE, HUWC → UFC, HUOL → UFRN, HUUFMA → UFMA). O ROR quase não tem departamentos no NE, e o OpenAlex trabalha no nível de instituição.
+  - No mapa, as subunidades ficam ocultas e entram num leque abaixo da principal quando ela é selecionada. Pelo mesmo mecanismo, em cada cidade só as 4 maiores (ou as que têm ≥ 20% da maior) ficam sempre visíveis; as demais entram no leque da maior da cidade.
+  - Ligações de instituições ocultas são somadas à instituição que as representa.
+- **Instituições:** treemap agrupado por estado ou por tipo, com o tamanho por publicações, pesquisadores ou programas. Clicar no grupo filtra. Abaixo, cards com números e a barra de áreas, mais filtros por estado, tipo e texto (tudo no navegador; cerca de 190 itens).
+- **Programas:** matriz área de avaliação × conceito CAPES, com círculos proporcionais, que funciona como filtro. Abaixo, cards com o conceito em destaque, agrupáveis por área, instituição ou estado, e filtros por estado e nível.
+- **Perfis:**
+  - áreas, subunidades e parceiras em barras horizontais;
+  - pesquisadores, docentes e coautores em nuvem (tamanho = publicações);
+  - programas em cards;
+  - publicações e teses numa linha do tempo por ano.
+- **Cores:** as cores categóricas (`--area-0…9`) passaram para `tokens.css`, para valerem fora do mapa (treemap, cards, perfis).

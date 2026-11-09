@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Nuvem } from "@/components/Graficos";
 import { fmt } from "@/lib/areas";
+import { COR_CONCEITO, TITULO_NIVEL, colunaDe, niveis, nomeArea, nomePrograma } from "@/lib/programas";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
 
@@ -37,34 +39,51 @@ export default async function Programa({ params }: { params: { id: string } }) {
       `SELECT title, degree, year, author_name, advisor_name, advisor_researcher_id, full_text_url FROM theses
         WHERE program_id = $1 ORDER BY year DESC, defense_date DESC NULLS LAST LIMIT 40`, [p.id]),
   ]);
+  const categorias = [...docentes.reduce((m, d) => m.set(d.category ?? "OUTROS", [...(m.get(d.category ?? "OUTROS") ?? []), d]), new Map<string, typeof docentes>())]
+    .sort((a, b) => b[1].length - a[1].length);
   return (
     <div className="explorar invertido">
       <RedeEntidade tipo="programa" id={p.id} nome={p.name} />
       <aside className="painel painel-perfil">
-      <h1>{p.name}</h1>
+      <div className="perfil-topo">
+        <span className="cp-conceito cp-grande" style={{ background: COR_CONCEITO[colunaDe(p.grade)] }} title="Conceito CAPES">{p.grade}</span>
+        <div><h1>{nomePrograma(p.name)}</h1>
       <p className="meta">
         {p.instituicao ? <a href={`/instituicao/${p.institution_id}`}>{p.instituicao}</a> : "instituição não vinculada"} · {p.municipality_name} · {p.uf}
-      </p>
+      </p></div>
+      </div>
       <p>
-        <span className="tag">{p.degree?.toLowerCase()}</span><span className="tag">{p.modality?.toLowerCase()}</span>
-        <span className="tag">conceito CAPES {p.grade}</span><span className="tag">{p.evaluation_area?.toLowerCase()}</span>
+        {niveis(p.degree).map((n) => <span key={n} className="tag">{TITULO_NIVEL[n].toLowerCase()}</span>)}<span className="tag">{p.modality?.toLowerCase()}</span>
+        <span className="tag">área de avaliação: {nomeArea(p.evaluation_area)}</span>
         <span className="tag">código CAPES {p.capes_code}</span>{p.start_year && <span className="tag">desde {p.start_year}</span>}
       </p>
-      <h2>Docentes ({ultimo}) · {fmt(docentes.length)}</h2>
-      <ul className="lista">
-        {docentes.map((d) => (
-          <li key={d.id}><a href={`/pesquisador/${d.id}`}>{d.display_name}</a>{" "}
-            <span className="meta">· {d.category?.toLowerCase()}{d.pq_category ? ` · PQ ${d.pq_category}` : ""}{d.works ? ` · ${d.works} publicações` : ""}</span></li>
-        ))}
-      </ul>
+      <h2>Docentes em {ultimo} <small className="meta">{fmt(docentes.length)} · tamanho = publicações no recorte</small></h2>
+      {categorias.map(([cat, ds]) => (
+        <div key={cat} className="grupo-nuvem">
+          <h3>{cat.charAt(0) + cat.slice(1).toLowerCase()} <span className="contagem">{ds.length}</span></h3>
+          <Nuvem itens={ds.map((d) => ({ id: d.id, rotulo: d.display_name, peso: d.works ?? 0.3, href: `/pesquisador/${d.id}`,
+            detalhe: `${d.display_name}${d.pq_category ? ` · bolsa PQ ${d.pq_category}` : ""} · ${d.works ?? 0} publicações` }))} />
+        </div>
+      ))}
       {teses.length > 0 && (
         <><h2>Teses e dissertações recentes</h2>
-          <ul className="lista">{teses.map((t) => (
-            <li key={t.title + t.year}>{t.full_text_url ? <a href={t.full_text_url} rel="noopener">{t.title}</a> : t.title}
-              <div className="meta">{t.degree?.toLowerCase()} · {t.author_name} · orientação: {t.advisor_researcher_id ? <a href={`/pesquisador/${t.advisor_researcher_id}`}>{t.advisor_name || "ver perfil"}</a> : t.advisor_name} · {t.year}</div></li>
-          ))}</ul></>
+          {porAno(teses).map(([ano, ts]) => (
+            <div key={ano} className="linha-tempo">
+              <span className="lt-ano">{ano}</span>
+              <ul className="lista">{ts.map((t) => (
+                <li key={t.title + t.year}>{t.full_text_url ? <a href={t.full_text_url} rel="noopener">{t.title}</a> : t.title}
+                  <div className="meta">{t.degree?.toLowerCase()} · {t.author_name} · orientação: {t.advisor_researcher_id ? <a href={`/pesquisador/${t.advisor_researcher_id}`}>{t.advisor_name || "ver perfil"}</a> : t.advisor_name}</div></li>
+              ))}</ul>
+            </div>
+          ))}</>
       )}
       </aside>
     </div>
   );
+}
+
+function porAno<T extends { year: number }>(itens: T[]): [number, T[]][] {
+  const m = new Map<number, T[]>();
+  for (const i of itens) m.set(i.year, [...(m.get(i.year) ?? []), i]);
+  return [...m.entries()].sort((a, b) => b[0] - a[0]);
 }

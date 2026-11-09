@@ -92,3 +92,10 @@
   --font-body: var(--fonte-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
   --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
 }
+
+/* ---------- 5. Cores categóricas (áreas do OpenAlex e tipos de instituição) ---------- */
+/* Fixas (não seguem a paleta): precisam ser distintas entre si. Usadas no mapa, nas legendas e nos gráficos. */
+:root {
+  --area-0: #0f6e5a; --area-1: #8bb043; --area-2: #3f7fbf; --area-3: #c75b8f; --area-4: #7d5cc6;
+  --area-5: #e0912b; --area-6: #2aa7a0; --area-7: #b5473a; --area-8: #6b7a33; --area-9: #8a6d4b;
+}

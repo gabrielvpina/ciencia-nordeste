@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Avatar, { type Foto } from "@/components/Avatar";
+import { Nuvem } from "@/components/Graficos";
+import { AREAS_ORDEM } from "@/components/mapa/areas";
 import { area } from "@/lib/areas";
+import { COR_CONCEITO, colunaDe, nomePrograma } from "@/lib/programas";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
 
@@ -11,7 +14,7 @@ type Perfil = {
   id: string; display_name: string; orcid: string | null; is_capes_faculty: boolean; pq_category_latest: string | null;
   instituicao: string | null; uf: string | null; main_institution_id: string | null; works: number | null; first_year: number | null; last_year: number | null; topicos: string[] | null;
 };
-type Programa = { name: string; entity_acronym: string; grade: string; category: string; base_year: number };
+type Programa = { id: string; name: string; entity_acronym: string; grade: string; category: string; base_year: number };
 type Work = { id: string; title: string; year: number; venue: string | null; doi: string | null; primary_field: string };
 type Coautor = { id: string; display_name: string; n: number };
 type Orientacao = { title: string; degree: string; year: number; author_name: string; programa: string; full_text_url: string | null };
@@ -44,7 +47,7 @@ export default async function Pesquisador({ params }: { params: { id: string } }
 
   const [programas, works, coautores, orientacoes, fotos] = await Promise.all([
     q<Programa>(
-      `SELECT DISTINCT ON (g.id) g.name, g.entity_acronym, g.grade, f.category, f.base_year
+      `SELECT DISTINCT ON (g.id) g.id, g.name, g.entity_acronym, g.grade, f.category, f.base_year
          FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id
         WHERE f.researcher_id = $1 ORDER BY g.id, f.base_year DESC`, [p.id]),
     q<Work>(
@@ -87,18 +90,22 @@ export default async function Pesquisador({ params }: { params: { id: string } }
       {programas.length > 0 && (
         <>
           <h2>Programas de pós-graduação (CAPES)</h2>
-          <ul className="lista">
+          <div className="grade-cards grade-prog grade-estreita">
             {programas.map((g) => (
-              <li key={g.name + g.entity_acronym}>{g.name} <span className="meta">· {g.entity_acronym} · conceito {g.grade} · {g.category?.toLowerCase()} ({g.base_year})</span></li>
+              <a key={g.id} href={`/programa/${g.id}`} className="card-prog">
+                <span className="cp-conceito" style={{ background: COR_CONCEITO[colunaDe(g.grade)] }} title={`Conceito CAPES ${g.grade}`}>{g.grade}</span>
+                <span className="cp-corpo"><span className="cp-nome">{nomePrograma(g.name)}</span>
+                  <span className="cp-meta">{g.entity_acronym} · docente {g.category?.toLowerCase()} ({g.base_year})</span></span>
+              </a>
             ))}
-          </ul>
+          </div>
         </>
       )}
 
       {coautores.length > 0 && (
         <>
-          <h2>Principais coautores no Nordeste</h2>
-          <p>{coautores.map((c) => <a key={c.id} className="tag" href={`/pesquisador/${c.id}`}>{c.display_name} ({c.n})</a>)}</p>
+          <h2>Principais coautores no Nordeste <small className="meta">tamanho = publicações em comum</small></h2>
+          <Nuvem itens={coautores.map((c) => ({ id: c.id, rotulo: c.display_name, peso: c.n, href: `/pesquisador/${c.id}`, detalhe: `${c.display_name}: ${c.n} publicações em comum` }))} />
         </>
       )}
 
@@ -118,16 +125,27 @@ export default async function Pesquisador({ params }: { params: { id: string } }
 
       <h2>Publicações recentes</h2>
       {works.length === 0 ? <p className="meta">Sem publicações do recorte ligadas a este perfil.</p> : (
-        <ul className="lista">
-          {works.map((w) => (
-            <li key={w.id}>
-              {w.doi ? <a href={`https://doi.org/${w.doi}`} rel="noopener">{w.title}</a> : w.title}
-              <div className="meta">{w.year}{w.venue ? ` · ${w.venue}` : ""} · {area(w.primary_field)}</div>
-            </li>
-          ))}
-        </ul>
+        porAno(works).map(([ano, ws]) => (
+          <div key={ano} className="linha-tempo">
+            <span className="lt-ano">{ano} <small>{ws.length}</small></span>
+            <ul className="lista">
+              {ws.map((w) => (
+                <li key={w.id}>
+                  {w.doi ? <a href={`https://doi.org/${w.doi}`} rel="noopener">{w.title}</a> : w.title}
+                  <div className="meta"><i className="ponto" style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(w.primary_field))})` }} />{area(w.primary_field)}{w.venue ? ` · ${w.venue}` : ""}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
       )}
       </aside>
     </div>
   );
+}
+
+function porAno<T extends { year: number }>(itens: T[]): [number, T[]][] {
+  const m = new Map<number, T[]>();
+  for (const i of itens) m.set(i.year, [...(m.get(i.year) ?? []), i]);
+  return [...m.entries()].sort((a, b) => b[0] - a[0]);
 }

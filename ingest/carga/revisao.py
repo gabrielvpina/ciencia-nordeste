@@ -216,7 +216,7 @@ def consolidar() -> dict[str, Any]:
     for arq in ("researcher_identifiers_openalex.csv", "researcher_identifiers_capes.csv"):
         for r in ler_csv(DIR_PROCESSADOS / arq):
             u = canon(r["researcher_id"])
-            linha = dict(r, researcher_id=u)
+            linha: dict[str, Any] = dict(r, researcher_id=u)
             if u != r["researcher_id"]:
                 # vínculo docente↔autor sem identificador comum: confiança < 1, registra a origem
                 linha["confidence"] = 0.95 if alias[r["researcher_id"]][1] != "revisao_manual" else 0.99

@@ -587,7 +587,8 @@ def analisar_amostra_csv(amostra: bytes, tamanho_total: int | None) -> dict[str,
     est_linhas = None
     media = None
     if corpo and tamanho_total:
-        bytes_corpo = sum(len(lk.encode("utf-8" if codificacao in (None, "utf-8-sig") else codificacao, errors="replace")) + 1 for lk in corpo)
+        enc = codificacao if codificacao and codificacao != "utf-8-sig" else "utf-8"
+        bytes_corpo = sum(len(lk.encode(enc, errors="replace")) + 1 for lk in corpo)
         media = bytes_corpo / len(corpo)
         est_linhas = int((tamanho_total - len(cabecalho) - 1) / media)
     exemplo = None

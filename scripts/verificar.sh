@@ -2,7 +2,7 @@
 # Verificação local equivalente à CI: lint/tipos do Python, typecheck/build do app e migrações num Postgres vazio.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-echo "== Python"; .venv/bin/ruff check ingest --select E,F,W,I --ignore E501 && .venv/bin/mypy ingest
+echo "== Python"; .venv/bin/ruff check ingest --select E,F,W,I --ignore E501 && .venv/bin/mypy --config-file ingest/pyproject.toml ingest
 echo "== App (typecheck + build no Docker)"; docker compose build -q web
 echo "== Migrações num banco vazio (descartável, duas rodadas)"
 docker compose up -d --wait db >/dev/null

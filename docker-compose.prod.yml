@@ -1,0 +1,7 @@
+# Sobreposição de produção: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# O banco não publica porta nenhuma (só a rede interna do Docker); o app fica atrás do Caddy (a configurar na Fase E).
+services:
+  db:
+    ports: !reset []
+  web:
+    ports: !reset []

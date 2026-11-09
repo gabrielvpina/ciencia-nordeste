@@ -1,0 +1,6 @@
+# Busca vetorial (etapa 12 / parte 8). Pesado: só para quem vai calcular os embeddings.
+-r requirements.txt
+torch==2.14.1
+sentence-transformers==6.2.0
+psycopg[binary]==3.3.6
+numpy>=2

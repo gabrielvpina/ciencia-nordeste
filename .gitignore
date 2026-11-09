@@ -1,0 +1,21 @@
+# segredos
+.env
+
+# ambientes e caches
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+ingest/.cache/
+
+# O git guarda só código e documentação (D-026). Tudo que é dado ou saída de execução fica fora:
+# brutos, processados, fotos, registro de UUIDs estáveis, decisões de revisão e relatórios gerados.
+# ATENÇÃO: ingest/dados/ids/ e ingest/dados/revisao/decisoes.csv NÃO são regeneráveis — precisam de backup próprio.
+ingest/dados/
+ingest/relatorios/
+*.parcial
+
+# app web
+apps/web/node_modules/
+apps/web/.next/
+apps/web/tsconfig.tsbuildinfo

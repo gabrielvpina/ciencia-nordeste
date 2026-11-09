@@ -1,0 +1,56 @@
+# Ciência Nordeste — ambiente local.
+#   docker compose up -d db                  # Postgres 16 (só em 127.0.0.1)
+#   ./scripts/carregar_banco.sh               # aplica o schema e carrega os CSVs de ingest/dados/processados/
+#   docker compose up -d web                  # app Next.js em http://localhost:3000
+# Em produção, usar também docker-compose.prod.yml (sem portas do banco expostas).
+
+# Nome fixo do projeto: containers e volume não dependem do nome da pasta (renomear a pasta não cria um banco novo).
+name: ciencia-nordeste
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.6-pg16   # Postgres 16 + extensão pgvector (busca vetorial, D-028)
+    restart: unless-stopped
+    shm_size: 1gb   # memória compartilhada para construir o índice HNSW em paralelo (o padrão de 64 MB não basta)
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ciencia}
+      POSTGRES_USER: ${POSTGRES_USER:-ciencia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./ingest:/repo/ingest:ro          # para \copy dos CSVs na carga
+    working_dir: /repo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  embed:
+    # Embedding das consultas da busca por tema (D-028). Só na rede interna: nenhuma porta publicada.
+    build: ./servicos/embed
+    restart: unless-stopped
+    environment:
+      THREADS: "2"
+
+  web:
+    build: ./apps/web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      embed:
+        condition: service_healthy
+    volumes:
+      - ./ingest/dados/fotos:/app/fotos:ro   # fotos WebP da Parte 7 (servidas por /foto/<id>)
+    environment:
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      EMBED_URL: http://embed:8000           # serviço de embedding da busca por tema (D-028)
+      DATABASE_URL: postgres://${POSTGRES_USER:-ciencia}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-ciencia}
+    ports:
+      - "127.0.0.1:3000:3000"
+
+volumes:
+  pgdata:

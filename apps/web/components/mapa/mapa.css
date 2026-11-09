@@ -1,0 +1,58 @@
+/* Mapa próprio do Nordeste — toda a aparência vem destas variáveis. Para mudar o visual, altere só aqui. */
+/* Paleta das áreas: no :root para valer também nas legendas em HTML. */
+:root {
+  --area-0: #0f6e5a; --area-1: #8bb043; --area-2: #3f7fbf; --area-3: #c75b8f; --area-4: #7d5cc6;
+  --area-5: #e0912b; --area-6: #2aa7a0; --area-7: #b5473a; --area-8: #6b7a33; --area-9: #8a6d4b;
+}
+.mn {
+  --mn-fundo: transparent;
+  --mn-estado: #e9efe9;
+  --mn-estado-borda: #ffffff;
+  --mn-estado-ativo: #d3e6dc;
+  --mn-estado-apagado-opacidade: 0.45;
+  --mn-estado-area: #0f6e5a;           /* cor do coroplético no modo áreas com área escolhida */
+  --mn-sigla: #8c9a93;
+  --mn-barra: #0f6e5a;
+  --mn-barra-hover: #e0672b;
+  --mn-arco: #0f6e5a;
+  --mn-arco-externo: #e0672b;
+  --mn-no: #0f6e5a;
+  --mn-origem: #e0672b;
+  --mn-ancora: #e0672b;
+  --mn-rotulo: #1d2321;
+  --mn-rotulo-halo: #fbfaf7;
+  width: 100%; height: 100%; display: block; background: var(--mn-fundo);
+  font-family: inherit;
+}
+@media (prefers-color-scheme: dark) {
+  .mn {
+    --mn-estado: #1f2724; --mn-estado-borda: #141816; --mn-estado-ativo: #26342e; --mn-sigla: #63716b;
+    --mn-barra: #4fc3a1; --mn-arco: #4fc3a1; --mn-no: #4fc3a1; --mn-rotulo: #e7ebe9; --mn-rotulo-halo: #141816; --mn-estado-area: #4fc3a1;
+  }
+}
+.mn-estado { fill: var(--mn-estado); stroke: var(--mn-estado-borda); stroke-width: 2.5; stroke-linejoin: round; transition: fill .2s, opacity .2s; }
+.mn-estado-ativo { fill: var(--mn-estado-ativo); }
+.mn-estado-apagado { opacity: var(--mn-estado-apagado-opacidade); }
+.mn-modo-areas .mn-estado[style] { fill: color-mix(in srgb, var(--mn-estado-area) calc(var(--mn-intensidade) * 70%), var(--mn-estado)); }
+.mn-sigla { fill: var(--mn-sigla); font-size: 22px; font-weight: 700; text-anchor: middle; letter-spacing: .05em; pointer-events: none; }
+.mn-modo-areas .mn-sigla { opacity: 0; }
+.mn-barra path { fill: var(--mn-barra); fill-opacity: .85; transition: fill .15s; }
+.mn-barra:hover path { fill: var(--mn-barra-hover); fill-opacity: 1; }
+.mn-base { fill: var(--mn-barra); }
+.mn-arco { fill: none; stroke: var(--mn-arco); stroke-linecap: round; }
+.mn-arco-externo { stroke: var(--mn-arco-externo); stroke-dasharray: 6 5; opacity: .75; }
+.mn-no { fill: var(--mn-no); fill-opacity: .8; stroke: var(--mn-rotulo-halo); stroke-width: 1.5; }
+.mn-origem { fill: var(--mn-origem); stroke: var(--mn-rotulo-halo); stroke-width: 3; }
+.mn-ancora { fill: var(--mn-ancora); }
+.mn-rotulo { fill: var(--mn-rotulo); font-size: 19px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: var(--mn-rotulo-halo); stroke-width: 4px; pointer-events: none; }
+.mn-rotulo-ancora { font-size: 16px; }
+.mn-rotulo-origem { font-size: 18px; }
+.mn-fatia { stroke: var(--mn-rotulo-halo); stroke-width: 1.5; }
+.mn-fatia-apagada { opacity: .18; }
+.mn-rosca-total { fill: var(--mn-rotulo); font-size: 15px; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: var(--mn-rotulo-halo); stroke-width: 4px; }
+.mn-area-0 { fill: var(--area-0); } .mn-area-1 { fill: var(--area-1); } .mn-area-2 { fill: var(--area-2); } .mn-area-3 { fill: var(--area-3); }
+.mn-area-4 { fill: var(--area-4); } .mn-area-5 { fill: var(--area-5); } .mn-area-6 { fill: var(--area-6); } .mn-area-7 { fill: var(--area-7); }
+.mn-area-8 { fill: var(--area-8); } .mn-area-9 { fill: var(--area-9); }
+/* legenda (HTML, fora do SVG) */
+.mn-legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--suave, #5d6763); }
+.mn-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }

@@ -9,9 +9,6 @@
 
 Repositório aberto da pesquisa em **ciências da vida** do Nordeste: saúde, biomedicina, biotecnologia, genética, microbiologia, ciências agrárias e biológicas e veterinária. Reúne, a partir de **dados abertos**, instituições, programas de pós-graduação, pesquisadores, publicações (2022–2026), teses e colaborações dos nove estados da região.
 
-- Visão, recorte, modelo de dados e fases: **[SCHEME.md](SCHEME.md)**, a fonte de verdade do projeto.
-- Ingestão de dados, passo a passo: **[ingest/README.md](ingest/README.md)**.
-
 ## Telas
 
 Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**

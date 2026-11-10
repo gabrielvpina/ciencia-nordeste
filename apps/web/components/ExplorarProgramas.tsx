@@ -109,7 +109,7 @@ export default function ExplorarProgramas({ itens, ufInicial, areaInicial }: { i
                     <button key={c} className={`mz-celula${ativo ? "" : " apagada"}`} disabled={!v} aria-label={`${nomeArea(a)}, conceito ${c}: ${v} programas`}
                       onClick={() => { const mesmo = area === a && conceito === c; setArea(mesmo ? "" : a); setConceito(mesmo ? "" : c); }}
                       {...(v ? dicaProps(() => ({ titulo: nomeArea(a), sub: c === "outros" ? "conceito 2 ou A" : `conceito ${c}`, linhas: [["Programas", fmt(v)]], nota: "Clique para filtrar" })) : {})}>
-                      {v > 0 && <span className="mz-bolha" style={{ width: d, height: d, background: COR_CONCEITO[c], color: c === "6" ? "var(--on-accent)" : undefined }}>{v >= 3 ? v : ""}</span>}
+                      {v > 0 && <span className="mz-bolha" style={{ width: d, height: d, background: COR_CONCEITO[c], color: c === "5" || c === "6" ? "var(--panel)" : undefined }}>{v >= 3 ? v : ""}</span>}
                     </button>
                   );
                 })}

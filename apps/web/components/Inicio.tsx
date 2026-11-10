@@ -189,10 +189,6 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
             <div className="kpi"><span className="tag tag-mini">OpenAlex</span><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
             <div className="kpi"><span className="tag tag-mini">2022–26</span><b>{fmt(resumo.works)}</b><span>publicações</span></div>
           </div>
-          <div className="kpis-par">
-            <a className="kpi" href="/instituicoes"><span className="tag tag-mini">ROR · INEP</span><b>{fmt(resumo.instituicoes)}</b><span>instituições →</span></a>
-            <a className="kpi" href="/programas"><span className="tag tag-mini">CAPES</span><b>{fmt(resumo.programas)}</b><span>programas →</span></a>
-          </div>
           <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
             <h2>Seletores do mapa <span className="tag">filtros</span></h2>
             <div className="filtro">

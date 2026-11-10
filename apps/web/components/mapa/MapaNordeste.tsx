@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./mapa.css";
 import { AREAS_ORDEM, rotuloArea } from "./areas";
-import { ESTADOS, VIEWBOX, arco, espalhar, fatia, projetar, unidadesPorKm } from "./projecao";
+import { CAIXA_UF, ESTADOS, VIEWBOX, arco, desprojetar, espalhar, fatia, projetar, unidadesPorKm } from "./projecao";
 import type { DadosMapa, ModoMapa, PontoInst } from "./tipos";
 
 type Props = {
@@ -31,11 +31,9 @@ const ROTULO_FORA: Record<string, [number, number]> = { AL: [78, 18], SE: [74, 4
 const ALTURA_MAX = 150;       // altura do cone mais alto (unidades do viewBox), além da altura mínima
 const ALTURA_MIN = 14;
 const [VX, VY, VW, VH] = VIEWBOX;
-const ESCALA = 200 * unidadesPorKm(-9);   // comprimento de 200 km no viewBox
 // Anéis de fundo (centro e raio no viewBox) e linhas do gride geográfico.
 const ANEL = { cx: VW / 2, cy: VH / 2 + 10, r: 600 };
-const GRADE_LAT = [-5, -10, -15];
-const GRADE_LON = [-45, -40, -35];
+
 // Margens extras: topo para as barras do litoral norte; direita, no modo rede, para as âncoras externas.
 const topoExtra = (modo: ModoMapa) => (modo === "densidade" ? 75 : 30);
 const viewBox = (modo: ModoMapa) => [VX - 20, VY - topoExtra(modo), VW + (modo === "rede" ? 250 : 40), VH + topoExtra(modo) + 60];
@@ -87,6 +85,16 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
     onKeyDown: (e: React.KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(id); } },
   });
 
+  // ---- estado isolado: as coordenadas são reescaladas para o estado ocupar a área do mapa ----
+  // (os tamanhos de cilindros, rótulos e bordas não mudam; só as posições)
+  const zoom = useMemo(() => (ufAtiva && modo !== "rede" && CAIXA_UF[ufAtiva] ? calcularZoom(CAIXA_UF[ufAtiva], modo) : null), [ufAtiva, modo]);
+  const T = (x: number, y: number): [number, number] => (zoom ? [zoom.ex + x * zoom.z, zoom.ey + y * zoom.z] : [x, y]);
+  const xy = (p: { lat: number; lon: number }) => { const [x, y] = T(...projetar(p.lat, p.lon)); return { x, y }; };
+  const grade = gradeGeografica(zoom);
+  const escala = escalaGrafica(zoom?.z ?? 1);
+  const estadosVisiveis = zoom ? ESTADOS.filter((e) => e.uf === ufAtiva) : ESTADOS;
+  const matriz = zoom ? `matrix(${zoom.z} 0 0 ${zoom.z} ${zoom.ex} ${zoom.ey})` : undefined;
+
   // ---- pontos: principais (espalhados quando caem na mesma cidade) + subunidades da instituição selecionada ----
   const { principais, porId, filhos, menores, subs, rank, maxWorks, dono } = useMemo(() => {
     const ids = new Set(dados.pontos.map((p) => p.id));
@@ -125,11 +133,13 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
     for (const [pai, fs] of [...filhos, ...menores]) for (const f of fs) dono.set(f.id, dono.get(pai) ?? pai);
     for (const [pai] of filhos) if (dono.has(pai)) for (const f of filhos.get(pai)!) dono.set(f.id, dono.get(pai)!);
     return { principais, porId, filhos, menores, subs, rank, maxWorks, dono };
-  }, [dados.pontos, selecionado]);
+  }, [dados.pontos, selecionado, zoom]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   const subsAtuais = useRef(new Set<string>());
   subsAtuais.current = new Set(subs.map((p) => p.id));
   // Alturas comprimidas (expoente 0,45) e com mínimo: as diferenças continuam visíveis sem picos discrepantes.
+  // tom de cada cilindro: vizinhos muito próximos recebem tons diferentes
+  const tons = modo === "densidade" ? tonsVizinhos([...principais, ...subs]) : new Map<string, number>();
   const altura = (w: number) => ALTURA_MIN + ALTURA_MAX * Math.pow(w / maxWorks, 0.45);
   const ativo = foco ?? destaque ?? null;
   const dicaInst = (p: Ponto): Dica => {
@@ -181,49 +191,50 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
             const a = (g * Math.PI) / 180, r0 = ANEL.r * 0.97, r1 = ANEL.r * 1.04;
             return <line key={g} className="mn-anel-cardeal" x1={ANEL.cx + r0 * Math.sin(a)} y1={ANEL.cy - r0 * Math.cos(a)} x2={ANEL.cx + r1 * Math.sin(a)} y2={ANEL.cy - r1 * Math.cos(a)} />;
           })}
-          {GRADE_LAT.map((lat) => {
-            const y = projetar(lat, -40)[1];
+          {grade.lats.map((lat) => {
+            const y = T(...projetar(lat, -40))[1];
             return <g key={lat}><line className="mn-grade" x1={VX - 20} x2={VX + VW + 20} y1={y} y2={y} /><text className="mn-grade-txt" x={VX - 14} y={y - 6}>{-lat}° S</text></g>;
           })}
-          {GRADE_LON.map((lon) => {
-            const x = projetar(-5, lon)[0];
+          {grade.lons.map((lon) => {
+            const x = T(...projetar(-5, lon))[0];
             return <g key={lon}><line className="mn-grade" x1={x} x2={x} y1={VY - topoExtra(modo)} y2={VH + 60} /><text className="mn-grade-txt" x={x + 6} y={VH + 52}>{-lon}° O</text></g>;
           })}
         </g>
         {/* sombra dura: uma cópia do mapa deslocada, em tinta sólida */}
         <g className="mn-placa" aria-hidden>
           {[9].map((d) => (
-            <g key={d} transform={`translate(${d} ${d})`}>{ESTADOS.map((e) => <path key={e.uf} d={e.path} />)}</g>
+            <g key={d} transform={`translate(${d} ${d})`}>{estadosVisiveis.map((e) => <path key={e.uf} d={e.path} transform={matriz} vectorEffect="non-scaling-stroke" />)}</g>
           ))}
         </g>
         <g className="mn-estados">
-          {ESTADOS.map((e) => {
+          {estadosVisiveis.map((e) => {
             const intens = modo === "areas" && areaAtiva ? (porUf.get(e.uf)?.fatias.get(areaAtiva) ?? 0) / maxAreaUf : 0;
             return (
-              <path key={e.uf} d={e.path} className={`mn-estado${ufAtiva === e.uf ? " mn-estado-ativo" : ""}${ufAtiva && ufAtiva !== e.uf ? " mn-estado-apagado" : ""}`}
+              <path key={e.uf} d={e.path} transform={matriz} vectorEffect="non-scaling-stroke" className={`mn-estado${ufAtiva === e.uf && !zoom ? " mn-estado-ativo" : ""}${ufAtiva && ufAtiva !== e.uf ? " mn-estado-apagado" : ""}`}
                 style={intens ? ({ "--mn-intensidade": intens.toFixed(3) } as React.CSSProperties) : undefined}
                 {...(modo === "rede" ? {} : comDica(() => dicaEstado(e)))} />
             );
           })}
         </g>
         <g className="mn-siglas" aria-hidden>
-          {ESTADOS.map((e) => {
-            const [dx, dy] = ROTULO_FORA[e.uf] ?? [0, 0];
-            const [x, y] = [e.centro[0] + dx, e.centro[1] + dy];
+          {estadosVisiveis.map((e) => {
+            const [cx, cy] = T(...e.centro);
+            const [dx, dy] = zoom ? [0, 0] : ROTULO_FORA[e.uf] ?? [0, 0];
+            const [x, y] = [cx + dx, cy + dy];
             return (
               <g key={e.uf}>
-                {(dx || dy) ? <><path className="mn-guia" d={`M${e.centro[0]},${e.centro[1]} L${x - 18},${y - 7}`} /><circle className="mn-guia-ponto" cx={e.centro[0]} cy={e.centro[1]} r={3} /></> : null}
+                {(dx || dy) ? <><path className="mn-guia" d={`M${cx},${cy} L${x - 18},${y - 7}`} /><circle className="mn-guia-ponto" cx={cx} cy={cy} r={3} /></> : null}
                 <text x={x} y={y} className="mn-sigla">{e.uf}</text>
               </g>
             );
           })}
         </g>
 
-        {/* convenção cartográfica: escala gráfica (200 km, a 9° S) e seta do norte */}
+        {/* convenção cartográfica: escala gráfica (ajustada ao zoom) e seta do norte */}
         <g className="mn-escala" aria-hidden transform={`translate(${VX + 20} ${VH + 22})`}>
-          <rect width={ESCALA / 2} height={11} className="mn-escala-a" />
-          <rect x={ESCALA / 2} width={ESCALA / 2} height={11} className="mn-escala-b" />
-          <text x={0} y={-8}>200 km</text>
+          <rect width={escala.u / 2} height={11} className="mn-escala-a" />
+          <rect x={escala.u / 2} width={escala.u / 2} height={11} className="mn-escala-b" />
+          <text x={0} y={-8}>{escala.km} km</text>
         </g>
         <g className="mn-norte" aria-hidden transform={`translate(${VX} ${VY - topoExtra(modo) + 12})`}>
           <rect width={56} height={72} rx={7} />
@@ -235,10 +246,10 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
           <g className="mn-barras">
             {[...principais, ...subs].sort((a, b) => a.y - b.y).map((p) => {
               const h = altura(p.works);
-              const w = 6 + 10 * Math.sqrt(p.works / maxWorks);     // base larga: legível, sem fidelidade de escala
+              const w = 5 + 8 * Math.sqrt(p.works / maxWorks);      // base larga: legível, sem fidelidade de escala
               const ehSub = subs.includes(p);
               const n = (filhos.get(p.id)?.length ?? 0) + (menores.get(p.id)?.length ?? 0);
-              const cls = ["mn-barra",
+              const cls = ["mn-barra", `mn-tom-${tons.get(p.id) ?? 0}`,
                 rank.get(p.id)! <= 3 && "mn-barra-top",
                 p.id === selecionado && "mn-barra-sel", ehSub && "mn-barra-sub",
                 ativo === p.id && "mn-barra-foco",
@@ -247,8 +258,7 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
                 <g key={p.id} className={cls} {...acionavel(p.id, `${p.nome}: ${fmt(p.works)} publicações`)} {...comDica(() => dicaInst(p), p.id)}>
                   {ehSub && <line x1={porId.get(selecionado!)!.x} y1={porId.get(selecionado!)!.y} x2={p.x} y2={p.y} className="mn-sub-linha" />}
                   {n > 0 && !ehSub && <circle cx={p.x} cy={p.y} r={7 + w} className="mn-sub-anel" />}
-                  <path d={cone(p.x, p.y, w, h)} />
-                  <path d={`M${p.x},${p.y - h} L${p.x + w},${p.y} A${w},${w * 0.38} 0 0 1 ${p.x},${p.y + w * 0.38} Z`} className="mn-cone-sombra" />
+                  <Cilindro x={p.x} y={p.y} w={w} h={h} />
                   <rect x={p.x - w - 4} y={p.y - h - 4} width={2 * w + 8} height={h + 8} className="mn-alvo" />
                 </g>
               );
@@ -309,8 +319,9 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 
         {modo === "areas" && (
           <g className="mn-areas">
-            {ESTADOS.map((e) => {
+            {estadosVisiveis.map((e) => {
               const u = porUf.get(e.uf);
+              const [ex, ey] = T(...e.centro);
               if (!u || u.total === 0) return null;
               const r = 20 + 46 * Math.sqrt(u.total / maxUf);
               let ang = 0;
@@ -322,12 +333,12 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
                     const a0 = ang, a1 = ang + (2 * Math.PI * v) / u.total;
                     ang = a1;
                     return (
-                      <path key={f} d={fatia(e.centro[0], e.centro[1], r, r * 0.55, a0, Math.min(a1, a0 + 2 * Math.PI - 1e-4))}
+                      <path key={f} d={fatia(ex, ey, r, r * 0.55, a0, Math.min(a1, a0 + 2 * Math.PI - 1e-4))}
                         className={`mn-fatia mn-area-${AREAS_ORDEM.indexOf(f)}${areaAtiva && areaAtiva !== f ? " mn-fatia-apagada" : ""}`}
                         {...comDica(() => ({ titulo: rotuloArea(f), sub: e.nome, linhas: [["Publicações", fmt(v)], ["Parte do estado", `${((100 * v) / u.total).toFixed(0)}%`]] }))} />
                     );
                   })}
-                  <text x={e.centro[0]} y={e.centro[1] + 5} className="mn-rosca-total">{fmt(u.total)}</text>
+                  <text x={ex} y={ey + 5} className="mn-rosca-total">{fmt(u.total)}</text>
                 </g>
               );
             })}
@@ -429,10 +440,6 @@ function semColisao<T extends { x: number; y: number }>(itens: T[], limite: numb
   return ok;
 }
 
-function xy(p: { lat: number; lon: number }) {
-  const [x, y] = projetar(p.lat, p.lon);
-  return { x, y };
-}
 
 /** Cartões HTML para as 3 maiores, ligados à ponta da barra por linha pontilhada (como na inspiração). */
 function Callouts({ pontos, altura, vb, tam }: { pontos: Ponto[]; altura: (w: number) => number; vb: number[]; tam: { w: number; h: number } }) {
@@ -472,11 +479,11 @@ function Legenda({ modo, altura, maxWorks, escala }: { modo: ModoMapa; altura: (
     return (
       <div className="mn-legenda-caixa">
         <div>
-          <div className="ttl">Publicações (altura do cone, escala comprimida)</div>
+          <div className="ttl">Publicações (altura do cilindro, escala comprimida)</div>
           <svg className="lg-svg" width={refs.length * 58} height={hMax + 6} aria-hidden>
             {refs.map((v, i) => {
               const h = Math.max(3, altura(v) * escala * k), x = 8 + i * 58;
-              return <g key={v}><path className="lg-pico" d={cone(x, hMax + 1, 5, h)} /><text x={x + 9} y={hMax - 2}>{fmt(v)}</text></g>;
+              return <g key={v} className="lg-pico"><Cilindro x={x} y={hMax + 1} w={5} h={h} /><text x={x + 9} y={hMax - 2}>{fmt(v)}</text></g>;
             })}
           </svg>
         </div>
@@ -511,7 +518,52 @@ function Legenda({ modo, altura, maxWorks, escala }: { modo: ModoMapa; altura: (
   );
 }
 
-/** Cone: triângulo com base elíptica (visto levemente de cima). */
-function cone(x: number, y: number, w: number, h: number) {
-  return `M${x - w},${y} L${x},${y - h} L${x + w},${y} A${w},${w * 0.38} 0 0 1 ${x - w},${y} Z`;
+/** Cilindro visto levemente de cima: corpo com base elíptica, lateral direita sombreada e tampa mais clara. */
+function Cilindro({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+  const ry = w * 0.38;
+  return (
+    <>
+      <path className="mn-cil" d={`M${x - w},${y - h} L${x - w},${y} A${w},${ry} 0 0 0 ${x + w},${y} L${x + w},${y - h} Z`} />
+      <path className="mn-cil-sombra" d={`M${x + w * 0.2},${y - h} L${x + w},${y - h} L${x + w},${y} A${w},${ry} 0 0 1 ${x + w * 0.2},${y + ry * 0.98} Z`} />
+      <ellipse className="mn-cil-topo" cx={x} cy={y - h} rx={w} ry={ry} />
+    </>
+  );
+}
+
+/** Tons alternados para cilindros vizinhos (coloração gulosa: maior primeiro, tom diferente dos vizinhos já coloridos). */
+function tonsVizinhos(pontos: Ponto[], raio = 34): Map<string, number> {
+  const tons = new Map<string, number>();
+  const feitos: Ponto[] = [];
+  for (const p of [...pontos].sort((a, b) => b.works - a.works)) {
+    const usados = new Set(feitos.filter((q) => Math.hypot(q.x - p.x, q.y - p.y) < raio).map((q) => tons.get(q.id)));
+    let t = 0;
+    while (usados.has(t) && t < 3) t++;
+    tons.set(p.id, t);
+    feitos.push(p);
+  }
+  return tons;
+}
+
+/** Enquadra a caixa de um estado na área do mapa (sem alterar o viewBox). */
+function calcularZoom([x0, y0, x1, y1]: [number, number, number, number], modo: ModoMapa) {
+  const folgaTopo = modo === "densidade" ? 150 : 40;          // espaço para os cilindros mais altos
+  const z = Math.min(6, (VW * 0.88) / (x1 - x0), (VH * 0.88 - folgaTopo) / (y1 - y0));
+  const cx = VW / 2, cy = VH / 2 + folgaTopo / 2;
+  return { z, ex: cx - ((x0 + x1) / 2) * z, ey: cy - ((y0 + y1) / 2) * z };
+}
+
+/** Linhas do gride: a cada 5° no mapa inteiro; 1° ou 2° quando um estado está isolado. */
+function gradeGeografica(zoom: { z: number; ex: number; ey: number } | null) {
+  const inv = (x: number, y: number) => (zoom ? desprojetar((x - zoom.ex) / zoom.z, (y - zoom.ey) / zoom.z) : desprojetar(x, y));
+  const [latTopo, lonEsq] = inv(VX, VY), [latBase, lonDir] = inv(VX + VW, VY + VH);
+  const passo = !zoom ? 5 : zoom.z > 3 ? 1 : 2;
+  const faixa = (a: number, b: number) => { const r: number[] = []; for (let v = Math.ceil(Math.min(a, b) / passo) * passo; v <= Math.max(a, b); v += passo) r.push(v); return r; };
+  return { lats: faixa(latBase, latTopo).filter((v) => v < 0), lons: faixa(lonEsq, lonDir) };
+}
+
+/** Escala gráfica com um comprimento "redondo" que caiba bem no zoom atual. */
+function escalaGrafica(z: number) {
+  const porKm = unidadesPorKm(-9) * z;
+  const km = [500, 200, 100, 50, 20, 10].find((k) => k * porKm <= 260) ?? 10;
+  return { km, u: km * porKm };
 }

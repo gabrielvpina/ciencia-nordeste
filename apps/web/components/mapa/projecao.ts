@@ -53,3 +53,15 @@ export function fatia(cx: number, cy: number, r: number, r0: number, a0: number,
 
 /** Unidades do viewBox por quilômetro na direção leste-oeste, numa latitude (para a escala gráfica). */
 export const unidadesPorKm = (lat: number) => P.kx / (111.32 * Math.cos((lat * Math.PI) / 180));
+
+/** Retângulo envolvente de cada estado no viewBox (lido do próprio path). */
+export const CAIXA_UF: Record<string, [number, number, number, number]> = Object.fromEntries(
+  ESTADOS.map((e) => {
+    const n = (e.path.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
+    const xs = n.filter((_, i) => i % 2 === 0), ys = n.filter((_, i) => i % 2 === 1);
+    return [e.uf, [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]];
+  }),
+);
+
+/** Inversa da projeção: coordenadas do viewBox → [lat, lon]. */
+export const desprojetar = (x: number, y: number): [number, number] => [P.latMax - (y - P.margem) / P.ky, P.lonMin + (x - P.margem) / P.kx];

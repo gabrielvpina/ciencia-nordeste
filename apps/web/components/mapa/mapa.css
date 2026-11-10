@@ -214,3 +214,17 @@
 .mn-anel-cardeal { stroke: var(--mn-tinta); stroke-width: 2.4; }
 .mn-grade { stroke: var(--ring); stroke-width: 1.2; stroke-dasharray: 2 8; }
 .mn-grade-txt { fill: var(--muted); font: 500 15px var(--font-body); }
+
+/* cilindros (densidade): tom por vizinhança, tampa mais clara, lateral sombreada */
+.mn-barra { --tom: var(--mn-barra); }
+.mn-tom-1 { --tom: var(--seq-4); }
+.mn-tom-2 { --tom: var(--seq-2); }
+.mn-tom-3 { --tom: var(--accent); }
+.mn-barra-top, .mn-barra-sel, .mn-barra-sub, .mn-barra:hover, .mn-barra:focus-visible, .mn-barra-foco { --tom: var(--flow); }
+.mn-barra path.mn-cil { fill: var(--tom); stroke: var(--mn-tinta); stroke-width: 1.5; stroke-linejoin: round; }
+.mn-barra .mn-cil-topo { fill: color-mix(in srgb, var(--tom) 55%, #fff); stroke: var(--mn-tinta); stroke-width: 1.5; }
+.mn-barra path.mn-cil-sombra { fill: var(--mn-tinta); opacity: .18; stroke: none; }
+.lg-pico .mn-cil { fill: var(--accent-vivo); stroke: var(--stroke); stroke-width: 1.2; }
+.lg-pico .mn-cil-topo { fill: color-mix(in srgb, var(--accent-vivo) 55%, #fff); stroke: var(--stroke); stroke-width: 1.2; }
+.lg-pico .mn-cil-sombra { fill: var(--stroke); opacity: .18; }
+.lg-pico { fill: none; stroke: none; }

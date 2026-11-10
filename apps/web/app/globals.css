@@ -528,3 +528,27 @@ a.kpi:hover, .card-inst:hover, .card-prog:hover { transform: translate(-1px, -1p
 .tm-item:hover { background: var(--accent-soft); }
 .hero h1 .estrela path { fill: var(--accent-vivo); }
 .lp-no { fill: var(--panel); }
+
+/* matriz área × conceito: linhas separando cada área (tracejadas) e cabeçalho com linha de tinta */
+.matriz .mz-col, .matriz .mz-canto, .matriz .mz-total-cab { border-bottom: var(--b) solid var(--stroke); border-radius: 0; padding-bottom: 8px; }
+.mz-linha > * { border-bottom: 2px dashed var(--line); border-radius: 0; }
+.mz-linha:last-child > * { border-bottom: 0; }
+.mz-linha > .mz-area, .mz-linha > .mz-celula, .mz-linha > .mz-total { min-height: 48px; height: 100%; display: flex; align-items: center; }
+.mz-linha > .mz-celula { justify-content: center; }
+.mz-linha > .mz-total { justify-content: flex-end; }
+.mz-linha:nth-child(even of .mz-linha) > * { background: color-mix(in srgb, var(--sand) 55%, transparent); }
+.mz-linha > .mz-area { font-weight: 500; }
+
+/* matriz: cabeçalho com todas as células na mesma altura (a linha de tinta fica contínua e alinhada) */
+.matriz .mz-canto, .matriz .mz-col, .matriz .mz-total-cab {
+  align-self: stretch; display: flex; align-items: flex-end; min-height: 38px; padding: 0 0 8px; margin: 0;
+}
+.matriz .mz-col { justify-content: center; }
+.matriz .mz-total-cab { justify-content: flex-end; padding-right: 6px; font-size: .72rem; }
+.matriz .mz-col:hover, .matriz .mz-col.ativo { border-radius: 8px 8px 0 0; }
+.mz-linha > * { align-self: stretch; }
+
+/* menu superior: linha de divisória sob as abas e separador antes dos botões de tema */
+.topo { border-bottom: var(--b) solid var(--stroke); padding-bottom: 12px; margin-bottom: 4px; background: var(--panel); }
+.topo .topo-acoes { padding-left: 14px; border-left: 2px dashed var(--line); }
+.nav { gap: 6px; }

@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/01-placa-horizontal-escuro.svg">
+    <img src="assets/01-placa-horizontal.svg" alt="Ciência Nordeste" width="420">
+  </picture>
+</p>
+
 # Ciência Nordeste
 
 Repositório aberto da pesquisa em **ciências da vida** do Nordeste: saúde, biomedicina, biotecnologia, genética, microbiologia, ciências agrárias e biológicas e veterinária. Reúne, a partir de **dados abertos**, instituições, programas de pós-graduação, pesquisadores, publicações (2022–2026), teses e colaborações dos nove estados da região.
@@ -25,6 +32,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r ingest/requirements.txt
 docker compose up -d embed web             # app em http://localhost:3000 (+ serviço da busca por tema)
 ./scripts/verificar.sh                     # lint, tipos, build e migrações num banco vazio
 ./scripts/backup.sh                        # backup do que não se regenera + dump do banco (~/Backups/ciencia-nordeste)
+./scripts/atualizar_dados.sh               # atualização periódica dos dados (--sim mostra o plano; ver ingest/README.md)
 ```
 
 ## Índice da documentação (`docs/`)
@@ -51,7 +59,7 @@ docker compose up -d embed web             # app em http://localhost:3000 (+ ser
 
 | Documento | Conteúdo |
 |---|---|
-| [docs/decisoes.md](docs/decisoes.md) | Registro de decisões técnicas, D-001 a D-028 (fontes, robots.txt, recorte, identidade, banco, app, mapa, nome do projeto) |
+| [docs/decisoes.md](docs/decisoes.md) | Registro de decisões técnicas, D-001 a D-032 (fontes, robots.txt, recorte, identidade, banco, app, mapa, interface, atualização dos dados) |
 | [docs/pedido_lai_cnpq.md](docs/pedido_lai_cnpq.md) | Texto pronto do pedido de acesso à informação ao CNPq (grupos de pesquisa e bolsistas PQ) |
 
 ### Relatórios gerados (`ingest/relatorios/`, fora do git)

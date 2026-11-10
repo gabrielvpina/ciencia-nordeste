@@ -62,7 +62,7 @@ def avaliar(url: str) -> dict:
             linha = {}
             for modo in ("texto", "vetor", "hibrido"):
                 t0 = time.monotonic()
-                r = cli.get(f"{url}/api/tema?q={quote(consulta)}&modo={modo}").json()
+                r = cli.get(f"{url}/api/tema?q={quote(consulta)}&modo={modo}&ql=0").json()  # base inteira, sem o filtro Qualis (D-035)
                 ms = (time.monotonic() - t0) * 1000
                 pubs = r.get("publicacoes", [])[:10]
                 rel = sum(1 for p in pubs if any(_norm(t) in _norm(p["titulo"] + " " + kws.get(p["id"], "")) for t in termos))

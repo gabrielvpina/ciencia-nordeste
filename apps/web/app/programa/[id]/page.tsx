@@ -7,6 +7,7 @@ import AbasEntidade, { visaoDe } from "@/components/AbasEntidade";
 import ProducaoEntidade from "@/components/ProducaoEntidade";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
+import { soQualis } from "@/lib/qualis-filtro";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -33,10 +34,12 @@ export default async function Programa({ params, searchParams }: { params: { id:
   const p = await carregar(params.id);
   if (!p) notFound();
   const ultimo = Math.max(...(p.base_years ?? [0]));
+  const sq = soQualis();
   const [docentes, teses] = await Promise.all([
     q<{ id: string; display_name: string; category: string; pq_category: string | null; works: number | null }>(
-      `SELECT r.id, r.display_name, f.category, f.pq_category, s.works_count_period AS works
+      `SELECT r.id, r.display_name, f.category, f.pq_category, ${sq ? "b.works_qualis" : "s.works_count_period"} AS works
          FROM program_faculty f JOIN researchers r ON r.id = f.researcher_id LEFT JOIN researcher_openalex_stats s ON s.researcher_id = r.id
+         LEFT JOIN mv_pesquisador_busca b ON b.id = r.id
         WHERE f.program_id = $1 AND f.base_year = $2 ORDER BY f.category DESC, r.display_name`, [p.id, ultimo]),
     q<{ title: string; degree: string; year: number; author_name: string; advisor_name: string; advisor_researcher_id: string | null; full_text_url: string | null }>(
       `SELECT title, degree, year, author_name, advisor_name, advisor_researcher_id, full_text_url FROM theses

@@ -1,43 +1,45 @@
 import type { DadosMapa, Externo } from "@/components/mapa/tipos";
 import { q } from "@/lib/db";
 import { ANO_MIN, anoMax, type Filtros } from "@/lib/filtros";
+import { colWorks, juntaQualis } from "@/lib/qualis-filtro";
 
 const nomePais = (() => {
   const dn = new Intl.DisplayNames(["pt-BR"], { type: "region" });
   return (iso: string) => { try { return dn.of(iso) ?? iso; } catch { return iso; } };
 })();
 
-/** Dados do mapa geral (densidade, ligações, áreas) respeitando os filtros. */
-export async function dadosMapa(f: Filtros): Promise<DadosMapa> {
+/** Dados do mapa geral (densidade, ligações, áreas) respeitando os filtros; `sq` = só publicações em revistas com Qualis (D-035). */
+export async function dadosMapa(f: Filtros, sq: boolean): Promise<DadosMapa> {
+  const W = colWorks(sq);
   const args: unknown[] = [f.de, f.ate];
   let condArea = "";
   if (f.area) { args.push(f.area); condArea = ` AND field = $${args.length}`; }
   const pontos = await q<DadosMapa["pontos"][number]>(
     `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, i.kind AS tipo, v.parent_id AS pai,
-            sum(m.works)::int AS works
+            sum(m.${W})::int AS works
        FROM mv_mapa_producao m JOIN institutions i ON i.id = m.institution_id
        LEFT JOIN v_instituicao_vinculo v ON v.institution_id = i.id
       WHERE m.year BETWEEN $1 AND $2${condArea} AND i.latitude IS NOT NULL
-      GROUP BY i.id, v.parent_id HAVING sum(m.works) > 0`, args);
+      GROUP BY i.id, v.parent_id HAVING sum(m.${W}) > 0`, args);
   const argsL = [...args];
   let condUf = "";
   if (f.uf) { argsL.push(f.uf); condUf = ` AND (ia.uf = $${argsL.length} OR ib.uf = $${argsL.length})`; }
   const ligacoes = await q<{ a: string; b: string; works: number }>(
-    `SELECT m.inst_a AS a, m.inst_b AS b, sum(m.works)::int AS works
+    `SELECT m.inst_a AS a, m.inst_b AS b, sum(m.${W})::int AS works
        FROM mv_mapa_colaboracao m JOIN institutions ia ON ia.id = m.inst_a JOIN institutions ib ON ib.id = m.inst_b
       WHERE m.year BETWEEN $1 AND $2${condArea}${condUf}
-      GROUP BY 1, 2 ORDER BY works DESC LIMIT 160`, argsL);
+      GROUP BY 1, 2 HAVING sum(m.${W}) > 0 ORDER BY works DESC LIMIT 160`, argsL);
   const areas = await q<{ uf: string; field: string; works: number }>(
-    `SELECT i.uf, m.field, sum(m.works)::int AS works FROM mv_mapa_producao m JOIN institutions i ON i.id = m.institution_id
+    `SELECT i.uf, m.field, sum(m.${W})::int AS works FROM mv_mapa_producao m JOIN institutions i ON i.id = m.institution_id
       WHERE m.year BETWEEN $1 AND $2 AND m.field IS NOT NULL GROUP BY 1, 2`, [f.de, f.ate]);
   // Produção por ano: todos os anos do recorte, para o card mostrar a série inteira.
   const anos = f.uf
     ? await q<{ ano: number; works: number }>(
-        `SELECT year AS ano, sum(works)::int AS works FROM mv_uf_ano_area
+        `SELECT year AS ano, sum(${W})::int AS works FROM mv_uf_ano_area
           WHERE uf = $1 AND year BETWEEN $2 AND $3${f.area ? " AND field = $4" : ""} GROUP BY 1 ORDER BY 1`,
         f.area ? [f.uf, ANO_MIN, anoMax(), f.area] : [f.uf, ANO_MIN, anoMax()])
     : await q<{ ano: number; works: number }>(
-        `SELECT year AS ano, count(*)::int AS works FROM works
+        `SELECT year AS ano, count(*)::int AS works FROM works w${juntaQualis(sq, "w.id")}
           WHERE year BETWEEN $1 AND $2${f.area ? " AND primary_field = $3" : ""} GROUP BY 1 ORDER BY 1`,
         f.area ? [ANO_MIN, anoMax(), f.area] : [ANO_MIN, anoMax()]);
   return { pontos: f.uf ? pontos.filter((p) => p.uf === f.uf) : pontos, ligacoes, areas, anos };
@@ -53,21 +55,22 @@ export function sqlPessoas(tipo: "pesquisador" | "programa"): string {
 }
 
 /** Rede de colaboração de uma entidade: origem (instituições), parceiros do NE e coautores externos. */
-export async function dadosRede(tipo: Tipo, id: string): Promise<DadosMapa & { resumo: { works: number; parceiros: number; externos: number } }> {
+export async function dadosRede(tipo: Tipo, id: string, sq: boolean): Promise<DadosMapa & { resumo: { works: number; parceiros: number; externos: number } }> {
   let origem: string[] = [];
   let parceiros: { id: string; works: number }[] = [];
   let externosBrutos: { pais: string; works: number }[] = [];
   let works = 0;
+  const W = colWorks(sq);
 
   if (tipo === "instituicao") {
     origem = [id];
     parceiros = await q(
-      `SELECT CASE WHEN inst_a = $1 THEN inst_b ELSE inst_a END AS id, sum(works)::int AS works
-         FROM mv_mapa_colaboracao WHERE inst_a = $1 OR inst_b = $1 GROUP BY 1 ORDER BY 2 DESC LIMIT 40`, [id]);
-    externosBrutos = await q(`SELECT pais, works FROM mv_inst_externo WHERE institution_id = $1`, [id]);
-    [{ works }] = await q<{ works: number }>(`SELECT count(*)::int AS works FROM mv_work_inst WHERE institution_id = $1`, [id]);
+      `SELECT CASE WHEN inst_a = $1 THEN inst_b ELSE inst_a END AS id, sum(${W})::int AS works
+         FROM mv_mapa_colaboracao WHERE inst_a = $1 OR inst_b = $1 GROUP BY 1 HAVING sum(${W}) > 0 ORDER BY 2 DESC LIMIT 40`, [id]);
+    externosBrutos = await q(`SELECT pais, ${W} AS works FROM mv_inst_externo WHERE institution_id = $1 AND ${W} > 0`, [id]);
+    [{ works }] = await q<{ works: number }>(`SELECT count(*)::int AS works FROM mv_work_inst wi${juntaQualis(sq, "wi.work_id")} WHERE wi.institution_id = $1`, [id]);
   } else {
-    const base = `WITH p AS (${sqlPessoas(tipo)}), w AS (SELECT DISTINCT a.work_id FROM work_authorships a JOIN p ON p.rid = a.researcher_id)`;
+    const base = `WITH p AS (${sqlPessoas(tipo)}), w AS (SELECT DISTINCT a.work_id FROM work_authorships a JOIN p ON p.rid = a.researcher_id${juntaQualis(sq, "a.work_id")})`;
     origem = tipo === "programa"
       ? (await q<{ id: string }>(`SELECT institution_id AS id FROM graduate_programs WHERE id = $1 AND institution_id IS NOT NULL`, [id])).map((r) => r.id)
       : (await q<{ id: string }>(
@@ -91,7 +94,7 @@ export async function dadosRede(tipo: Tipo, id: string): Promise<DadosMapa & { r
   const ids = [...new Set([...origem, ...parceiros.map((p) => p.id)])];
   const pontos = ids.length
     ? await q<DadosMapa["pontos"][number]>(
-        `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, i.kind AS tipo, COALESCE(s.works, 0)::int AS works
+        `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.latitude AS lat, i.longitude AS lon, i.kind AS tipo, COALESCE(s.${W}, 0)::int AS works
            FROM institutions i LEFT JOIN mv_instituicao_stats s ON s.institution_id = i.id
           WHERE i.id = ANY($1::uuid[]) AND i.latitude IS NOT NULL`, [ids])
     : [];

@@ -368,3 +368,11 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Sistema em modo escuro:** o site continua claro. `color-scheme: light` no `:root` mantém também os controles nativos do navegador (barras de rolagem, campos) no claro.
 - **Cabeçalho:** fica só o link para o repositório no GitHub.
 - **Revoga** a parte de tema escuro das decisões de interface anteriores (D-031). A paleta (`data-palette`) e os tokens claros não mudam. As telas do README passam a ser só claras; o logo do README mantém a variante escura, que segue o tema do GitHub do leitor, não o do site.
+
+## D-035 — Filtro "só revistas com Qualis" no site inteiro
+
+- **O quê:** um card pequeno acima de **Áreas**, na tela inicial, com a caixa "Só publicações em revistas com Qualis", **marcada por padrão**. Com ela marcada, todo o site conta só as publicações cuja revista está no Qualis Periódicos 2021-2024 (D-033): mapa (produção, colaboração, áreas), produção por ano, totais, busca por nome e por tema, listas e perfis de instituição, programa e pesquisador (números, publicações, coautores, rede e a aba Produção).
+- **Onde fica a escolha:** no cookie `cn-qualis` (sem cookie = ligado; `0` = desligado), para valer em todas as páginas e o servidor ler na hora de montar cada uma. As chamadas do navegador às APIs levam `ql=0|1` na URL, para o cache do navegador não misturar as duas versões. O rodapé avisa quando o filtro está ligado.
+- **Banco (migração 0011):** as visões de contagem (`mv_resumo`, `mv_pesquisador_busca`, `mv_instituicao_stats`, `mv_instituicao_areas`, `mv_mapa_producao`, `mv_mapa_colaboracao`, `mv_inst_externo`, `mv_uf_ano_area`) foram recriadas com uma coluna `works_qualis` ao lado de `works`; o app escolhe a coluna. Nenhum dado novo: tudo vem de `mv_work_qualis`, que agora é a primeira do REFRESH em `carga.sql`.
+- **Contado na hora com o filtro:** coautores do pesquisador e parceiras da instituição (as tabelas `coauthorships` e `institution_collaborations` da ingestão não separam Qualis).
+- **Não muda:** número de pesquisadores, programas, teses e orientações (não são publicações em revista). A avaliação da busca por tema (`avaliar_busca_tema.py`) usa `ql=0`, a base inteira.

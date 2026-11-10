@@ -647,3 +647,10 @@ a.kpi:hover, .card-inst:hover, .card-prog:hover { transform: translate(-1px, -1p
 @media (min-width: 861px) { .explorar:has(.producao-area) { grid-template-rows: minmax(0, 1fr); } }
 @media (max-width: 860px) { .producao-area { overflow: visible; } }
 @media (max-width: 600px) { .kpis-tres { grid-template-columns: 1fr; } }
+
+/* ---------- filtro "só revistas com Qualis" (tela inicial, D-035) ---------- */
+.card-filtro-qualis { padding-top: 12px; padding-bottom: 12px; }
+.check-qualis { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: .92rem; font-weight: 500; }
+.check-qualis input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent-vivo); cursor: pointer; flex: none; }
+.check-qualis input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card-filtro-qualis .linha-cap { margin: 4px 0 0 28px; padding: 0; border: 0; }

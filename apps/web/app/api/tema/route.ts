@@ -1,3 +1,4 @@
+import { soQualis } from "@/lib/qualis-filtro";
 import { buscaPorTema, type ModoBusca } from "@/lib/vetorial";
 
 export const dynamic = "force-dynamic";
@@ -9,5 +10,5 @@ export async function GET(req: Request) {
   const q = (p.get("q") ?? "").trim().slice(0, 300);
   const modo = (MODOS.includes(p.get("modo") as ModoBusca) ? p.get("modo") : "hibrido") as ModoBusca;
   if (q.length < 3) return Response.json({ erro: "consulta curta demais" }, { status: 400 });
-  return Response.json(await buscaPorTema(q, modo));
+  return Response.json(await buscaPorTema(q, modo, soQualis(req)));
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
 import type { DadosMapa } from "@/components/mapa/tipos";
+import { paramQualis } from "@/lib/qualis-cookie";
 
 type Rede = DadosMapa & { resumo: { works: number; parceiros: number; externos: number } };
 
@@ -11,7 +12,7 @@ export default function RedeEntidade({ tipo, id, nome, abas }: { tipo: "pesquisa
   const [erro, setErro] = useState(false);
   useEffect(() => {
     const ctl = new AbortController();
-    fetch(`/api/rede?tipo=${tipo}&id=${id}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : Promise.reject())).then(setRede).catch(() => setErro(true));
+    fetch(`/api/rede?tipo=${tipo}&id=${id}&${paramQualis()}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : Promise.reject())).then(setRede).catch(() => setErro(true));
     return () => ctl.abort();
   }, [tipo, id]);
   return (

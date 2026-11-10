@@ -4,11 +4,13 @@ import { BarrasH } from "@/components/Graficos";
 import GraficoQualis from "@/components/GraficoQualis";
 import { fmt } from "@/lib/areas";
 import { EVENTO_QUALIS, FAIXA_SEM, corFaixa, dadosProducao, faixaDe } from "@/lib/qualis";
+import { soQualis } from "@/lib/qualis-filtro";
 
 const pct = (a: number, b: number) => `${b ? Math.round((100 * a) / b) : 0}%`;
 
 export default async function ProducaoEntidade({ tipo, id, nome, abas }: { tipo: "pesquisador" | "programa"; id: string; nome: string; abas: ReactNode }) {
-  const d = await dadosProducao(tipo, id);
+  const sq = soQualis();
+  const d = await dadosProducao(tipo, id, sq);
   const somaFaixa = (i: number) => d.anos.reduce((s, a) => s + a.porFaixa[i], 0);
   const comQualis = d.total - somaFaixa(FAIXA_SEM);
   const quem = tipo === "programa" ? "dos docentes do programa (último ano-base)" : "do pesquisador";
@@ -25,7 +27,9 @@ export default async function ProducaoEntidade({ tipo, id, nome, abas }: { tipo:
             <div className="kpis-tres">
               <div className="kpi"><b>{fmt(d.total)}</b><span>publicações {quem}</span></div>
               <div className="kpi"><b>{pct(somaFaixa(0), d.total)}</b><span>em revistas A1–A2 ({fmt(somaFaixa(0))})</span></div>
-              <div className="kpi"><b>{pct(comQualis, d.total)}</b><span>em revistas com Qualis ({fmt(comQualis)})</span></div>
+              {sq
+                ? <div className="kpi"><b>{EVENTO_QUALIS}</b><span>só publicações em revistas com Qualis (filtro na tela inicial)</span></div>
+                : <div className="kpi"><b>{pct(comQualis, d.total)}</b><span>em revistas com Qualis ({fmt(comQualis)})</span></div>}
             </div>
 
             <h2>Publicações por ano e estrato Qualis</h2>
@@ -35,7 +39,7 @@ export default async function ProducaoEntidade({ tipo, id, nome, abas }: { tipo:
             <div className="producao-colunas">
               <div>
                 <h2>Distribuição por estrato</h2>
-                <BarrasH unidade="publicações" itens={d.porEstrato.map((e) => ({
+                <BarrasH unidade="publicações" itens={d.porEstrato.filter((e) => !sq || e.estrato !== "Sem Qualis").map((e) => ({
                   id: e.estrato, rotulo: e.estrato, valor: e.n, cor: corFaixa(faixaDe(e.estrato === "Sem Qualis" ? null : e.estrato)), sub: pct(e.n, d.total),
                 }))} />
               </div>
@@ -53,6 +57,7 @@ export default async function ProducaoEntidade({ tipo, id, nome, abas }: { tipo:
               O Qualis classifica <b>revistas</b>, não artigos nem pessoas: foi feito para a avaliação dos programas de pós-graduação pela CAPES.
               Publicações de 2025 em diante usam a classificação {EVENTO_QUALIS}, a mais recente. &ldquo;Sem Qualis&rdquo; reúne revistas fora da lista,
               anais de eventos, livros e capítulos. Revistas casadas pelo ISSN (impresso ou eletrônico).
+              {sq && " O filtro “só revistas com Qualis” está ligado: desligue-o na tela inicial para ver também essas publicações."}
             </p>
           </>
         )}

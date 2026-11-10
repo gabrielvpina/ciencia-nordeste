@@ -31,7 +31,8 @@ export type ResultadoTema = {
   programas: { id: string; nome: string; detalhe: string; n: number }[];
 };
 
-export async function buscaPorTema(texto: string, modoPedido: ModoBusca = "hibrido"): Promise<ResultadoTema> {
+/** `sq` = só publicações em revistas com Qualis (filtro do site, D-035). */
+export async function buscaPorTema(texto: string, modoPedido: ModoBusca = "hibrido", sq = false): Promise<ResultadoTema> {
   const vetor = modoPedido === "texto" ? null : await embedConsulta(texto);
   const modo: ModoBusca = vetor ? modoPedido : "texto";
   const usaVetor = modo !== "texto";
@@ -42,7 +43,7 @@ export async function buscaPorTema(texto: string, modoPedido: ModoBusca = "hibri
     await cliente.query("SET LOCAL hnsw.ef_search = 120");
     // Busca filtrada no HNSW (pgvector >= 0.8): continua varrendo o índice até achar vizinhos que passam no filtro.
     await cliente.query("SET LOCAL hnsw.iterative_scan = relaxed_order");
-    // $1 = vetor (ou null), $2 = texto
+    // $1 = vetor (ou null), $2 = texto, $3/$4 = usa vetor/texto, $5 = só revistas com Qualis
     await cliente.query(
       `CREATE TEMP TABLE _tema ON COMMIT DROP AS
        -- Balanceado por idioma: o modelo multilíngue ainda prefere textos no idioma da consulta, então buscamos
@@ -51,10 +52,12 @@ export async function buscaPorTema(texto: string, modoPedido: ModoBusca = "hibri
          SELECT work_id, row_number() OVER (PARTITION BY ingles ORDER BY d) AS r, 1 - d AS sim FROM (
            (SELECT e.work_id, e.embedding <=> $1::halfvec AS d, true AS ingles FROM work_embeddings e
              WHERE $3 AND e.work_id IN (SELECT id FROM works WHERE language = 'en')
+               AND (NOT $5 OR e.work_id IN (SELECT work_id FROM mv_work_qualis))
              ORDER BY e.embedding <=> $1::halfvec LIMIT ${CANDIDATOS / 2})
            UNION ALL
            (SELECT e.work_id, e.embedding <=> $1::halfvec AS d, false FROM work_embeddings e
              WHERE $3 AND e.work_id IN (SELECT id FROM works WHERE language IS DISTINCT FROM 'en')
+               AND (NOT $5 OR e.work_id IN (SELECT work_id FROM mv_work_qualis))
              ORDER BY e.embedding <=> $1::halfvec LIMIT ${CANDIDATOS / 2})
          ) x
        ), txt AS (
@@ -62,12 +65,12 @@ export async function buscaPorTema(texto: string, modoPedido: ModoBusca = "hibri
            SELECT id AS work_id, 2 AS peso FROM works WHERE $4 AND lower(f_unaccent(title)) LIKE '%' || lower(f_unaccent($2)) || '%'
            UNION
            SELECT work_id, 1 FROM work_keywords WHERE $4 AND lower(f_unaccent(keyword)) LIKE '%' || lower(f_unaccent($2)) || '%'
-         ) t LIMIT ${CANDIDATOS}
+         ) t WHERE NOT $5 OR t.work_id IN (SELECT work_id FROM mv_work_qualis) LIMIT ${CANDIDATOS}
        )
        SELECT work_id, sum(1.0 / (${K_RRF} + r)) AS s, max(sim) AS sim
          FROM (SELECT work_id, r, sim FROM vec UNION ALL SELECT work_id, r, NULL::float FROM txt) u
         GROUP BY work_id`,
-      [vetor ?? "[" + Array(768).fill(0).join(",") + "]", texto, usaVetor, usaTexto],
+      [vetor ?? "[" + Array(768).fill(0).join(",") + "]", texto, usaVetor, usaTexto, sq],
     );
     const [pub, pesq, inst, prog] = await Promise.all([
       cliente.query(

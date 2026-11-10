@@ -1,6 +1,7 @@
 // Produção por ano e estrato Qualis Periódicos 2021-2024 (D-033), para pesquisadores e programas.
 import { q } from "@/lib/db";
 import { sqlPessoas } from "@/lib/mapa-dados";
+import { juntaQualis } from "@/lib/qualis-filtro";
 
 export const ESTRATOS = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C"] as const;
 export const EVENTO_QUALIS = "2021–2024";
@@ -30,8 +31,9 @@ export type Producao = {
   revistas: { venue: string; estrato: string | null; n: number }[];
 };
 
-export async function dadosProducao(tipo: "pesquisador" | "programa", id: string): Promise<Producao> {
-  const base = `WITH p AS (${sqlPessoas(tipo)}), w AS (SELECT DISTINCT a.work_id FROM work_authorships a JOIN p ON p.rid = a.researcher_id)`;
+/** `sq` = só publicações em revistas com Qualis (filtro do site, D-035). */
+export async function dadosProducao(tipo: "pesquisador" | "programa", id: string, sq: boolean): Promise<Producao> {
+  const base = `WITH p AS (${sqlPessoas(tipo)}), w AS (SELECT DISTINCT a.work_id FROM work_authorships a JOIN p ON p.rid = a.researcher_id${juntaQualis(sq, "a.work_id")})`;
   const [linhas, revistas] = await Promise.all([
     q<{ ano: number; estrato: string | null; n: number }>(
       `${base} SELECT wk.year AS ano, mq.estrato, count(*)::int AS n

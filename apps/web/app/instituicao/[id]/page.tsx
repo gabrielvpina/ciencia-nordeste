@@ -7,6 +7,7 @@ import { TIPOS_INSTITUICAO, area, fmt } from "@/lib/areas";
 import { nomeArea } from "@/lib/programas";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
+import { colWorks, soQualis } from "@/lib/qualis-filtro";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -19,9 +20,10 @@ type Inst = {
 
 async function carregar(id: string) {
   if (!UUID.test(id)) return null;
+  const W = colWorks(soQualis());
   const [i] = await q<Inst>(
     `SELECT i.id, i.name, i.acronym, i.kind, i.legal_nature, i.academic_org, i.uf, m.name AS municipio, i.latitude, i.longitude, i.website,
-            i.established, s.works, s.pesquisadores, s.programas,
+            i.established, s.${W} AS works, s.pesquisadores, s.programas,
             (SELECT value FROM institution_identifiers WHERE institution_id = i.id AND scheme = 'ror' LIMIT 1) AS ror,
             (SELECT value FROM institution_identifiers WHERE institution_id = i.id AND scheme = 'emec' LIMIT 1) AS emec
        FROM institutions i LEFT JOIN municipalities m ON m.ibge_code = i.municipality_ibge
@@ -37,23 +39,28 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function Instituicao({ params }: { params: { id: string } }) {
   const i = await carregar(params.id);
   if (!i) notFound();
+  const sq = soQualis(), W = colWorks(sq);
   const [areas, pesquisadores, programas, parceiras, vinculos] = await Promise.all([
     q<{ primary_field: string; n: string }>(
-      `SELECT primary_field, works AS n FROM mv_instituicao_areas WHERE institution_id = $1 ORDER BY works DESC`, [i.id]),
+      `SELECT primary_field, ${W} AS n FROM mv_instituicao_areas WHERE institution_id = $1 AND ${W} > 0 ORDER BY ${W} DESC`, [i.id]),
     q<{ id: string; display_name: string; works: number; is_capes_faculty: boolean }>(
-      `SELECT id, display_name, works, is_capes_faculty FROM mv_pesquisador_busca WHERE main_institution_id = $1 ORDER BY works DESC LIMIT 20`, [i.id]),
+      `SELECT id, display_name, ${W} AS works, is_capes_faculty FROM mv_pesquisador_busca WHERE main_institution_id = $1 AND ${W} > 0 ORDER BY ${W} DESC LIMIT 20`, [i.id]),
     q<{ id: string; name: string; grade: string; degree: string; evaluation_area: string }>(
       `SELECT id, name, grade, degree, evaluation_area FROM graduate_programs WHERE institution_id = $1 ORDER BY evaluation_area, name`, [i.id]),
-    q<{ id: string; name: string; uf: string; n: number }>(
-      `SELECT o.id, o.name, o.uf, c.shared_works_count AS n FROM institution_collaborations c
-         JOIN institutions o ON o.id = CASE WHEN c.institution_a_id = $1 THEN c.institution_b_id ELSE c.institution_a_id END
-        WHERE c.institution_a_id = $1 OR c.institution_b_id = $1 ORDER BY c.shared_works_count DESC LIMIT 15`, [i.id]),
+    q<{ id: string; name: string; uf: string; n: number }>(sq
+      // com o filtro, as parcerias vêm da visão do mapa, que separa as publicações com Qualis
+      ? `SELECT o.id, o.name, o.uf, sum(m.works_qualis)::int AS n FROM mv_mapa_colaboracao m
+           JOIN institutions o ON o.id = CASE WHEN m.inst_a = $1 THEN m.inst_b ELSE m.inst_a END
+          WHERE m.inst_a = $1 OR m.inst_b = $1 GROUP BY o.id HAVING sum(m.works_qualis) > 0 ORDER BY n DESC LIMIT 15`
+      : `SELECT o.id, o.name, o.uf, c.shared_works_count AS n FROM institution_collaborations c
+           JOIN institutions o ON o.id = CASE WHEN c.institution_a_id = $1 THEN c.institution_b_id ELSE c.institution_a_id END
+          WHERE c.institution_a_id = $1 OR c.institution_b_id = $1 ORDER BY c.shared_works_count DESC LIMIT 15`, [i.id]),
     // principal (se esta for subunidade) e subunidades (se for principal): D-030
     q<{ id: string; name: string; acronym: string | null; papel: "pai" | "filho"; works: number | null }>(
-      `SELECT o.id, o.name, o.acronym, 'pai' AS papel, s.works FROM v_instituicao_vinculo v JOIN institutions o ON o.id = v.parent_id
+      `SELECT o.id, o.name, o.acronym, 'pai' AS papel, s.${W} AS works FROM v_instituicao_vinculo v JOIN institutions o ON o.id = v.parent_id
          LEFT JOIN mv_instituicao_stats s ON s.institution_id = o.id WHERE v.institution_id = $1
        UNION ALL
-       SELECT o.id, o.name, o.acronym, 'filho', s.works FROM v_instituicao_vinculo v JOIN institutions o ON o.id = v.institution_id
+       SELECT o.id, o.name, o.acronym, 'filho', s.${W} FROM v_instituicao_vinculo v JOIN institutions o ON o.id = v.institution_id
          LEFT JOIN mv_instituicao_stats s ON s.institution_id = o.id WHERE v.parent_id = $1
        ORDER BY works DESC NULLS LAST`, [i.id]),
   ]);

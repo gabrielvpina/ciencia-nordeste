@@ -9,6 +9,7 @@ import AbasEntidade, { visaoDe } from "@/components/AbasEntidade";
 import ProducaoEntidade from "@/components/ProducaoEntidade";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
+import { juntaQualis, soQualis } from "@/lib/qualis-filtro";
 
 export const dynamic = "force-dynamic";
 
@@ -36,10 +37,15 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
   // UUID antigo que virou alias: redireciona para o perfil canônico (IDs nunca quebram).
   const [alias] = await q<{ researcher_id: string }>(`SELECT researcher_id FROM researcher_aliases WHERE alias_id = $1`, [params.id]);
   if (alias) redirect(`/pesquisador/${alias.researcher_id}`);
+  const sq = soQualis();
 
   const [p] = await q<Perfil>(
     `SELECT r.id, r.display_name, r.orcid, r.is_capes_faculty, r.pq_category_latest, i.name AS instituicao, i.uf, r.main_institution_id,
-            s.works_count_period AS works, s.first_year, s.last_year, s.top_topics AS topicos
+            ${sq
+              ? `(SELECT count(DISTINCT a.work_id) FROM work_authorships a${juntaQualis(true, "a.work_id")} WHERE a.researcher_id = r.id)::int AS works,
+            (SELECT min(w.year) FROM work_authorships a JOIN works w ON w.id = a.work_id${juntaQualis(true, "a.work_id")} WHERE a.researcher_id = r.id) AS first_year,
+            (SELECT max(w.year) FROM work_authorships a JOIN works w ON w.id = a.work_id${juntaQualis(true, "a.work_id")} WHERE a.researcher_id = r.id) AS last_year`
+              : "s.works_count_period AS works, s.first_year, s.last_year"}, s.top_topics AS topicos
        FROM researchers r
        LEFT JOIN institutions i ON i.id = r.main_institution_id
        LEFT JOIN researcher_openalex_stats s ON s.researcher_id = r.id
@@ -55,10 +61,16 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
         WHERE f.researcher_id = $1 ORDER BY g.id, f.base_year DESC`, [p.id]),
     q<Work>(
       `SELECT w.id, w.title, w.year, w.venue, w.doi, w.primary_field
-         FROM work_authorships a JOIN works w ON w.id = a.work_id
+         FROM work_authorships a JOIN works w ON w.id = a.work_id${juntaQualis(sq, "a.work_id")}
         WHERE a.researcher_id = $1 ORDER BY w.year DESC, w.cited_by_count DESC NULLS LAST LIMIT 50`, [p.id]),
-    q<Coautor>(
-      `SELECT r.id, r.display_name, c.shared_works_count AS n
+    q<Coautor>(sq
+      // com o filtro, os coautores são contados na hora, só nas publicações em revistas com Qualis
+      ? `SELECT r.id, r.display_name, count(DISTINCT b.work_id)::int AS n
+           FROM work_authorships a${juntaQualis(true, "a.work_id")}
+           JOIN work_authorships b ON b.work_id = a.work_id AND b.researcher_id IS NOT NULL AND b.researcher_id <> a.researcher_id
+           JOIN researchers r ON r.id = b.researcher_id AND NOT r.is_hidden
+          WHERE a.researcher_id = $1 GROUP BY r.id ORDER BY n DESC, r.display_name LIMIT 12`
+      : `SELECT r.id, r.display_name, c.shared_works_count AS n
          FROM coauthorships c JOIN researchers r ON r.id = CASE WHEN c.researcher_a_id = $1 THEN c.researcher_b_id ELSE c.researcher_a_id END
         WHERE c.researcher_a_id = $1 OR c.researcher_b_id = $1
         ORDER BY c.shared_works_count DESC LIMIT 12`, [p.id]),

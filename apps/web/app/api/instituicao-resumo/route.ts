@@ -1,4 +1,5 @@
 import { q } from "@/lib/db";
+import { colWorks, soQualis } from "@/lib/qualis-filtro";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -12,11 +13,12 @@ export type ResumoInstituicao = {
 export async function GET(req: Request) {
   const id = new URL(req.url).searchParams.get("id") ?? "";
   if (!UUID.test(id)) return Response.json({ erro: "id inválido" }, { status: 400 });
+  const W = colWorks(soQualis(req));
   const [r] = await q<ResumoInstituicao>(
     `SELECT i.id, i.name AS nome, i.acronym AS sigla, i.uf, i.kind AS tipo, m.name AS municipio,
-            COALESCE(s.works, 0)::int AS works, COALESCE(s.pesquisadores, 0)::int AS pesquisadores, COALESCE(s.programas, 0)::int AS programas,
-            COALESCE((SELECT json_agg(json_build_object('f', a.primary_field, 'n', a.works) ORDER BY a.works DESC)
-                        FROM (SELECT * FROM mv_instituicao_areas WHERE institution_id = i.id ORDER BY works DESC LIMIT 3) a), '[]') AS areas
+            COALESCE(s.${W}, 0)::int AS works, COALESCE(s.pesquisadores, 0)::int AS pesquisadores, COALESCE(s.programas, 0)::int AS programas,
+            COALESCE((SELECT json_agg(json_build_object('f', a.primary_field, 'n', a.${W}) ORDER BY a.${W} DESC)
+                        FROM (SELECT * FROM mv_instituicao_areas WHERE institution_id = i.id AND ${W} > 0 ORDER BY ${W} DESC LIMIT 3) a), '[]') AS areas
        FROM institutions i
        LEFT JOIN municipalities m ON m.ibge_code = i.municipality_ibge
        LEFT JOIN mv_instituicao_stats s ON s.institution_id = i.id

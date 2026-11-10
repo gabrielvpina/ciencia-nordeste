@@ -1,6 +1,7 @@
 "use client";
 // Tela inicial: busca em destaque no topo; abaixo, um painel em três colunas — áreas | mapa | seletores e filtros do mapa.
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AREAS_ORDEM, rotuloArea } from "@/components/mapa/areas";
 import { Estrela } from "@/components/Logo";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
@@ -9,8 +10,9 @@ import type { ResultadoBusca } from "@/app/api/busca/route";
 import type { ResultadoTema } from "@/lib/vetorial";
 import type { ResumoInstituicao } from "@/app/api/instituicao-resumo/route";
 import { UFS, fmt } from "@/lib/areas";
+import { gravarSoQualis, paramQualis } from "@/lib/qualis-cookie";
 
-type Resumo = { pesquisadores: string; works: string; instituicoes: string; programas: string; teses: string };
+type Resumo = { pesquisadores: string; works: string; works_qualis: string; instituicoes: string; programas: string; teses: string };
 const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; titulo: string; legenda: string }[] = [
   { id: "densidade", rotulo: "Produção", titulo: "Publicações por instituição", legenda: "Altura da barra = publicações (escala de raiz, para as menores não sumirem). Número = posição no ranking. Anel tracejado = tem subunidades: clique para ver." },
   { id: "ligacoes", rotulo: "Colaboração", titulo: "Coautoria entre instituições do Nordeste", legenda: "Espessura do arco = publicações em comum (as 160 ligações mais fortes). Passe o mouse numa instituição para isolar a rede dela." },
@@ -18,9 +20,14 @@ const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; titulo: string; le
 ];
 const EXEMPLOS = ["dengue e arboviroses", "UFPE", "melhoramento genético de caprinos", "saúde bucal", "plantas medicinais da caatinga"];
 
-export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; inicial: DadosMapa; periodo: { min: number; max: number } }) {
+export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { resumo: Resumo; inicial: DadosMapa; periodo: { min: number; max: number }; soQualisInicial: boolean }) {
   const ANOS = Array.from({ length: periodo.max - periodo.min + 1 }, (_, i) => periodo.min + i);
   const faixa = `${periodo.min}–${periodo.max}`, faixaCurta = `${periodo.min}–${String(periodo.max).slice(2)}`;
+  // Filtro "só revistas com Qualis" (D-035): vale para o site inteiro (cookie); muda o mapa, as áreas, os anos, os totais e as buscas.
+  const [soQualis, setSoQualis] = useState(soQualisInicial);
+  const router = useRouter();
+  // router.refresh(): o servidor relê o cookie e atualiza o que ele desenha (o aviso do rodapé); o estado desta tela continua.
+  const alternarQualis = (v: boolean) => { gravarSoQualis(v); setSoQualis(v); router.refresh(); };
   const [modo, setModo] = useState<Exclude<ModoMapa, "rede">>("densidade");
   const [forma, setForma] = useState<"colunas" | "bolhas">("bolhas");
   const [uf, setUf] = useState("");
@@ -43,9 +50,9 @@ export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; i
     const ctl = new AbortController();
     setCarregando(true);
     const qs = new URLSearchParams({ de: String(de), ate: String(ate), ...(uf && { uf }), ...(area && { area }) });
-    fetch(`/api/mapa?${qs}`, { signal: ctl.signal }).then((r) => r.json()).then(setDados).catch(() => {}).finally(() => setCarregando(false));
+    fetch(`/api/mapa?${qs}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => r.json()).then(setDados).catch(() => {}).finally(() => setCarregando(false));
     return () => ctl.abort();
-  }, [uf, area, de, ate]);
+  }, [uf, area, de, ate, soQualis]);
 
   useEffect(() => {
     const q = termo.trim();
@@ -53,20 +60,20 @@ export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; i
     const ctl = new AbortController();
     const t = setTimeout(() => {
       setBuscandoTema(true);
-      fetch(`/api/tema?q=${encodeURIComponent(q)}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : null)).then(setTema)
+      fetch(`/api/tema?q=${encodeURIComponent(q)}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : null)).then(setTema)
         .catch(() => {}).finally(() => setBuscandoTema(false));
     }, 450);
     return () => { clearTimeout(t); ctl.abort(); };
-  }, [termo]);
+  }, [termo, soQualis]);
 
   useEffect(() => {
     if (termo.trim().length < 2) { setRes(null); return; }
     const ctl = new AbortController();
     const t = setTimeout(() => {
-      fetch(`/api/busca?q=${encodeURIComponent(termo)}`, { signal: ctl.signal }).then((r) => r.json()).then(setRes).catch(() => {});
+      fetch(`/api/busca?q=${encodeURIComponent(termo)}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => r.json()).then(setRes).catch(() => {});
     }, 250);
     return () => { clearTimeout(t); ctl.abort(); };
-  }, [termo]);
+  }, [termo, soQualis]);
 
   // Ranking: só instituições principais (subunidades ficam dentro da principal, como no mapa).
   const { ranking, subunidades, total } = useMemo(() => {
@@ -88,9 +95,9 @@ export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; i
   useEffect(() => {
     if (!selecionado) { setResumoSel(null); return; }
     const ctl = new AbortController();
-    fetch(`/api/instituicao-resumo?id=${selecionado}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : null)).then(setResumoSel).catch(() => {});
+    fetch(`/api/instituicao-resumo?id=${selecionado}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : null)).then(setResumoSel).catch(() => {});
     return () => ctl.abort();
-  }, [selecionado]);
+  }, [selecionado, soQualis]);
   const maxAno = Math.max(1, ...(dados.anos ?? []).map((a) => a.works));
   const m = MODOS.find((x) => x.id === modo)!;
   const tudo = de === ANOS[0] && ate === ANOS[ANOS.length - 1];
@@ -149,6 +156,14 @@ export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; i
       <div className="cockpit">
 
         <div className="col col-esq">
+          <section className="painel-card card-filtro-qualis">
+            <label className="check-qualis">
+              <input type="checkbox" checked={soQualis} onChange={(e) => alternarQualis(e.target.checked)} />
+              <span>Só publicações em revistas com <b>Qualis</b></span>
+            </label>
+            <p className="linha-cap">Qualis Periódicos 2021–2024 (CAPES) · vale para todo o site{carregando ? " · atualizando…" : ""}</p>
+          </section>
+
           <section className="painel-card">
             <h2>Áreas <span className="tag">OpenAlex</span></h2>
             <p className="linha-cap">{uf || "Nordeste"} · publicações por área · clique para filtrar</p>
@@ -202,7 +217,7 @@ export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; i
         <div className="col col-dir">
           <div className="kpis-par">
             <div className="kpi"><span className="tag tag-mini">OpenAlex</span><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
-            <div className="kpi"><span className="tag tag-mini">{faixaCurta}</span><b>{fmt(resumo.works)}</b><span>publicações</span></div>
+            <div className="kpi"><span className="tag tag-mini">{faixaCurta}</span><b>{fmt(soQualis ? resumo.works_qualis : resumo.works)}</b><span>{soQualis ? "publicações com Qualis" : "publicações"}</span></div>
           </div>
           <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
             <h2>Seletores do mapa <span className="tag">filtros</span></h2>

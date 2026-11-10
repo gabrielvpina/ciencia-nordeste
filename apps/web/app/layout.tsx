@@ -3,6 +3,7 @@ import { DM_Sans, Lexend } from "next/font/google";
 import "./tokens.css";
 import "./globals.css";
 import Logo from "@/components/Logo";
+import { soQualis } from "@/lib/qualis-filtro";
 import { RECURSOS } from "@/lib/recursos";
 
 const REPOSITORIO = "https://github.com/gabrielvpina/ciencia-nordeste";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </header>
         <main>{children}</main>
         <footer>
+          {soQualis() && <>Contagens só com publicações em revistas com Qualis (filtro na <a href="/">tela inicial</a>).{" "}</>}
           Dados obtidos de fontes abertas: OpenAlex (CC0), ROR (CC0), CAPES Dados Abertos (CC-BY), INEP e IBGE.{" "}
           {RECURSOS.login ? "Este é você? Entre com seu ORCID para reivindicar o perfil." : "Encontrou um erro sobre você?"} <a href="/sobre">Saiba mais</a>. Criado por <a href="/sobre#autor">Gabriel Pina</a>.
         </footer>

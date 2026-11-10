@@ -1,4 +1,5 @@
 import { dadosRede } from "@/lib/mapa-dados";
+import { soQualis } from "@/lib/qualis-filtro";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -9,5 +10,5 @@ export async function GET(req: Request) {
   const tipo = p.get("tipo") as (typeof TIPOS)[number] | null;
   const id = p.get("id") ?? "";
   if (!tipo || !TIPOS.includes(tipo) || !UUID.test(id)) return Response.json({ erro: "parâmetros inválidos" }, { status: 400 });
-  return Response.json(await dadosRede(tipo, id), { headers: { "cache-control": "public, max-age=300" } });
+  return Response.json(await dadosRede(tipo, id, soQualis(req)), { headers: { "cache-control": "public, max-age=300" } });
 }

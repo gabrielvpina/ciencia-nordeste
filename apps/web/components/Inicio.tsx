@@ -11,7 +11,6 @@ import type { ResumoInstituicao } from "@/app/api/instituicao-resumo/route";
 import { UFS, fmt } from "@/lib/areas";
 
 type Resumo = { pesquisadores: string; works: string; instituicoes: string; programas: string; teses: string };
-const ANOS = [2022, 2023, 2024, 2025, 2026];
 const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; titulo: string; legenda: string }[] = [
   { id: "densidade", rotulo: "Produção", titulo: "Publicações por instituição", legenda: "Altura da barra = publicações (escala de raiz, para as menores não sumirem). Número = posição no ranking. Anel tracejado = tem subunidades: clique para ver." },
   { id: "ligacoes", rotulo: "Colaboração", titulo: "Coautoria entre instituições do Nordeste", legenda: "Espessura do arco = publicações em comum (as 160 ligações mais fortes). Passe o mouse numa instituição para isolar a rede dela." },
@@ -19,13 +18,15 @@ const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; titulo: string; le
 ];
 const EXEMPLOS = ["dengue e arboviroses", "UFPE", "melhoramento genético de caprinos", "saúde bucal", "plantas medicinais da caatinga"];
 
-export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: DadosMapa }) {
+export default function Inicio({ resumo, inicial, periodo }: { resumo: Resumo; inicial: DadosMapa; periodo: { min: number; max: number } }) {
+  const ANOS = Array.from({ length: periodo.max - periodo.min + 1 }, (_, i) => periodo.min + i);
+  const faixa = `${periodo.min}–${periodo.max}`, faixaCurta = `${periodo.min}–${String(periodo.max).slice(2)}`;
   const [modo, setModo] = useState<Exclude<ModoMapa, "rede">>("densidade");
   const [forma, setForma] = useState<"colunas" | "bolhas">("bolhas");
   const [uf, setUf] = useState("");
   const [area, setArea] = useState("");
-  const [de, setDe] = useState(2022);
-  const [ate, setAte] = useState(2026);
+  const [de, setDe] = useState(periodo.min);
+  const [ate, setAte] = useState(periodo.max);
   const [dados, setDados] = useState<DadosMapa>(inicial);
   const [carregando, setCarregando] = useState(false);
   const [selecionado, setSelecionado] = useState<string | null>(null);
@@ -103,7 +104,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
     <div className="inicio">
       <section className="hero" aria-labelledby="hero-titulo">
         <h1 id="hero-titulo">Quem pesquisa o quê no <b>Nordeste</b> <Estrela lima tamanho={22} /></h1>
-        <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados, 2022–2026.</p>
+        <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados, {faixa}.</p>
         <div className="busca-grande">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           <input ref={campo} id="busca" type="search" value={termo} onChange={(e) => setTermo(e.target.value)} autoComplete="off"
@@ -201,7 +202,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
         <div className="col col-dir">
           <div className="kpis-par">
             <div className="kpi"><span className="tag tag-mini">OpenAlex</span><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
-            <div className="kpi"><span className="tag tag-mini">2022–26</span><b>{fmt(resumo.works)}</b><span>publicações</span></div>
+            <div className="kpi"><span className="tag tag-mini">{faixaCurta}</span><b>{fmt(resumo.works)}</b><span>publicações</span></div>
           </div>
           <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
             <h2>Seletores do mapa <span className="tag">filtros</span></h2>
@@ -261,7 +262,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
                 </div>
                 <dl className="detalhe-dl">
                   <div><dt>no filtro</dt><dd>{fmt(sel.works)}<small> publ.</small></dd></div>
-                  <div><dt>total 2022–26</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
+                  <div><dt>total {faixaCurta}</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
                   <div><dt>pesquisadores</dt><dd>{resumoSel ? fmt(resumoSel.pesquisadores) : "…"}</dd></div>
                   <div><dt>programas de pós</dt><dd>{resumoSel ? fmt(resumoSel.programas) : "…"}</dd></div>
                 </dl>

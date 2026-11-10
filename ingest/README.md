@@ -168,6 +168,24 @@ docker compose up -d web                    # http://localhost:3000
 
 Ordem completa de uma atualização: Parte 1 → 2 → 5 → 4 → revisão (consolidar) → 6 → 7 → 8 (keywords, embeddings) → `carregar_banco.sh` → 8 (carregar).
 
+## Atualização periódica (`scripts/atualizar_dados.sh`)
+
+Um comando faz a ordem completa acima, com backup antes e depois e uma conferência no fim:
+
+```bash
+./scripts/atualizar_dados.sh --sim                 # mostra o plano
+./scripts/atualizar_dados.sh                       # atualização completa (algumas horas)
+./scripts/atualizar_dados.sh --a-partir-de banco   # retoma depois de uma falha
+./scripts/atualizar_dados.sh --so producao,banco   # só algumas etapas
+```
+
+- **Respostas novas:** por padrão ignora o cache HTTP (`INGEST_SEM_CACHE=1`) e recoleta os lotes do OpenAlex (`--recoletar`). `--manter-cache` reaproveita tudo (útil só para refazer o processamento).
+- **Período:** vai de `YEAR_START` (.env) ao ano corrente. Num ano novo, ele entra sozinho na coleta, e o app lê o período do banco.
+- **Revisão de identidade:** a regra D-018 é aplicada aos pares novos; os demais vão para `dados/revisao/pendentes_*.csv` (revisão manual, como antes).
+- **Memória:** a etapa `embeddings` para os containers do Docker para liberar memória para o modelo; `app` os sobe de novo.
+- **Conferência:** grava `relatorios/atualizacao-<data>.md` com as contagens antes/depois (alerta para quedas acima de 2%) e um teste das rotas do app; o log completo fica em `relatorios/atualizacao-<data>.log`.
+- **Se algo der errado:** o backup da primeira etapa permite voltar (`scripts/restaurar.sh PACOTE --ids --forcar` e `--banco --forcar`).
+
 ## IDs estáveis e carga no Postgres
 
 - UUIDs internos ficam em `dados/ids/<entidade>.csv` (só acréscimo; faz parte do backup). Ver D-013.

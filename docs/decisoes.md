@@ -338,3 +338,16 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - legenda abaixo do mapa e dica com borda e sombra dura.
 - **Filtro de estado:** isola o estado escolhido e o amplia na área do mapa. Só as posições são reescaladas (cilindros, bolhas, rótulos e bordas mantêm o tamanho); o gride (1°/2°) e a escala gráfica acompanham o zoom.
 - **Programas:** linhas tracejadas e fundo alternado separando cada área na matriz área × conceito, com cabeçalho alinhado.
+
+## D-032 — Atualização periódica dos dados em um comando
+
+- **Script:** `scripts/atualizar_dados.sh` executa a ordem completa da ingestão (Partes 1 → 2 → 5 → 4 → revisão → 6 → 7 → 8), recarrega o Postgres e grava os vetores. Faz backup antes e depois.
+- **Fontes sempre frescas:** por padrão o cache HTTP é ignorado. A nova variável `INGEST_SEM_CACHE=1`, lida em `carregar_config`, vale para todas as partes, mesmo as que não têm `--sem-cache`. Os lotes do OpenAlex são recoletados com `--recoletar`.
+- **Retomada e recorte:** `--a-partir-de` retoma de uma etapa, e `--so` roda só algumas. Uma trava impede duas execuções ao mesmo tempo.
+- **Conferência automática:**
+  - contagens antes/depois (publicações, pesquisadores, instituições, programas, teses, vetores e último ano);
+  - alerta para quedas acima de 2%;
+  - teste das rotas `/`, `/api/mapa`, `/api/busca` e `/api/tema`.
+  - Relatório em `ingest/relatorios/atualizacao-<data>.md`.
+- **Período dinâmico no app:** `ANO_MIN` vem de `ANO_INICIO` (padrão 2022) e o fim é o ano corrente. A tela inicial lê o período real do banco (`min`/`max` de `works.year`), então seletor de período, colunas de Produção por ano e textos acompanham a base sem mudar o código.
+- **Revisão de identidade:** continua humana. O script aplica a regra D-018 aos pares novos e exporta os pendentes.

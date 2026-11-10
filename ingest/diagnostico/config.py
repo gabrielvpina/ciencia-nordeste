@@ -90,6 +90,7 @@ def carregar_config(year_start: int | None = None, usar_cache: bool = True, amos
         dados_gov_br_token=os.getenv("DADOS_GOV_BR_TOKEN") or None,
         year_start=ys,
         year_end=ano_atual,
-        usar_cache=usar_cache,
+        # INGEST_SEM_CACHE=1 (usado por scripts/atualizar_dados.sh) força respostas novas em todas as partes.
+        usar_cache=usar_cache and os.getenv("INGEST_SEM_CACHE") != "1",
         amostra_orcid=amostra_orcid if amostra_orcid is not None else int(os.getenv("AMOSTRA_ORCID", "500")),
     )

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Inicio from "@/components/Inicio";
 import { q } from "@/lib/db";
-import { lerFiltros } from "@/lib/filtros";
+import { ANO_MIN, anoMax, lerFiltros } from "@/lib/filtros";
 import { dadosMapa } from "@/lib/mapa-dados";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [[resumo], inicial] = await Promise.all([
+  const [[resumo], [periodo], inicial] = await Promise.all([
     q<{ pesquisadores: string; works: string; instituicoes: string; programas: string; teses: string }>(`SELECT * FROM mv_resumo`),
+    // período real da base (muda sozinho quando uma atualização traz um ano novo)
+    q<{ min: number; max: number }>(`SELECT min(year)::int AS min, max(year)::int AS max FROM works WHERE year >= $1 AND year <= $2`, [ANO_MIN, anoMax()]),
     dadosMapa(lerFiltros({})),
   ]);
-  return <Inicio resumo={resumo} inicial={inicial} />;
+  return <Inicio resumo={resumo} inicial={inicial} periodo={{ min: periodo?.min ?? ANO_MIN, max: periodo?.max ?? anoMax() }} />;
 }

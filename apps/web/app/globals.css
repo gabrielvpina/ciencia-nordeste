@@ -587,7 +587,7 @@ a.kpi:hover, .card-inst:hover, .card-prog:hover { transform: translate(-1px, -1p
 
 /* ---------- cards da tela inicial: produção por ano e instituição selecionada ---------- */
 .cockpit { grid-template-columns: 270px auto 320px; justify-content: center; }
-.anos-colunas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; align-items: end; }
+.anos-colunas { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; align-items: end; }   /* uma coluna por ano do período */
 .ano-col { display: grid; grid-template-rows: auto 96px auto; gap: 4px; justify-items: center; border: 0; background: none; padding: 0; cursor: pointer; font: inherit; color: var(--fg); }
 .ano-val { font: 600 .68rem var(--font-display); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ano-barra { position: relative; width: 70%; height: 96px; border: var(--b) solid var(--stroke); border-radius: 8px 8px 3px 3px; background: var(--panel); overflow: hidden; }

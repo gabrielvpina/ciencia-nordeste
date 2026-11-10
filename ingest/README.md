@@ -14,11 +14,13 @@ Fonte de verdade do projeto: [`../SCHEME.md`](../SCHEME.md). Decisões técnicas
 
 ## Preparar o ambiente
 
+Requisitos de máquina e programas, a planilha do Qualis e o caminho completo de um clone até o site: [`../docs/rodar-localmente.md`](../docs/rodar-localmente.md).
+
 ```bash
 # na raiz do repositório
 python3.12 -m venv .venv            # 3.12 ou mais novo
 .venv/bin/pip install -r ingest/requirements.txt   # httpx, python-dotenv, truststore
-cp .env.example .env                # preencha CONTACT_EMAIL e OPENALEX_API_KEY
+cp .env.example .env                # preencha POSTGRES_PASSWORD, CONTACT_EMAIL e OPENALEX_API_KEY
 ```
 
 | Variável | Uso |
@@ -26,7 +28,8 @@ cp .env.example .env                # preencha CONTACT_EMAIL e OPENALEX_API_KEY
 | `CONTACT_EMAIL` | Vai no User-Agent (`ache-um-pesquisador-diagnostico/0.1 (...; mailto:...)`). |
 | `OPENALEX_API_KEY` | Chave gratuita do OpenAlex (US$ 1/dia). Sem ela: US$ 0,10/dia compartilhado por IP e sem cursor paging. |
 | `DADOS_GOV_BR_TOKEN` | Opcional. Token da API do dados.gov.br (sem ele o portal responde 401). |
-| `YEAR_START` | Ano inicial do recorte (padrão 2020). |
+| `YEAR_START` | Ano inicial do recorte. Use `2022` para reproduzir a base publicada; sem valor, vira (ano atual − 4). |
+| `INGEST_SEM_CACHE` | `1` ignora o cache HTTP em todas as partes (o `atualizar_dados.sh` liga sozinho). |
 | `AMOSTRA_ORCID` | Tamanho da amostra OpenAlex×ORCID na Parte 0 (padrão 500). |
 
 ## Parte 0 — diagnóstico de fontes

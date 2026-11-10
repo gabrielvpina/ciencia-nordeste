@@ -101,7 +101,8 @@ INICIO=$(date +%s)
 for e in "${PLANO[@]}"; do
   passo "$e"
   case "$e" in
-    backup)        ./scripts/backup.sh ;;
+    backup)        if [ -e ingest/dados/ids ] && [ -e ingest/dados/revisao/decisoes.csv ]; then ./scripts/backup.sh
+                   else echo "primeira execução (sem ingest/dados/ids nem decisões de revisão): nada a proteger, backup pulado"; fi ;;
     instituicoes)  "$PY" -m ingest.carga.parte1_instituicoes ;;
     capes)         "$PY" -m ingest.carga.parte2_capes ;;
     producao)      "$PY" -m ingest.carga.parte5_producao $RECOLETAR ;;

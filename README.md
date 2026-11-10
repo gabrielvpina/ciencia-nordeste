@@ -48,16 +48,30 @@ Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**
 
 ## Como rodar localmente
 
+Guia completo, com requisitos, tempos e o que muda na reprodução: **[docs/rodar-localmente.md](docs/rodar-localmente.md)**.
+
+**Requisitos:** Git, Docker com Compose v2, Python 3.12+, 8 GB de memória (16 GB recomendados), cerca de 25 GB livres em disco, um e-mail de contato e uma [chave gratuita do OpenAlex](https://openalex.org/settings/api). Node.js não é necessário (o app é compilado no Docker).
+
+**Arquivo obtido à mão:** a planilha do Qualis Periódicos 2021-2024, exportada da [Plataforma Sucupira](https://sucupira-legado.capes.gov.br/sucupira/public/consultas/coleta/veiculoPublicacaoQualis/listaConsultaGeralPeriodicos.jsf), em `ingest/dados/brutos/capes/qualis/qualis-2021-2024.xlsx` (passo a passo no guia).
+
 ```bash
-cp .env.example .env                       # preencha CONTACT_EMAIL, OPENALEX_API_KEY e POSTGRES_*
+git clone https://github.com/gabrielvpina/ciencia-nordeste.git && cd ciencia-nordeste
+cp .env.example .env                       # preencha POSTGRES_PASSWORD, CONTACT_EMAIL e OPENALEX_API_KEY
 python3.12 -m venv .venv && .venv/bin/pip install -r ingest/requirements.txt
-# dados (ordem completa em ingest/README.md): partes 1 → 2 → 5 → 4 → revisão → 6 → 7
-./scripts/carregar_banco.sh                # Postgres 16 no Docker: migrações + carga dos CSVs
-docker compose up -d embed web             # app em http://localhost:3000 (+ serviço da busca por tema)
-./scripts/verificar.sh                     # lint, tipos, build e migrações num banco vazio
-./scripts/backup.sh                        # backup do que não se regenera + dump do banco (~/Backups/ciencia-nordeste)
-./scripts/atualizar_dados.sh               # atualização periódica dos dados (--sim mostra o plano; ver ingest/README.md)
+.venv/bin/pip install -r ingest/requirements-embeddings.txt   # opcional: busca por tema (ou use --sem-embeddings abaixo)
+./scripts/atualizar_dados.sh               # ingestão completa + banco + app (~3–4 h); --sim mostra o plano
+# site em http://localhost:3000
 ```
+
+Depois disso:
+
+```bash
+docker compose up -d embed web             # sobe o site (o banco sobe junto)
+./scripts/verificar.sh                     # lint, tipos, build e migrações num banco vazio (o mesmo que a CI)
+./scripts/backup.sh                        # backup do que não se regenera + dump do banco (~/Backups/ciencia-nordeste)
+```
+
+Os números podem diferir um pouco dos do site publicado: as fontes são atualizadas continuamente, a revisão manual de identidade não está no repositório e os IDs internos são gerados na sua máquina. Detalhes na seção "Reprodutibilidade" do guia.
 
 ## Índice da documentação (`docs/`)
 
@@ -83,7 +97,9 @@ docker compose up -d embed web             # app em http://localhost:3000 (+ ser
 
 | Documento | Conteúdo |
 |---|---|
-| [docs/decisoes.md](docs/decisoes.md) | Registro de decisões técnicas, D-001 a D-032 (fontes, robots.txt, recorte, identidade, banco, app, mapa, interface, atualização dos dados) |
+| [docs/rodar-localmente.md](docs/rodar-localmente.md) | Requisitos, passo a passo de um clone até o site local e o que muda na reprodução da base |
+| [docs/deploy/guia-deploy-ec2.qmd](docs/deploy/guia-deploy-ec2.qmd) | Publicação num servidor (AWS EC2, Docker, Caddy com HTTPS) e atualização do site |
+| [docs/decisoes.md](docs/decisoes.md) | Registro de decisões técnicas, D-001 a D-035 (fontes, robots.txt, recorte, identidade, banco, app, mapa, interface, atualização dos dados, Qualis, tema claro) |
 | [docs/pedido_lai_cnpq.md](docs/pedido_lai_cnpq.md) | Texto pronto do pedido de acesso à informação ao CNPq (grupos de pesquisa e bolsistas PQ) |
 
 ### Relatórios gerados (`ingest/relatorios/`, fora do git)

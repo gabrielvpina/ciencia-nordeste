@@ -221,6 +221,17 @@ DELETE FROM researcher_photos WHERE source = 'wikimedia_commons';
 INSERT INTO researcher_photos SELECT DISTINCT ON (researcher_id) * FROM _ph WHERE researcher_id IN (SELECT id FROM researchers)
 ON CONFLICT (researcher_id) DO NOTHING;   -- upload próprio (Fase D) prevalece sobre o Commons
 
+-- ------------------------------------------------------------------ Qualis Periódicos e ISSNs das revistas (Parte 9; recriados a cada carga)
+CREATE TEMP TABLE _qp (evento text, issn text, estrato text, titulo text, areas text) ON COMMIT DROP;
+\copy _qp FROM 'ingest/dados/processados/qualis_periodicos.csv' WITH (FORMAT csv, HEADER true)
+DELETE FROM qualis_periodicos WHERE evento IN (SELECT DISTINCT evento FROM _qp);
+INSERT INTO qualis_periodicos SELECT evento, issn, estrato, NULLIF(titulo, ''), string_to_array(NULLIF(areas, ''), '|') FROM _qp;
+
+CREATE TEMP TABLE _vi (LIKE venue_issns) ON COMMIT DROP;
+\copy _vi FROM 'ingest/dados/processados/venue_issns.csv' WITH (FORMAT csv, HEADER true)
+DELETE FROM venue_issns;
+INSERT INTO venue_issns SELECT DISTINCT * FROM _vi;
+
 COMMIT;
 
 -- Visões materializadas (migração 0002): atualizadas depois de cada carga.
@@ -233,3 +244,4 @@ REFRESH MATERIALIZED VIEW mv_mapa_producao;
 REFRESH MATERIALIZED VIEW mv_mapa_colaboracao;
 REFRESH MATERIALIZED VIEW mv_inst_externo;
 REFRESH MATERIALIZED VIEW mv_uf_ano_area;      -- depende de mv_work_inst
+REFRESH MATERIALIZED VIEW mv_work_qualis;      -- migração 0010 (Parte 9)

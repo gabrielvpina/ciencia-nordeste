@@ -40,6 +40,9 @@
   --ring: hsl(var(--h) 22% 74%);
   --shadow-card: 3px 3px 0 var(--shadow-c);
   --ok: #2f7d4f; --warn: #b07c0f; --crit: #d0503c;
+  /* Qualis (D-033): rampa ordinal de um tom, A1–A2 (0) mais escuro → C (4) mais claro; "sem Qualis" em cinza.
+     Validada com o validador do skill de dataviz (--ordinal) contra o card claro (#fbfcfe). Fixa: não segue a paleta do site. */
+  --qualis-0: #0d366b; --qualis-1: #1c5cab; --qualis-2: #2a78d6; --qualis-3: #5598e7; --qualis-4: #86b6ef; --qualis-sem: #a9abb8;
 }
 
 /* ---------- 3. Tema escuro: o marinho vira fundo, a borda recua ---------- */
@@ -55,6 +58,7 @@
     --map-edge: #0f1120; --map-side: #0b0d17; --ring: #383e5e;
     --shadow-card: 3px 3px 0 var(--shadow-c);
     --ok: #7fd3a2; --warn: #e6c260; --crit: #e98a78;
+    --qualis-0: #cde2fb; --qualis-1: #9ec5f4; --qualis-2: #6da7ec; --qualis-3: #3987e5; --qualis-4: #256abf; --qualis-sem: #5a6079;   /* no escuro, A1–A2 é o mais claro; validada contra o card escuro */
     color-scheme: dark;
   }
 }
@@ -69,6 +73,7 @@
   --map-edge: #0f1120; --map-side: #0b0d17; --ring: #383e5e;
   --shadow-card: 3px 3px 0 var(--shadow-c);
   --ok: #7fd3a2; --warn: #e6c260; --crit: #e98a78;
+  --qualis-0: #cde2fb; --qualis-1: #9ec5f4; --qualis-2: #6da7ec; --qualis-3: #3987e5; --qualis-4: #256abf; --qualis-sem: #5a6079;
   color-scheme: dark;
 }
 

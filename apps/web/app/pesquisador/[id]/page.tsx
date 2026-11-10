@@ -5,6 +5,8 @@ import { Nuvem } from "@/components/Graficos";
 import { AREAS_ORDEM } from "@/components/mapa/areas";
 import { area } from "@/lib/areas";
 import { COR_CONCEITO, colunaDe, nomePrograma } from "@/lib/programas";
+import AbasEntidade, { visaoDe } from "@/components/AbasEntidade";
+import ProducaoEntidade from "@/components/ProducaoEntidade";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
 
@@ -28,7 +30,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   return p ? { title: `${p.display_name} — Ciência Nordeste`, description: `Publicações, orientações e colaborações de ${p.display_name}${p.instituicao ? ` (${p.instituicao})` : ""}.` } : {};
 }
 
-export default async function Pesquisador({ params }: { params: { id: string } }) {
+export default async function Pesquisador({ params, searchParams }: { params: { id: string }; searchParams: { ver?: string } }) {
+  const visao = visaoDe(searchParams.ver);
   if (!UUID.test(params.id)) notFound();
   // UUID antigo que virou alias: redireciona para o perfil canônico (IDs nunca quebram).
   const [alias] = await q<{ researcher_id: string }>(`SELECT researcher_id FROM researcher_aliases WHERE alias_id = $1`, [params.id]);
@@ -68,7 +71,9 @@ export default async function Pesquisador({ params }: { params: { id: string } }
 
   return (
     <div className="explorar invertido">
-      <RedeEntidade tipo="pesquisador" id={p.id} nome={p.display_name} />
+      {visao === "producao"
+        ? <ProducaoEntidade tipo="pesquisador" id={p.id} nome={p.display_name} abas={<AbasEntidade base={`/pesquisador/${p.id}`} ativa={visao} />} />
+        : <RedeEntidade tipo="pesquisador" id={p.id} nome={p.display_name} abas={<AbasEntidade base={`/pesquisador/${p.id}`} ativa={visao} />} />}
       <aside className="painel painel-perfil">
       <div className="perfil-topo">
         <Avatar id={p.id} nome={p.display_name} foto={fotos[0] ?? null} />

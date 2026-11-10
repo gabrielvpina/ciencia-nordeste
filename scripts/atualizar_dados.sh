@@ -15,6 +15,7 @@
 #   instituicoes   Parte 1 — ROR, INEP, IBGE, Wikidata                         ~5 min
 #   capes          Parte 2 — programas e docentes (CAPES)                       ~10 min (crawl-delay da CAPES)
 #   producao       Parte 5 — publicações do OpenAlex                            ~35 min, < US$ 0,15
+#   qualis         Parte 9 — estrato Qualis das revistas (planilha da Sucupira em ingest/dados/brutos/capes/qualis/)  ~1 min
 #   pesquisadores  Parte 4 — perfis de autor e coautorias                       ~30–60 min
 #   revisao        regra D-018 nos pares novos + consolidação; exporta os pendentes para revisão manual
 #   complementos   Parte 6 — teses e orientações (baixa ~1,5 GB), FAPs          ~20–40 min
@@ -33,7 +34,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-ETAPAS=(backup instituicoes capes producao pesquisadores revisao complementos fotos keywords embeddings banco vetores app conferencia backup-final)
+ETAPAS=(backup instituicoes capes producao qualis pesquisadores revisao complementos fotos keywords embeddings banco vetores app conferencia backup-final)
 SIM=0; A_PARTIR=""; SO=""; MANTER_CACHE=0; SEM_EMB=0
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -104,6 +105,7 @@ for e in "${PLANO[@]}"; do
     instituicoes)  "$PY" -m ingest.carga.parte1_instituicoes ;;
     capes)         "$PY" -m ingest.carga.parte2_capes ;;
     producao)      "$PY" -m ingest.carga.parte5_producao $RECOLETAR ;;
+    qualis)        "$PY" -m ingest.carga.parte9_qualis ;;
     pesquisadores) "$PY" -m ingest.carga.parte4_pesquisadores $RECOLETAR ;;
     revisao)       "$PY" -m ingest.carga.revisao aplicar-regra --decidido-por "regra D-018 (atualização $STAMP)"
                    "$PY" -m ingest.carga.revisao consolidar

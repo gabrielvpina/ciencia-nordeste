@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Nuvem } from "@/components/Graficos";
 import { fmt } from "@/lib/areas";
 import { COR_CONCEITO, TITULO_NIVEL, colunaDe, niveis, nomeArea, nomePrograma } from "@/lib/programas";
+import AbasEntidade, { visaoDe } from "@/components/AbasEntidade";
+import ProducaoEntidade from "@/components/ProducaoEntidade";
 import RedeEntidade from "@/components/RedeEntidade";
 import { q } from "@/lib/db";
 
@@ -26,7 +28,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   return p ? { title: `${p.name} (${p.uf}) — Ciência Nordeste`, description: `Programa de pós-graduação em ${p.name}: docentes, orientações e área de avaliação CAPES.` } : {};
 }
 
-export default async function Programa({ params }: { params: { id: string } }) {
+export default async function Programa({ params, searchParams }: { params: { id: string }; searchParams: { ver?: string } }) {
+  const visao = visaoDe(searchParams.ver);
   const p = await carregar(params.id);
   if (!p) notFound();
   const ultimo = Math.max(...(p.base_years ?? [0]));
@@ -43,7 +46,9 @@ export default async function Programa({ params }: { params: { id: string } }) {
     .sort((a, b) => b[1].length - a[1].length);
   return (
     <div className="explorar invertido">
-      <RedeEntidade tipo="programa" id={p.id} nome={p.name} />
+      {visao === "producao"
+        ? <ProducaoEntidade tipo="programa" id={p.id} nome={p.name} abas={<AbasEntidade base={`/programa/${p.id}`} ativa={visao} />} />
+        : <RedeEntidade tipo="programa" id={p.id} nome={p.name} abas={<AbasEntidade base={`/programa/${p.id}`} ativa={visao} />} />}
       <aside className="painel painel-perfil">
       <div className="perfil-topo">
         <span className="cp-conceito cp-grande" style={{ background: COR_CONCEITO[colunaDe(p.grade)] }} title="Conceito CAPES">{p.grade}</span>

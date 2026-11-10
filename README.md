@@ -64,11 +64,11 @@ docker compose up -d embed web             # app em http://localhost:3000 (+ ser
 
 ### Relatórios gerados (`ingest/relatorios/`, fora do git)
 
-Saídas de cada etapa, geradas localmente ao rodar a ingestão (não são versionadas, D-026), com os números exatos de cada execução: `diagnostico_fontes`, `parte1_instituicoes`, `parte2_capes`, `parte4_pesquisadores`, `parte5_producao`, `parte6_complementos`, `parte7_fotos` (em `.md` e `.json`) e `revisao_consolidacao.json`. O diagnóstico nacional original está em `ingest/relatorios/arquivo/`.
+Saídas de cada etapa, geradas localmente ao rodar a ingestão (não são versionadas, D-026), com os números exatos de cada execução: `diagnostico_fontes`, `parte1_instituicoes`, `parte2_capes`, `parte4_pesquisadores`, `parte5_producao`, `parte6_complementos`, `parte7_fotos`, `parte9_qualis` (em `.md` e `.json`) e `revisao_consolidacao.json`. O diagnóstico nacional original está em `ingest/relatorios/arquivo/`.
 
 ## Fontes e licenças
 
-OpenAlex (CC0), ROR (CC0), CAPES Dados Abertos (CC-BY), INEP e IBGE (dados públicos), Wikidata (CC0) e Wikimedia Commons (licenças livres por arquivo, com crédito). Sem dados da Plataforma Lattes nem do Google Acadêmico.
+OpenAlex (CC0), ROR (CC0), CAPES Dados Abertos (CC-BY), Qualis Periódicos 2021-2024 (CAPES/Sucupira, dados públicos), INEP e IBGE (dados públicos), Wikidata (CC0) e Wikimedia Commons (licenças livres por arquivo, com crédito). Sem dados da Plataforma Lattes nem do Google Acadêmico.
 
 ## O que está (e o que não está) no git
 

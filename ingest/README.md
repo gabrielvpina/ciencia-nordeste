@@ -105,6 +105,18 @@ Works com autoria em instituição do NE (lista da Parte 1, via lineage) × fiel
 `work_authorships_openalex.csv`, `topics.csv`, `work_topics.csv`, `funders.csv` e `work_funders.csv`. Relatório:
 `relatorios/parte5_producao.md`. Lotes já coletados não são baixados de novo (`--recoletar` força).
 
+## Parte 9 — Qualis Periódicos (depois da 5)
+
+```bash
+python -m ingest.carga.parte9_qualis        # ~20 s; lê a planilha e os brutos da Parte 5, sem chamadas à rede
+```
+
+Entrada manual: na [consulta de periódicos do Qualis](https://sucupira-legado.capes.gov.br/sucupira/public/consultas/coleta/veiculoPublicacaoQualis/listaConsultaGeralPeriodicos.jsf)
+escolha o evento "Classificações de periódicos quadriênio 2021-2024", exporte a planilha e salve em
+`dados/brutos/capes/qualis/qualis-2021-2024.xlsx` (colunas ISSN, Título, Área de Avaliação, Estrato). Gera `qualis_periodicos.csv` e
+`venue_issns.csv` (todos os ISSNs de cada revista). Relatório com a cobertura: `relatorios/parte9_qualis.md`. A planilha não entra no
+backup, mas os dados ficam no dump do banco (D-033).
+
 ## Parte 4 — pesquisadores
 
 ```bash
@@ -166,7 +178,7 @@ python -m ingest.carga.gerar_mapa_ne     # só quando a malha do IBGE mudar; gra
 docker compose up -d web                    # http://localhost:3000
 ```
 
-Ordem completa de uma atualização: Parte 1 → 2 → 5 → 4 → revisão (consolidar) → 6 → 7 → 8 (keywords, embeddings) → `carregar_banco.sh` → 8 (carregar).
+Ordem completa de uma atualização: Parte 1 → 2 → 5 → 9 → 4 → revisão (consolidar) → 6 → 7 → 8 (keywords, embeddings) → `carregar_banco.sh` → 8 (carregar).
 
 ## Atualização periódica (`scripts/atualizar_dados.sh`)
 

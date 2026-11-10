@@ -45,6 +45,13 @@ export async function dadosMapa(f: Filtros): Promise<DadosMapa> {
 
 type Tipo = "pesquisador" | "instituicao" | "programa";
 
+/** Pessoas cuja produção conta para a entidade ($1 = id): o próprio pesquisador, ou os docentes do programa no último ano-base. */
+export function sqlPessoas(tipo: "pesquisador" | "programa"): string {
+  return tipo === "pesquisador" ? `SELECT $1::uuid AS rid`
+    : `SELECT f.researcher_id AS rid FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id
+        WHERE f.program_id = $1 AND f.base_year = (SELECT max(b) FROM unnest(g.base_years) b)`;
+}
+
 /** Rede de colaboração de uma entidade: origem (instituições), parceiros do NE e coautores externos. */
 export async function dadosRede(tipo: Tipo, id: string): Promise<DadosMapa & { resumo: { works: number; parceiros: number; externos: number } }> {
   let origem: string[] = [];
@@ -60,11 +67,7 @@ export async function dadosRede(tipo: Tipo, id: string): Promise<DadosMapa & { r
     externosBrutos = await q(`SELECT pais, works FROM mv_inst_externo WHERE institution_id = $1`, [id]);
     [{ works }] = await q<{ works: number }>(`SELECT count(*)::int AS works FROM mv_work_inst WHERE institution_id = $1`, [id]);
   } else {
-    // pesquisador: os próprios works; programa: works dos docentes do último ano-base
-    const pessoas = tipo === "pesquisador" ? `SELECT $1::uuid AS rid`
-      : `SELECT f.researcher_id AS rid FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id
-          WHERE f.program_id = $1 AND f.base_year = (SELECT max(b) FROM unnest(g.base_years) b)`;
-    const base = `WITH p AS (${pessoas}), w AS (SELECT DISTINCT a.work_id FROM work_authorships a JOIN p ON p.rid = a.researcher_id)`;
+    const base = `WITH p AS (${sqlPessoas(tipo)}), w AS (SELECT DISTINCT a.work_id FROM work_authorships a JOIN p ON p.rid = a.researcher_id)`;
     origem = tipo === "programa"
       ? (await q<{ id: string }>(`SELECT institution_id AS id FROM graduate_programs WHERE id = $1 AND institution_id IS NOT NULL`, [id])).map((r) => r.id)
       : (await q<{ id: string }>(

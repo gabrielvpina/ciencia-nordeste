@@ -216,10 +216,45 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
         </section>
 
         <div className="col col-dir">
-          <div className="kpis-par">
-            <div className="kpi"><span className="tag tag-mini">OpenAlex</span><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
-            <div className="kpi"><span className="tag tag-mini">{faixaCurta}</span><b>{fmt(soQualis ? resumo.works_qualis : resumo.works)}</b><span>{soQualis ? "publicações com Qualis" : "publicações"}</span></div>
-          </div>
+          <section className="painel-card detalhe-sel" aria-live="polite">
+            <h2>Instituição selecionada <span className="tag">{sel ? `${ranking.indexOf(sel) + 1}ª` : "mapa"}</span></h2>
+            {!sel ? (
+              <p className="detalhe-vazio">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 1v4M12 19v4M1 12h4M19 12h4" /></svg>
+                Clique numa bolha do mapa para ver os números da instituição, suas áreas e subunidades.
+              </p>
+            ) : (
+              <>
+                <div className="detalhe-topo">
+                  <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
+                  <div><b>{sel.nome}</b><span>{[resumoSel?.municipio, sel.uf].filter(Boolean).join(" · ")}</span></div>
+                </div>
+                <dl className="detalhe-dl">
+                  <div><dt>no filtro</dt><dd>{fmt(sel.works)}<small> publ.</small></dd></div>
+                  <div><dt>total {faixaCurta}</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
+                  <div><dt>pesquisadores</dt><dd>{resumoSel ? fmt(resumoSel.pesquisadores) : "…"}</dd></div>
+                  <div><dt>programas de pós</dt><dd>{resumoSel ? fmt(resumoSel.programas) : "…"}</dd></div>
+                </dl>
+                {resumoSel && resumoSel.areas.length > 0 && (
+                  <ul className="detalhe-areas">
+                    {resumoSel.areas.map((a) => (
+                      <li key={a.f}><i style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(a.f))})` }} />{rotuloArea(a.f)}<span>{fmt(a.n)}</span></li>
+                    ))}
+                  </ul>
+                )}
+                {subunidades.get(sel.id) && (
+                  <p className="detalhe-subs">Subunidades: {subunidades.get(sel.id)!.map((x, k) => (
+                    <a key={x.id} href={`/instituicao/${x.id}`}>{k ? ", " : ""}{x.sigla ?? x.nome}</a>
+                  ))}</p>
+                )}
+                <div className="detalhe-acoes">
+                  <a className="botao-primario" href={`/instituicao/${sel.id}`}>Perfil e rede →</a>
+                  <button type="button" className="chip" onClick={() => setSelecionado(null)}>limpar</button>
+                </div>
+              </>
+            )}
+          </section>
+
           <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
             <h2>Seletores do mapa <span className="tag">filtros</span></h2>
             <div className="filtro">
@@ -263,44 +298,10 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
             )}
           </section>
 
-          <section className="painel-card detalhe-sel" aria-live="polite">
-            <h2>Instituição selecionada <span className="tag">{sel ? `${ranking.indexOf(sel) + 1}ª` : "mapa"}</span></h2>
-            {!sel ? (
-              <p className="detalhe-vazio">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 1v4M12 19v4M1 12h4M19 12h4" /></svg>
-                Clique numa bolha do mapa para ver os números da instituição, suas áreas e subunidades.
-              </p>
-            ) : (
-              <>
-                <div className="detalhe-topo">
-                  <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
-                  <div><b>{sel.nome}</b><span>{[resumoSel?.municipio, sel.uf].filter(Boolean).join(" · ")}</span></div>
-                </div>
-                <dl className="detalhe-dl">
-                  <div><dt>no filtro</dt><dd>{fmt(sel.works)}<small> publ.</small></dd></div>
-                  <div><dt>total {faixaCurta}</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
-                  <div><dt>pesquisadores</dt><dd>{resumoSel ? fmt(resumoSel.pesquisadores) : "…"}</dd></div>
-                  <div><dt>programas de pós</dt><dd>{resumoSel ? fmt(resumoSel.programas) : "…"}</dd></div>
-                </dl>
-                {resumoSel && resumoSel.areas.length > 0 && (
-                  <ul className="detalhe-areas">
-                    {resumoSel.areas.map((a) => (
-                      <li key={a.f}><i style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(a.f))})` }} />{rotuloArea(a.f)}<span>{fmt(a.n)}</span></li>
-                    ))}
-                  </ul>
-                )}
-                {subunidades.get(sel.id) && (
-                  <p className="detalhe-subs">Subunidades: {subunidades.get(sel.id)!.map((x, k) => (
-                    <a key={x.id} href={`/instituicao/${x.id}`}>{k ? ", " : ""}{x.sigla ?? x.nome}</a>
-                  ))}</p>
-                )}
-                <div className="detalhe-acoes">
-                  <a className="botao-primario" href={`/instituicao/${sel.id}`}>Perfil e rede →</a>
-                  <button type="button" className="chip" onClick={() => setSelecionado(null)}>limpar</button>
-                </div>
-              </>
-            )}
-          </section>
+          <div className="kpis-par">
+            <div className="kpi"><span className="tag tag-mini">OpenAlex</span><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
+            <div className="kpi"><span className="tag tag-mini">{faixaCurta}</span><b>{fmt(soQualis ? resumo.works_qualis : resumo.works)}</b><span>{soQualis ? "publicações com Qualis" : "publicações"}</span></div>
+          </div>
         </div>
       </div>
     </div>

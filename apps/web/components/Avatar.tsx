@@ -13,7 +13,7 @@ export default function Avatar({ id, nome, foto, tamanho = 96 }: { id: string; n
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`/foto/${id}`} alt={`Foto de ${nome}`} width={tamanho} height={tamanho} className="avatar" />
         <figcaption>
-          {foto.source_page_url ? <a href={foto.source_page_url} rel="noopener">Foto</a> : "Foto"}: {foto.author || "autor no Commons"} · {foto.license}
+          {foto.source_page_url ? <a href={foto.source_page_url} target="_blank" rel="noopener noreferrer">Foto</a> : "Foto"}: {foto.author || "autor no Commons"} · {foto.license}
         </figcaption>
       </figure>
     );

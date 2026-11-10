@@ -81,7 +81,7 @@ export default async function Pesquisador({ params }: { params: { id: string } }
       <p>
         {p.is_capes_faculty && <span className="tag">docente de pós-graduação</span>}
         {p.pq_category_latest && <span className="tag">bolsa de produtividade {p.pq_category_latest}</span>}
-        {p.orcid && <a className="tag" href={`https://orcid.org/${p.orcid}`} rel="noopener">ORCID {p.orcid}</a>}
+        {p.orcid && <a className="tag" href={`https://orcid.org/${p.orcid}`} target="_blank" rel="noopener noreferrer">ORCID {p.orcid}</a>}
       </p>
       {p.topicos && p.topicos.length > 0 && <p>{p.topicos.map((t) => <span key={t} className="tag">{t}</span>)}</p>}
         </div>
@@ -115,7 +115,7 @@ export default async function Pesquisador({ params }: { params: { id: string } }
           <ul className="lista">
             {orientacoes.map((o) => (
               <li key={o.title + o.year}>
-                {o.full_text_url ? <a href={o.full_text_url} rel="noopener">{o.title}</a> : o.title}
+                {o.full_text_url ? <a href={o.full_text_url} target="_blank" rel="noopener noreferrer">{o.title}</a> : o.title}
                 <div className="meta">{o.degree?.toLowerCase()} · {o.author_name} · {o.programa} · {o.year}</div>
               </li>
             ))}
@@ -131,7 +131,7 @@ export default async function Pesquisador({ params }: { params: { id: string } }
             <ul className="lista">
               {ws.map((w) => (
                 <li key={w.id}>
-                  {w.doi ? <a href={`https://doi.org/${w.doi}`} rel="noopener">{w.title}</a> : w.title}
+                  {w.doi ? <a href={`https://doi.org/${w.doi}`} target="_blank" rel="noopener noreferrer">{w.title}</a> : w.title}
                   <div className="meta"><i className="ponto" style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(w.primary_field))})` }} />{area(w.primary_field)}{w.venue ? ` · ${w.venue}` : ""}</div>
                 </li>
               ))}

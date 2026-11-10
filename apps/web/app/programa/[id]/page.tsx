@@ -71,7 +71,7 @@ export default async function Programa({ params }: { params: { id: string } }) {
             <div key={ano} className="linha-tempo">
               <span className="lt-ano">{ano}</span>
               <ul className="lista">{ts.map((t) => (
-                <li key={t.title + t.year}>{t.full_text_url ? <a href={t.full_text_url} rel="noopener">{t.title}</a> : t.title}
+                <li key={t.title + t.year}>{t.full_text_url ? <a href={t.full_text_url} target="_blank" rel="noopener noreferrer">{t.title}</a> : t.title}
                   <div className="meta">{t.degree?.toLowerCase()} · {t.author_name} · orientação: {t.advisor_researcher_id ? <a href={`/pesquisador/${t.advisor_researcher_id}`}>{t.advisor_name || "ver perfil"}</a> : t.advisor_name}</div></li>
               ))}</ul>
             </div>

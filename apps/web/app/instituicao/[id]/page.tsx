@@ -70,8 +70,8 @@ export default async function Instituicao({ params }: { params: { id: string } }
         {i.legal_nature ? ` · ${i.legal_nature}` : ""}{i.established ? ` · fundada em ${i.established}` : ""}
       </p>
       <p>
-        {i.website && <a className="tag" href={i.website} rel="noopener">site</a>}
-        {i.ror && <a className="tag" href={`https://ror.org/${i.ror}`} rel="noopener">ROR {i.ror}</a>}
+        {i.website && <a className="tag" href={i.website} target="_blank" rel="noopener noreferrer">site</a>}
+        {i.ror && <a className="tag" href={`https://ror.org/${i.ror}`} target="_blank" rel="noopener noreferrer">ROR {i.ror}</a>}
         {i.emec && <span className="tag">e-MEC {i.emec}</span>}
       </p>
       <div className="cards">

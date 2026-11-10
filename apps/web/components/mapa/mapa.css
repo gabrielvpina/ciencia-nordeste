@@ -228,3 +228,8 @@
 .lg-pico .mn-cil-topo { fill: color-mix(in srgb, var(--accent-vivo) 55%, #fff); stroke: var(--stroke); stroke-width: 1.2; }
 .lg-pico .mn-cil-sombra { fill: var(--stroke); opacity: .18; }
 .lg-pico { fill: none; stroke: none; }
+
+/* bolhas (densidade, alternativa aos cilindros): área ∝ publicações, menores por cima */
+.mn-barra circle.mn-bolha { fill: color-mix(in srgb, var(--tom) 78%, transparent); stroke: var(--mn-tinta); stroke-width: 1.6; transition: r .2s; }
+.lg-bolha { fill: color-mix(in srgb, var(--accent-vivo) 35%, transparent); stroke: var(--stroke); stroke-width: 1.2; }
+.lg-guia { stroke: var(--muted); stroke-dasharray: 2 2; }

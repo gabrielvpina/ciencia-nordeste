@@ -552,3 +552,16 @@ a.kpi:hover, .card-inst:hover, .card-prog:hover { transform: translate(-1px, -1p
 .topo { border-bottom: var(--b) solid var(--stroke); padding-bottom: 12px; margin-bottom: 4px; background: var(--panel); }
 .topo .topo-acoes { padding-left: 14px; border-left: 2px dashed var(--line); }
 .nav { gap: 6px; }
+
+/* busca: sugestões compactas (até 4 por coluna, rolagem se passar da altura) */
+.resultados-grade { max-height: min(46vh, 380px); overflow-y: auto; padding: 2px 6px 6px 2px; }
+.coluna li { padding: 4px 8px; }
+.coluna li a { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.coluna li .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.coluna h3 .meta { font-family: var(--font-body); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
+.mais-itens { margin-top: 4px; border: 0; background: none; padding: 2px 0; font: 500 .78rem var(--font-body); color: var(--accent); cursor: pointer; }
+.mais-itens:hover { text-decoration: underline; }
+.coluna-tema .pubs li a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
+/* seletor de forma (cilindros/bolhas) */
+.grade-seg.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grade-seg.forma { margin-top: 6px; }

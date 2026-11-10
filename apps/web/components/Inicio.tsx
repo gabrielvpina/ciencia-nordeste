@@ -20,6 +20,7 @@ const EXEMPLOS = ["dengue e arboviroses", "UFPE", "melhoramento genético de cap
 
 export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: DadosMapa }) {
   const [modo, setModo] = useState<Exclude<ModoMapa, "rede">>("densidade");
+  const [forma, setForma] = useState<"colunas" | "bolhas">("bolhas");
   const [uf, setUf] = useState("");
   const [area, setArea] = useState("");
   const [de, setDe] = useState(2022);
@@ -115,10 +116,10 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
                 <h3>Por tema <span className="meta">{buscandoTema ? "buscando…" : tema?.vetorial ? "busca semântica PT/EN" : "só texto"}</span></h3>
                 {tema && (
                   <>
-                    <ul>{tema.pesquisadores.slice(0, 5).map((p) => (
+                    <ul>{tema.pesquisadores.slice(0, 3).map((p) => (
                       <li key={p.id}><a href={`/pesquisador/${p.id}`}>{p.nome}</a><span className="meta">{p.n} publicaç{p.n > 1 ? "ões" : "ão"} no tema</span></li>
                     ))}</ul>
-                    <ul className="pubs">{tema.publicacoes.slice(0, 4).map((w) => (
+                    <ul className="pubs">{tema.publicacoes.slice(0, 2).map((w) => (
                       <li key={w.id}>{w.doi ? <a href={`https://doi.org/${w.doi}`} target="_blank" rel="noopener noreferrer">{w.titulo}</a> : <span>{w.titulo}</span>}
                         <span className="meta">{w.ano}{w.area ? ` · ${rotuloArea(w.area)}` : ""}</span></li>
                     ))}</ul>
@@ -180,7 +181,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
               </div>
             )}
             <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined}
-              selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} />
+              selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} forma={forma} />
           </div>
         </section>
 
@@ -200,6 +201,12 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
                   </button>
                 ))}
               </div>
+              {modo === "densidade" && (
+                <div className="grade-seg cols-2 forma" role="group" aria-label="Forma dos marcadores">
+                  <button className={forma === "colunas" ? "ativo" : ""} aria-pressed={forma === "colunas"} onClick={() => setForma("colunas")} title="Relevo: altura comprimida">Cilindros</button>
+                  <button className={forma === "bolhas" ? "ativo" : ""} aria-pressed={forma === "bolhas"} onClick={() => setForma("bolhas")} title="Área proporcional; mais fácil de clicar">Bolhas</button>
+                </div>
+              )}
             </div>
             <div className="filtro">
               <span className="lbl">Estado</span>
@@ -231,16 +238,23 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
   );
 }
 
+/** Coluna de resultados: mostra até LIMITE itens; o resto fica atrás de "mais N". */
+const LIMITE = 4;
 function Coluna({ titulo, itens, href, onFoco }: { titulo: string; itens: { id: string; nome: string; detalhe: string }[]; href: (id: string) => string; onFoco?: (id: string | null) => void }) {
+  const [aberta, setAberta] = useState(false);
   if (!itens.length) return null;
+  const visiveis = aberta ? itens : itens.slice(0, LIMITE);
   return (
     <div className="coluna">
-      <h3>{titulo}</h3>
-      <ul>{itens.map((i) => (
+      <h3>{titulo} <span className="meta">{itens.length}</span></h3>
+      <ul>{visiveis.map((i) => (
         <li key={i.id} onPointerEnter={() => onFoco?.(i.id)} onPointerLeave={() => onFoco?.(null)}>
           <a href={href(i.id)}>{i.nome}</a><span className="meta">{i.detalhe}</span>
         </li>
       ))}</ul>
+      {itens.length > LIMITE && (
+        <button type="button" className="mais-itens" onClick={() => setAberta(!aberta)}>{aberta ? "mostrar menos" : `mais ${itens.length - LIMITE}`}</button>
+      )}
     </div>
   );
 }

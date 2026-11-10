@@ -24,7 +24,7 @@ export function espalhar<T extends { x: number; y: number }>(pontos: T[], celula
     if (g.length === 1) { saida.push(g[0]); continue; }
     const cx = g.reduce((s, p) => s + p.x, 0) / g.length;
     const cy = g.reduce((s, p) => s + p.y, 0) / g.length;
-    const raio = 8 + 2.2 * Math.sqrt(g.length) * 3;
+    const raio = 14 + 7 * Math.sqrt(g.length);   // anel mais largo: marcadores maiores não se encobrem
     g.forEach((p, i) => {
       if (i === 0) { saida.push({ ...p, x: cx, y: cy }); return; }   // o maior fica no centro (vem ordenado)
       const a = (2 * Math.PI * (i - 1)) / (g.length - 1);

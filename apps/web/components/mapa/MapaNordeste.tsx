@@ -19,6 +19,7 @@ type Props = {
   selecionado?: string | null;                   // instituição selecionada (mostra subunidades e destaca)
   onSelecionar?: (id: string | null) => void;    // sem isto, o clique abre o perfil
   destaque?: string | null;                      // realce vindo de fora (ex.: mouse sobre um nome no ranking)
+  forma?: "colunas" | "bolhas";                  // modo densidade: cilindros (relevo) ou bolhas (área ∝ publicações)
 };
 
 type Ponto = PontoInst & { x: number; y: number };
@@ -45,7 +46,7 @@ const TIPOS: Record<string, string> = {
   organizacao_sem_fins_lucrativos: "Organização sem fins lucrativos", financiador: "Financiador", outro: "Outro",
 };
 
-export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, hrefInstituicao = (id) => `/instituicao/${id}`, selecionado, onSelecionar, destaque }: Props) {
+export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, hrefInstituicao = (id) => `/instituicao/${id}`, selecionado, onSelecionar, destaque, forma = "colunas" }: Props) {
   const caixa = useRef<HTMLDivElement>(null);
   const [dica, setDica] = useState<(Dica & { x: number; y: number }) | null>(null);
   const [foco, setFoco] = useState<string | null>(null);     // instituição sob o mouse
@@ -141,6 +142,9 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
   // tom de cada cilindro: vizinhos muito próximos recebem tons diferentes
   const tons = modo === "densidade" ? tonsVizinhos([...principais, ...subs]) : new Map<string, number>();
   const altura = (w: number) => ALTURA_MIN + ALTURA_MAX * Math.pow(w / maxWorks, 0.45);
+  const raioBolha = (w: number) => 8 + 38 * Math.sqrt(w / maxWorks);   // área proporcional, com mínimo clicável
+  const bolhas = forma === "bolhas";
+  const topoDe = (p: Ponto) => p.y - (bolhas ? raioBolha(p.works) : altura(p.works));
   const ativo = foco ?? destaque ?? null;
   const dicaInst = (p: Ponto): Dica => {
     const n = filhos.get(p.id)?.length ?? 0;
@@ -244,9 +248,10 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 
         {modo === "densidade" && (
           <g className="mn-barras">
-            {[...principais, ...subs].sort((a, b) => a.y - b.y).map((p) => {
+            {[...principais, ...subs].sort((a, b) => (bolhas ? b.works - a.works : a.y - b.y)).map((p) => {
               const h = altura(p.works);
-              const w = 5 + 8 * Math.sqrt(p.works / maxWorks);      // base larga: legível, sem fidelidade de escala
+              const w = 7 + 9 * Math.sqrt(p.works / maxWorks);      // base larga: legível e fácil de clicar
+              const rb = raioBolha(p.works);
               const ehSub = subs.includes(p);
               const n = (filhos.get(p.id)?.length ?? 0) + (menores.get(p.id)?.length ?? 0);
               const cls = ["mn-barra", `mn-tom-${tons.get(p.id) ?? 0}`,
@@ -257,13 +262,24 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
               return (
                 <g key={p.id} className={cls} {...acionavel(p.id, `${p.nome}: ${fmt(p.works)} publicações`)} {...comDica(() => dicaInst(p), p.id)}>
                   {ehSub && <line x1={porId.get(selecionado!)!.x} y1={porId.get(selecionado!)!.y} x2={p.x} y2={p.y} className="mn-sub-linha" />}
-                  {n > 0 && !ehSub && <circle cx={p.x} cy={p.y} r={7 + w} className="mn-sub-anel" />}
-                  <Cilindro x={p.x} y={p.y} w={w} h={h} />
-                  <rect x={p.x - w - 4} y={p.y - h - 4} width={2 * w + 8} height={h + 8} className="mn-alvo" />
+                  {n > 0 && !ehSub && <circle cx={p.x} cy={p.y} r={(bolhas ? rb : w) + 7} className="mn-sub-anel" />}
+                  {bolhas ? (
+                    <>
+                      <circle cx={p.x} cy={p.y} r={rb} className="mn-bolha" />
+                      <circle cx={p.x} cy={p.y} r={Math.max(rb, 13)} className="mn-alvo" />
+                    </>
+                  ) : (
+                    <>
+                      <Cilindro x={p.x} y={p.y} w={w} h={h} />
+                      {/* área de clique generosa: corpo + base */}
+                      <rect x={p.x - w - 6} y={p.y - h - 8} width={2 * w + 12} height={h + 16} className="mn-alvo" />
+                      <circle cx={p.x} cy={p.y} r={Math.max(14, w + 8)} className="mn-alvo" />
+                    </>
+                  )}
                 </g>
               );
             })}
-            {rotulosBarras(principais, subs, altura, selecionado).map(({ p, x, y, r }) => (
+            {rotulosBarras(principais, subs, topoDe, selecionado).map(({ p, x, y, r }) => (
               <g key={p.id} className={`mn-etiqueta${r && r <= 3 ? " mn-etiqueta-top" : ""}`} transform={`translate(${x} ${y})`} aria-hidden>
                 {r ? (<><circle r={19} className="mn-badge" /><text className="mn-badge-num" dy="0.35em">{r}</text></>) : null}
                 <text x={r ? 25 : 0} dy="0.35em" className={`mn-rotulo${r ? " mn-rotulo-lado" : " mn-rotulo-sub"}`}>{p.sigla ?? p.nome.slice(0, 14)}</text>
@@ -400,9 +416,9 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
       </svg>
 
       {modo === "densidade" && !selecionado && tam.w >= 640 && (
-        <Callouts pontos={principais.slice(0, 3)} altura={altura} vb={viewBox(modo)} tam={tam} />
+        <Callouts pontos={principais.slice(0, 3)} topoDe={topoDe} vb={viewBox(modo)} tam={tam} />
       )}
-      <Legenda modo={modo} altura={altura} maxWorks={maxWorks} escala={tam.w ? Math.min(tam.w / viewBox(modo)[2], tam.h / viewBox(modo)[3]) : 0.5} />
+      <Legenda modo={modo} altura={altura} raioBolha={bolhas ? raioBolha : undefined} maxWorks={maxWorks} escala={tam.w ? Math.min(tam.w / viewBox(modo)[2], tam.h / viewBox(modo)[3]) : 0.5} />
 
       {dica && (
         <div className="mn-dica" role="tooltip"
@@ -418,8 +434,8 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 }
 
 /** Rótulos das barras: top 8 com a posição no ranking; com seleção, a selecionada e as subunidades. */
-function rotulosBarras(principais: Ponto[], subs: Ponto[], altura: (w: number) => number, selecionado?: string | null) {
-  const topo = (p: Ponto) => p.y - altura(p.works) - 26;
+function rotulosBarras(principais: Ponto[], subs: Ponto[], topoDe: (p: Ponto) => number, selecionado?: string | null) {
+  const topo = (p: Ponto) => topoDe(p) - 26;
   const base = principais.slice(0, 8).map((p) => ({ p, x: p.x, y: topo(p), r: principais.indexOf(p) + 1 as number | null }));
   const sel = principais.find((p) => p.id === selecionado);
   const extra = [
@@ -442,12 +458,12 @@ function semColisao<T extends { x: number; y: number }>(itens: T[], limite: numb
 
 
 /** Cartões HTML para as 3 maiores, ligados à ponta da barra por linha pontilhada (como na inspiração). */
-function Callouts({ pontos, altura, vb, tam }: { pontos: Ponto[]; altura: (w: number) => number; vb: number[]; tam: { w: number; h: number } }) {
+function Callouts({ pontos, topoDe, vb, tam }: { pontos: Ponto[]; topoDe: (p: Ponto) => number; vb: number[]; tam: { w: number; h: number } }) {
   const esc = Math.min(tam.w / vb[2], tam.h / vb[3]);
   const ox = (tam.w - vb[2] * esc) / 2 - vb[0] * esc, oy = (tam.h - vb[3] * esc) / 2 - vb[1] * esc;
   const L = 168, A = 52, GAP = 10;
   const itens = pontos.map((p, i) => {
-    const ax = ox + p.x * esc, ay = oy + (p.y - altura(p.works)) * esc;
+    const ax = ox + p.x * esc, ay = oy + topoDe(p) * esc;
     const direita = ax > tam.w * 0.5;
     const x = Math.max(8, Math.min(tam.w - L - 8, direita ? ax + 70 : ax - 70 - L));
     return { p, i, ax, ay, x, y: ay - A / 2, direita };
@@ -471,7 +487,29 @@ function Callouts({ pontos, altura, vb, tam }: { pontos: Ponto[]; altura: (w: nu
 }
 
 /** Legenda em caixa no canto do mapa, por modo. */
-function Legenda({ modo, altura, maxWorks, escala }: { modo: ModoMapa; altura: (w: number) => number; maxWorks: number; escala: number }) {
+function Legenda({ modo, altura, raioBolha, maxWorks, escala }: { modo: ModoMapa; altura: (w: number) => number; raioBolha?: (w: number) => number; maxWorks: number; escala: number }) {
+  if (modo === "densidade" && raioBolha) {
+    const refs = [100, 1000, 10000].filter((v) => v <= maxWorks * 1.05);
+    const rMax = Math.max(...refs.map((v) => raioBolha(v) * escala));
+    return (
+      <div className="mn-legenda-caixa">
+        <div>
+          <div className="ttl">Publicações (área da bolha)</div>
+          <svg className="lg-svg" width={refs.length * (rMax * 2 + 44)} height={rMax * 2 + 4} aria-hidden>
+            {refs.map((v, i) => {
+              const r = raioBolha(v) * escala, cx = i * (rMax * 2 + 44) + rMax + 2;
+              return <g key={v}><circle cx={cx} cy={rMax * 2 + 2 - r} r={r} className="lg-bolha" /><text x={cx + r + 5} y={rMax * 2 - r + 3}>{fmt(v)}</text></g>;
+            })}
+          </svg>
+        </div>
+        <div className="chave">
+          <span><i className="bola" style={{ background: "var(--mn-barra-hover)" }} />Top 3</span>
+          <span><i className="bola" style={{ background: "var(--mn-barra)" }} />Posição no ranking</span>
+          <span><i className="anel" />Tem subunidades</span>
+        </div>
+      </div>
+    );
+  }
   if (modo === "densidade") {
     const refs = [100, 1000, 10000].filter((v) => v <= maxWorks * 1.05);
     const k = Math.min(1, 24 / Math.max(1, ...refs.map((v) => altura(v) * escala)));   // a legenda não passa de 24 px

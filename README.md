@@ -12,6 +12,36 @@ Repositório aberto da pesquisa em **ciências da vida** do Nordeste: saúde, bi
 - Visão, recorte, modelo de dados e fases: **[SCHEME.md](SCHEME.md)**, a fonte de verdade do projeto.
 - Ingestão de dados, passo a passo: **[ingest/README.md](ingest/README.md)**.
 
+## Telas
+
+Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/telas/inicio-escuro.webp">
+    <img src="assets/telas/inicio.webp" alt="Tela inicial: busca, áreas, mapa de publicações por instituição no Nordeste e seletores do mapa" width="900">
+  </picture>
+  <br><sub>Tela inicial: busca por pesquisador, instituição, programa ou tema, e mapa da produção por instituição.</sub>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/telas/programa-producao-escuro.webp">
+    <img src="assets/telas/programa-producao.webp" alt="Programa de pós-graduação, aba Produção: publicações por ano e estrato Qualis" width="900">
+  </picture>
+  <br><sub>Programa de pós-graduação, aba <b>Produção</b>: publicações por ano e estrato Qualis Periódicos 2021–2024 (D-033).</sub>
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/telas/programa-rede.webp" alt="Programa de pós-graduação, aba Rede de colaboração"><br><sub>Aba <b>Rede de colaboração</b>: parceiras no Nordeste e coautorias externas.</sub></td>
+    <td width="50%"><img src="assets/telas/instituicao.webp" alt="Página de instituição com rede de colaboração e publicações por área"><br><sub>Instituição: rede de colaboração, números e publicações por área.</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="assets/telas/programas.webp" alt="Programas de pós-graduação: matriz área de avaliação por conceito CAPES"><br><sub>Programas de pós-graduação: área de avaliação × conceito CAPES, com filtros por estado e nível.</sub></td>
+  </tr>
+</table>
+
 ## Números atuais
 
 | | |

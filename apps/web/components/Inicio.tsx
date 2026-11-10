@@ -2,6 +2,7 @@
 // Tela inicial: busca em destaque no topo; abaixo, um painel em três colunas — áreas | mapa | seletores e filtros do mapa.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AREAS_ORDEM, rotuloArea } from "@/components/mapa/areas";
+import { Estrela } from "@/components/Logo";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
 import type { DadosMapa, ModoMapa, PontoInst } from "@/components/mapa/tipos";
 import type { ResultadoBusca } from "@/app/api/busca/route";
@@ -91,7 +92,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
   return (
     <div className="inicio">
       <section className="hero" aria-labelledby="hero-titulo">
-        <h1 id="hero-titulo">Quem pesquisa o quê no Nordeste</h1>
+        <h1 id="hero-titulo">Quem pesquisa o quê no <b>Nordeste</b> <Estrela lima tamanho={22} /></h1>
         <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados, 2022–2026.</p>
         <div className="busca-grande">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
@@ -118,7 +119,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
                       <li key={p.id}><a href={`/pesquisador/${p.id}`}>{p.nome}</a><span className="meta">{p.n} publicaç{p.n > 1 ? "ões" : "ão"} no tema</span></li>
                     ))}</ul>
                     <ul className="pubs">{tema.publicacoes.slice(0, 4).map((w) => (
-                      <li key={w.id}>{w.doi ? <a href={`https://doi.org/${w.doi}`} rel="noopener">{w.titulo}</a> : <span>{w.titulo}</span>}
+                      <li key={w.id}>{w.doi ? <a href={`https://doi.org/${w.doi}`} target="_blank" rel="noopener noreferrer">{w.titulo}</a> : <span>{w.titulo}</span>}
                         <span className="meta">{w.ano}{w.area ? ` · ${rotuloArea(w.area)}` : ""}</span></li>
                     ))}</ul>
                     {tema.instituicoes.length > 0 && (
@@ -134,17 +135,11 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
         )}
       </section>
 
-      <div className="kpis">
-        <div className="kpi"><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
-        <div className="kpi"><b>{fmt(resumo.works)}</b><span>publicações</span></div>
-        <a className="kpi" href="/instituicoes"><b>{fmt(resumo.instituicoes)}</b><span>instituições →</span></a>
-        <a className="kpi" href="/programas"><b>{fmt(resumo.programas)}</b><span>programas de pós →</span></a>
-      </div>
-
       <div className="cockpit">
         <div className="col col-esq">
           <section className="painel-card">
-            <h2>Áreas <small>{uf || "Nordeste"} · clique para filtrar</small></h2>
+            <h2>Áreas <span className="tag">OpenAlex</span></h2>
+            <p className="linha-cap">{uf || "Nordeste"} · publicações por área · clique para filtrar</p>
             <ul className="barras-area">
               {areasUf.map(({ f, i, n }) => (
                 <li key={f}>
@@ -161,6 +156,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
 
         <section className="painel-card mapa-card" aria-busy={carregando}>
           <div className="mapa-topo">
+            <span className="tag tag-mapa">{m.rotulo}</span>
             <div className="mapa-titulo">
               {m.titulo}
               <small>{fmt(total)} instituições{area ? ` · ${rotuloArea(area)}` : ""}{uf ? ` · ${uf}` : ""} · {de === ate ? de : `${de}–${ate}`}{carregando ? " · atualizando…" : ""}</small>
@@ -189,14 +185,22 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
         </section>
 
         <div className="col col-dir">
+          <div className="kpis-par">
+            <div className="kpi"><span className="tag tag-mini">OpenAlex</span><b>{fmt(resumo.pesquisadores)}</b><span>pesquisadores</span></div>
+            <div className="kpi"><span className="tag tag-mini">2022–26</span><b>{fmt(resumo.works)}</b><span>publicações</span></div>
+          </div>
+          <div className="kpis-par">
+            <a className="kpi" href="/instituicoes"><span className="tag tag-mini">ROR · INEP</span><b>{fmt(resumo.instituicoes)}</b><span>instituições →</span></a>
+            <a className="kpi" href="/programas"><span className="tag tag-mini">CAPES</span><b>{fmt(resumo.programas)}</b><span>programas →</span></a>
+          </div>
           <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
-            <h2>Seletores do mapa</h2>
+            <h2>Seletores do mapa <span className="tag">filtros</span></h2>
             <div className="filtro">
               <span className="lbl">Modo</span>
-              <div className="grade-seg cols-1" role="tablist" aria-label="Modo do mapa">
+              <div className="grade-seg cols-3" role="tablist" aria-label="Modo do mapa">
                 {MODOS.map((x) => (
-                  <button key={x.id} role="tab" aria-selected={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)}>
-                    <b>{x.rotulo}</b><small>{x.titulo}</small>
+                  <button key={x.id} role="tab" aria-selected={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)} title={x.legenda}>
+                    {x.rotulo}
                   </button>
                 ))}
               </div>
@@ -224,7 +228,6 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
             {(uf || area || !tudo) && (
               <button type="button" className="chip chip-limpar" onClick={() => { setUf(""); setArea(""); setDe(ANOS[0]); setAte(ANOS[ANOS.length - 1]); }}>limpar filtros</button>
             )}
-            <p className="meta mais"><a href="/instituicoes">Ver todas as instituições →</a></p>
           </section>
         </div>
       </div>

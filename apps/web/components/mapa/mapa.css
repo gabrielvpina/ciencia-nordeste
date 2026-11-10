@@ -134,3 +134,83 @@
 .lg-pico { fill: color-mix(in srgb, var(--mn-barra) 75%, transparent); }
 @media (max-width: 560px) { .mn-legenda-caixa { margin: 4px 6px 6px; padding: 6px 8px; } }
 @media (prefers-reduced-motion: reduce) { .mn-gira, .mn-gira-inverso, .mn-arco-externo, .mn-com-foco .mn-arco.mn-arco-foco { animation: none; } }
+
+/* ===================== Estilo neo-brutalista (branch ui) =====================
+   Contorno de tinta, sombra dura, lavanda nos dados e lima como marca-texto. Sobrepõe as regras acima. */
+.mn-caixa, .mn {
+  --mn-estado: var(--seq-0);
+  --mn-estado-borda: var(--map-edge);
+  --mn-estado-ativo: var(--seq-1);
+  --mn-placa: var(--map-side);
+  --mn-sigla: var(--fg);
+  --mn-barra: var(--accent-vivo);
+  --mn-barra-hover: var(--flow);
+  --mn-arco: var(--fg);
+  --mn-arco-externo: var(--fg);
+  --mn-no: var(--accent-vivo);
+  --mn-origem: var(--flow);
+  --mn-ancora: var(--flow);
+  --mn-rotulo: var(--fg);
+  --mn-rotulo-halo: var(--panel);
+  --mn-tinta: var(--fg);
+}
+.mn-placa { filter: none; }
+.mn-estado { stroke-width: 2.2; }
+.mn-estado-ativo { stroke: var(--mn-tinta); stroke-width: 4; }
+.mn-estado-apagado { fill: var(--sand); opacity: 1; }
+.mn-sigla { font-family: var(--font-display); font-weight: 700; font-size: 21px; letter-spacing: .04em; stroke: var(--mn-estado); opacity: .75; }
+.mn-guia, .mn-guia-ponto { stroke: var(--mn-tinta); fill: var(--mn-tinta); }
+.mn-guia { fill: none; stroke-width: 1.8; }
+/* cones */
+.mn-barra path { fill-opacity: 1; stroke: var(--mn-tinta); stroke-width: 1.6; stroke-linejoin: round; }
+.mn-barra-top path, .mn-barra-sel path, .mn-barra-sub path { fill: var(--mn-barra-hover); }
+.mn-barra-apagada { opacity: .25; }
+.mn-cone-sombra { fill: var(--mn-tinta); opacity: .16; stroke: none !important; }
+.mn-sub-anel { stroke: var(--mn-tinta); stroke-width: 1.8; opacity: .8; }
+.mn-sub-linha { stroke: var(--mn-tinta); stroke-width: 1.6; }
+/* selos do ranking */
+.mn-badge { fill: var(--panel); stroke: var(--mn-tinta); stroke-width: 2.6; }
+.mn-etiqueta-top .mn-badge { fill: var(--flow); }
+.mn-badge-num { fill: var(--mn-tinta); font-family: var(--font-display); }
+.mn-rotulo { font-family: var(--font-display); font-weight: 600; }
+/* nós e arcos */
+.mn-no { fill-opacity: 1; stroke: var(--mn-tinta); stroke-width: 1.8; }
+.mn-no:hover, .mn-no:focus-visible, .mn-no-foco { fill: var(--flow); }
+.mn-arco { stroke: var(--mn-arco); }
+.mn-com-foco .mn-arco.mn-arco-foco { stroke: var(--mn-tinta); opacity: 1; }
+.mn-arco-externo { opacity: .85; }
+.mn-origem, .mn-ancora { stroke: var(--mn-tinta); stroke-width: 2.4; }
+.mn-pulso { stroke: var(--mn-tinta); }
+.mn-fatia { stroke: var(--mn-tinta); stroke-width: 1.6; }
+.mn-rosca-total { font-family: var(--font-display); }
+/* escala gráfica e norte */
+.mn-escala rect { stroke: var(--mn-tinta); stroke-width: 2.2; }
+.mn-escala-a { fill: var(--mn-tinta); }
+.mn-escala-b { fill: var(--panel); }
+.mn-escala text, .mn-norte text { fill: var(--mn-tinta); font: 600 20px var(--font-body); }
+.mn-norte rect { fill: var(--panel); stroke: var(--stroke); stroke-width: 2.6; }
+.mn-norte path { fill: var(--mn-tinta); }
+.mn-norte text { font: 700 20px var(--font-display); }
+/* dica, callouts e legenda: borda de tinta e sombra dura */
+.mn-dica { border: var(--b) solid var(--stroke); border-radius: 10px; box-shadow: var(--hard-s); }
+.mn-callout { border: var(--b) solid var(--stroke); border-radius: 10px; box-shadow: var(--hard-s); }
+.mn-callout-ico { border: var(--b) solid var(--stroke); border-radius: 50%; background: var(--flow); }
+.mn-callout-ico svg { stroke: var(--on-hl); }
+.mn-callout-linhas path { stroke: var(--mn-tinta); stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 1; }
+.mn-legenda-caixa { background: var(--panel); border: var(--b) solid var(--stroke); border-radius: 10px; box-shadow: var(--hard-s); margin: 6px 16px 16px 12px; }
+.mn-legenda-caixa .ttl { font-weight: 600; }
+.mn-legenda-caixa .bola { border: 1.5px solid var(--stroke); }
+.mn-legenda-caixa .anel { border-color: var(--stroke); }
+.mn-legenda-caixa .traco { border-top-color: var(--fg); }
+.mn-legenda-caixa .tracejado { border-top-color: var(--fg); }
+.lg-pico { fill: var(--accent-vivo); stroke: var(--stroke); stroke-width: 1.2; }
+
+/* fundo do mapa: anéis e gride (sóbrios, estáticos) */
+.mn-fundo { pointer-events: none; }
+.mn-fundo .mn-anel { fill: none; stroke: var(--ring); stroke-width: 1.6; }
+.mn-fundo .mn-anel-tracejado { stroke-dasharray: 4 10; }
+.mn-fundo .mn-anel-marcas { fill: none; stroke: var(--ring); stroke-width: 10; stroke-dasharray: 1.6 12; }
+.mn-fundo .mn-anel-cheio { fill: color-mix(in srgb, var(--accent-soft) 55%, transparent); stroke: var(--ring); stroke-width: 1.4; stroke-dasharray: 2 6; }
+.mn-anel-cardeal { stroke: var(--mn-tinta); stroke-width: 2.4; }
+.mn-grade { stroke: var(--ring); stroke-width: 1.2; stroke-dasharray: 2 8; }
+.mn-grade-txt { fill: var(--muted); font: 500 15px var(--font-body); }

@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./mapa.css";
 import { AREAS_ORDEM, rotuloArea } from "./areas";
-import { ESTADOS, VIEWBOX, arco, espalhar, fatia, projetar } from "./projecao";
+import { ESTADOS, VIEWBOX, arco, espalhar, fatia, projetar, unidadesPorKm } from "./projecao";
 import type { DadosMapa, ModoMapa, PontoInst } from "./tipos";
 
 type Props = {
@@ -31,10 +31,14 @@ const ROTULO_FORA: Record<string, [number, number]> = { AL: [78, 18], SE: [74, 4
 const ALTURA_MAX = 150;       // altura do cone mais alto (unidades do viewBox), além da altura mínima
 const ALTURA_MIN = 14;
 const [VX, VY, VW, VH] = VIEWBOX;
-// Anéis decorativos de fundo (centro e raio no viewBox).
+const ESCALA = 200 * unidadesPorKm(-9);   // comprimento de 200 km no viewBox
+// Anéis de fundo (centro e raio no viewBox) e linhas do gride geográfico.
 const ANEL = { cx: VW / 2, cy: VH / 2 + 10, r: 600 };
+const GRADE_LAT = [-5, -10, -15];
+const GRADE_LON = [-45, -40, -35];
 // Margens extras: topo para as barras do litoral norte; direita, no modo rede, para as âncoras externas.
-const viewBox = (modo: ModoMapa) => [VX - 20, VY - (modo === "densidade" ? 75 : 30), VW + (modo === "rede" ? 250 : 40), VH + 50];
+const topoExtra = (modo: ModoMapa) => (modo === "densidade" ? 75 : 30);
+const viewBox = (modo: ModoMapa) => [VX - 20, VY - topoExtra(modo), VW + (modo === "rede" ? 250 : 40), VH + topoExtra(modo) + 60];
 const ANCORA_BRASIL: [number, number] = [70, VH - 60];
 const ancoraExterior = (i: number): [number, number] => [VW + 150, 230 + i * 110];
 const TIPOS: Record<string, string> = {
@@ -75,7 +79,7 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
     setDica(null);
     // subunidade à mostra: vai direto ao perfil (selecioná-la esconderia a própria subunidade)
     if (onSelecionar && !subsAtuais.current.has(id)) onSelecionar(id === selecionado ? null : id);
-    else window.open(hrefInstituicao(id), "_blank", "noopener");
+    else window.location.assign(hrefInstituicao(id));   // link interno: mesma aba
   };
   const acionavel = (id: string, rotulo: string) => ({
     role: "button", tabIndex: 0, "aria-label": rotulo,
@@ -167,24 +171,29 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
     <div className="mn-caixa" ref={caixa}>
       <svg ref={svgRef} className={`mn mn-modo-${modo}${selecionado ? " mn-com-selecao" : ""}`} viewBox={viewBox(modo).join(" ")} role="img"
         aria-label={titulo ?? "Mapa do Nordeste"} preserveAspectRatio="xMidYMid meet" onClick={() => onSelecionar?.(null)}>
-        {/* anéis decorativos (HUD): sólido, de marcações, tracejado e dois arcos girando em sentidos opostos */}
-        <g className="mn-aneis" aria-hidden>
-          <circle className="mn-anel-suave" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 0.78} />
-          <circle className="mn-anel-marcas" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 0.9} />
+        {/* fundo: anéis concêntricos (estáticos) e gride de latitude/longitude com rótulos */}
+        <g className="mn-fundo" aria-hidden>
+          <circle className="mn-anel-cheio" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 0.72} />
+          <circle className="mn-anel-marcas" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 0.86} />
           <circle className="mn-anel" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r} />
-          <circle className="mn-anel" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 1.08} style={{ opacity: 0.5 }} />
-          <g className="mn-gira" style={{ transformOrigin: `${ANEL.cx}px ${ANEL.cy}px` }}>
-            <path className="mn-anel-arco" d={arcoCirculo(ANEL.cx, ANEL.cy, ANEL.r, -0.5, 0.6)} />
-            <path className="mn-anel-seta" transform={`translate(${ANEL.cx + ANEL.r * 1.08 * Math.sin(2.4)} ${ANEL.cy - ANEL.r * 1.08 * Math.cos(2.4)}) rotate(${(2.4 * 180) / Math.PI})`} d="M-10,-7 L0,7 L10,-7 Z" />
-          </g>
-          <g className="mn-gira-inverso" style={{ transformOrigin: `${ANEL.cx}px ${ANEL.cy}px` }}>
-            <path className="mn-anel-arco" style={{ opacity: 0.55 }} d={arcoCirculo(ANEL.cx, ANEL.cy, ANEL.r * 1.08, 2.6, 3.3)} />
-          </g>
+          <circle className="mn-anel mn-anel-tracejado" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 1.1} />
+          {[0, 90, 180, 270].map((g) => {
+            const a = (g * Math.PI) / 180, r0 = ANEL.r * 0.97, r1 = ANEL.r * 1.04;
+            return <line key={g} className="mn-anel-cardeal" x1={ANEL.cx + r0 * Math.sin(a)} y1={ANEL.cy - r0 * Math.cos(a)} x2={ANEL.cx + r1 * Math.sin(a)} y2={ANEL.cy - r1 * Math.cos(a)} />;
+          })}
+          {GRADE_LAT.map((lat) => {
+            const y = projetar(lat, -40)[1];
+            return <g key={lat}><line className="mn-grade" x1={VX - 20} x2={VX + VW + 20} y1={y} y2={y} /><text className="mn-grade-txt" x={VX - 14} y={y - 6}>{-lat}° S</text></g>;
+          })}
+          {GRADE_LON.map((lon) => {
+            const x = projetar(-5, lon)[0];
+            return <g key={lon}><line className="mn-grade" x1={x} x2={x} y1={VY - topoExtra(modo)} y2={VH + 60} /><text className="mn-grade-txt" x={x + 6} y={VH + 52}>{-lon}° O</text></g>;
+          })}
         </g>
-        {/* espessura da placa: cópias dos estados deslocadas para baixo, com sombra (pseudo-3D) */}
+        {/* sombra dura: uma cópia do mapa deslocada, em tinta sólida */}
         <g className="mn-placa" aria-hidden>
-          {[16, 12, 8, 4].map((d) => (
-            <g key={d} transform={`translate(0 ${d})`}>{ESTADOS.map((e) => <path key={e.uf} d={e.path} />)}</g>
+          {[9].map((d) => (
+            <g key={d} transform={`translate(${d} ${d})`}>{ESTADOS.map((e) => <path key={e.uf} d={e.path} />)}</g>
           ))}
         </g>
         <g className="mn-estados">
@@ -208,6 +217,18 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
               </g>
             );
           })}
+        </g>
+
+        {/* convenção cartográfica: escala gráfica (200 km, a 9° S) e seta do norte */}
+        <g className="mn-escala" aria-hidden transform={`translate(${VX + 20} ${VH + 22})`}>
+          <rect width={ESCALA / 2} height={11} className="mn-escala-a" />
+          <rect x={ESCALA / 2} width={ESCALA / 2} height={11} className="mn-escala-b" />
+          <text x={0} y={-8}>200 km</text>
+        </g>
+        <g className="mn-norte" aria-hidden transform={`translate(${VX} ${VY - topoExtra(modo) + 12})`}>
+          <rect width={56} height={72} rx={7} />
+          <path d="M28,10 L41,36 L28,29 L15,36 Z" />
+          <text x={28} y={62} textAnchor="middle">N</text>
         </g>
 
         {modo === "densidade" && (
@@ -411,12 +432,6 @@ function semColisao<T extends { x: number; y: number }>(itens: T[], limite: numb
 function xy(p: { lat: number; lon: number }) {
   const [x, y] = projetar(p.lat, p.lon);
   return { x, y };
-}
-
-/** Arco de circunferência (ângulos em radianos, 0 = topo, sentido horário). */
-function arcoCirculo(cx: number, cy: number, r: number, a0: number, a1: number) {
-  const p = (a: number) => `${(cx + r * Math.sin(a)).toFixed(1)},${(cy - r * Math.cos(a)).toFixed(1)}`;
-  return `M${p(a0)} A${r},${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p(a1)}`;
 }
 
 /** Cartões HTML para as 3 maiores, ligados à ponta da barra por linha pontilhada (como na inspiração). */

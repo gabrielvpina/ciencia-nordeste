@@ -1,104 +1,91 @@
-/* Tokens de cor do Ciência Nordeste.
-   Cada paleta define só três números: matiz principal (--h), saturação (--s) e matiz de destaque (--h2).
-   Todos os tons do tema claro e do escuro derivam deles. Paleta padrão: Mangue (verde-água, âmbar nos destaques).
-   Para trocar a paleta do site inteiro: mude data-palette no <html> (app/layout.tsx), ou edite os números abaixo. */
+/* Tokens do Ciência Nordeste — estética "neo-brutalismo suave e sóbrio" (branch ui), paleta Azul:
+   fundo cinza liso, tinta azul-marinho, cards com borda de 2 px e sombra dura (sem desfoque),
+   controles em pílula, destaque em azul e marca-texto em lima (só no que merece atenção).
+   Fundo e tinta são fixos; cada paleta define só a matiz do destaque (--h, --s) e a do marca-texto (--hh, --hs, --hl).
+   Para trocar a paleta do site inteiro: data-palette no <html> (app/layout.tsx) ou edite os números abaixo. */
 
 /* ---------- 1. Paletas ---------- */
-:root                        { --h: 172; --s: 56%; --h2: 36; }   /* Mangue (padrão) */
-[data-palette="atlantico"]   { --h: 212; --s: 72%; --h2: 28; }
-[data-palette="lavanda"]     { --h: 252; --s: 62%; --h2: 340; }
-[data-palette="sertao"]      { --h: 26;  --s: 74%; --h2: 204; }
+:root                      { --h: 222; --s: 75%; --hh: 74;  --hs: 78%; --hl: 70%; }   /* Azul + lima (padrão) */
+[data-palette="lavanda"]   { --h: 265; --s: 70%; --hh: 74;  --hs: 78%; --hl: 70%; }
+[data-palette="coral"]     { --h: 8;   --s: 75%; --hh: 265; --hs: 70%; --hl: 80%; }
+[data-palette="verde"]     { --h: 158; --s: 45%; --hh: 45;  --hs: 90%; --hl: 66%; }
 
 /* ---------- 2. Tema claro ---------- */
 :root {
-  --bg:          hsl(var(--h) 34% 95.5%);
-  --panel:       hsl(var(--h) 40% 99.2%);
-  --line:        hsl(var(--h) 24% 87%);
-  --fg:          hsl(var(--h) 32% 13%);
-  --muted:       hsl(var(--h) 12% 40%);
-  --accent:      hsl(var(--h) var(--s) 32%);   /* mais escuro que na inspiração: links legíveis (contraste AA) */
-  --accent-vivo: hsl(var(--h) var(--s) 42%);   /* preenchimentos (barras, botões ativos) */
-  --accent-soft: hsl(var(--h) 60% 92%);
-  --on-accent:   hsl(var(--h) 40% 99%);
-  --flow:        hsl(var(--h2) 86% 48%);
-  --flow-soft:   hsl(var(--h2) 90% 92%);
-  --seq-0:       hsl(var(--h) 40% 97%);
-  --seq-1:       hsl(var(--h) 52% 90%);
-  --seq-2:       hsl(var(--h) 58% 80%);
-  --seq-3:       hsl(var(--h) var(--s) 67%);
-  --seq-4:       hsl(var(--h) var(--s) 54%);
-  --map-edge:    hsl(var(--h) 40% 99%);
-  --map-side:    hsl(var(--h) 30% 80%);
-  --map-shadow:  hsl(var(--h) 55% 35% / 0.28);
-  --ponto-fundo: hsl(var(--h) 30% 50% / .07);
-  --ring:        hsl(var(--h) 35% 80%);
-  --shadow-card: 0 1px 2px hsl(var(--h) 40% 30% / .06), 0 8px 24px hsl(var(--h) 40% 30% / .07);
+  --bg: hsl(var(--h) 24% 88%);   /* fundo liso, levemente tingido pela paleta (distinto dos cards) */
+  --panel: #fbfcfe;        /* cards */
+  --sand: hsl(var(--h) 20% 92%);   /* superfície neutra (esmaecido, cabeçalhos) */
+  --sand-2: #c9c9d3;
+  --line: hsl(var(--h) 18% 80%);   /* divisórias internas (tracejadas) */
+  --fg: #1b1e33;           /* tinta azul-marinho */
+  --muted: #5a5e75;
+  --stroke: #1b1e33;       /* bordas */
+  --shadow-c: #1b1e33;     /* sombra dura */
+  --accent:      hsl(var(--h) var(--s) 45%);   /* texto e links (contraste AA) */
+  --accent-vivo: hsl(var(--h) var(--s) 69%);   /* preenchimentos: barras, cones, botão ativo */
+  --accent-soft: hsl(var(--h) 80% 92%);
+  --on-accent:   #1b1e33;                      /* tinta sobre o lavanda */
+  --flow:        hsl(var(--hh) var(--hs) var(--hl));   /* marca-texto: top 3, callouts, seleção */
+  --flow-soft:   hsl(var(--hh) 80% 90%);
+  --on-hl:       #1b1e33;
+  --seq-0: hsl(var(--h) 40% 96%);
+  --seq-1: hsl(var(--h) 60% 88%);
+  --seq-2: hsl(var(--h) 62% 80%);
+  --seq-3: hsl(var(--h) var(--s) 70%);
+  --seq-4: hsl(var(--h) var(--s) 55%);
+  --map-edge: #1b1e33;     /* divisas */
+  --map-side: #1b1e33;     /* sombra dura do mapa */
+  --map-shadow: transparent;
+  --ponto-fundo: transparent;   /* fundo liso, sem pontilhado */
+  --ring: hsl(var(--h) 22% 74%);
+  --shadow-card: 3px 3px 0 var(--shadow-c);
+  --ok: #2f7d4f; --warn: #b07c0f; --crit: #d0503c;
 }
 
-/* ---------- 3. Tema escuro: preferência do sistema, ou data-theme="dark" no <html> ---------- */
+/* ---------- 3. Tema escuro: o marinho vira fundo, a borda recua ---------- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:          hsl(var(--h) 32% 6.5%);
-    --panel:       hsl(var(--h) 28% 10.5%);
-    --line:        hsl(var(--h) 22% 19%);
-    --fg:          hsl(var(--h) 24% 92%);
-    --muted:       hsl(var(--h) 12% 63%);
-    --accent:      hsl(var(--h) var(--s) 63%);
-    --accent-vivo: hsl(var(--h) var(--s) 56%);
-    --accent-soft: hsl(var(--h) 40% 18%);
-    --on-accent:   hsl(var(--h) 40% 8%);
-    --flow:        hsl(var(--h2) 92% 60%);
-    --flow-soft:   hsl(var(--h2) 50% 18%);
-    --seq-0:       hsl(var(--h) 24% 15%);
-    --seq-1:       hsl(var(--h) 32% 22%);
-    --seq-2:       hsl(var(--h) 42% 31%);
-    --seq-3:       hsl(var(--h) 52% 42%);
-    --seq-4:       hsl(var(--h) var(--s) 56%);
-    --map-edge:    hsl(var(--h) 30% 7%);
-    --map-side:    hsl(var(--h) 40% 3.5%);
-    --map-shadow:  hsl(var(--h) 85% 50% / 0.22);
-    --ponto-fundo: hsl(var(--h) 30% 70% / .05);
-    --ring:        hsl(var(--h) 35% 26%);
-    --shadow-card: 0 1px 0 hsl(var(--h) 40% 100% / .03) inset, 0 10px 30px hsl(0 0% 0% / .35);
+    --bg: hsl(var(--h) 34% 7%); --panel: hsl(var(--h) 28% 15%); --sand: #2a2f4a; --sand-2: #383e5e; --line: hsl(var(--h) 22% 26%);
+    --fg: #eceaf5; --muted: #a3a6bf; --stroke: #4a5075; --shadow-c: #0b0d17;
+    --accent: hsl(var(--h) 85% 80%); --accent-vivo: hsl(var(--h) 75% 72%); --accent-soft: hsl(var(--h) 30% 24%);
+    --on-accent: #161929;
+    --flow: hsl(var(--hh) 70% 68%); --flow-soft: hsl(var(--hh) 30% 22%); --on-hl: #161929;
+    --seq-0: hsl(var(--h) 20% 21%); --seq-1: hsl(var(--h) 26% 29%); --seq-2: hsl(var(--h) 32% 40%);
+    --seq-3: hsl(var(--h) 45% 55%); --seq-4: hsl(var(--h) 72% 72%);
+    --map-edge: #0f1120; --map-side: #0b0d17; --ring: #383e5e;
+    --shadow-card: 3px 3px 0 var(--shadow-c);
+    --ok: #7fd3a2; --warn: #e6c260; --crit: #e98a78;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg:          hsl(var(--h) 32% 6.5%);
-  --panel:       hsl(var(--h) 28% 10.5%);
-  --line:        hsl(var(--h) 22% 19%);
-  --fg:          hsl(var(--h) 24% 92%);
-  --muted:       hsl(var(--h) 12% 63%);
-  --accent:      hsl(var(--h) var(--s) 63%);
-  --accent-vivo: hsl(var(--h) var(--s) 56%);
-  --accent-soft: hsl(var(--h) 40% 18%);
-  --on-accent:   hsl(var(--h) 40% 8%);
-  --flow:        hsl(var(--h2) 92% 60%);
-  --flow-soft:   hsl(var(--h2) 50% 18%);
-  --seq-0:       hsl(var(--h) 24% 15%);
-  --seq-1:       hsl(var(--h) 32% 22%);
-  --seq-2:       hsl(var(--h) 42% 31%);
-  --seq-3:       hsl(var(--h) 52% 42%);
-  --seq-4:       hsl(var(--h) var(--s) 56%);
-  --map-edge:    hsl(var(--h) 30% 7%);
-  --map-side:    hsl(var(--h) 40% 3.5%);
-  --map-shadow:  hsl(var(--h) 85% 50% / 0.22);
-  --ponto-fundo: hsl(var(--h) 30% 70% / .05);
-    --ring:        hsl(var(--h) 35% 26%);
-  --shadow-card: 0 1px 0 hsl(var(--h) 40% 100% / .03) inset, 0 10px 30px hsl(0 0% 0% / .35);
+  --bg: hsl(var(--h) 34% 7%); --panel: hsl(var(--h) 28% 15%); --sand: #2a2f4a; --sand-2: #383e5e; --line: hsl(var(--h) 22% 26%);
+  --fg: #eceaf5; --muted: #a3a6bf; --stroke: #4a5075; --shadow-c: #0b0d17;
+  --accent: hsl(var(--h) 85% 80%); --accent-vivo: hsl(var(--h) 75% 72%); --accent-soft: hsl(var(--h) 30% 24%);
+  --on-accent: #161929;
+  --flow: hsl(var(--hh) 70% 68%); --flow-soft: hsl(var(--hh) 30% 22%); --on-hl: #161929;
+  --seq-0: hsl(var(--h) 20% 21%); --seq-1: hsl(var(--h) 26% 29%); --seq-2: hsl(var(--h) 32% 40%);
+  --seq-3: hsl(var(--h) 45% 55%); --seq-4: hsl(var(--h) 72% 72%);
+  --map-edge: #0f1120; --map-side: #0b0d17; --ring: #383e5e;
+  --shadow-card: 3px 3px 0 var(--shadow-c);
+  --ok: #7fd3a2; --warn: #e6c260; --crit: #e98a78;
   color-scheme: dark;
 }
 
-/* ---------- 4. Tipografia e medidas ---------- */
+/* ---------- 4. Estrutura e tipografia ---------- */
 :root {
-  --font-display: var(--fonte-sora), "Inter", system-ui, sans-serif;
-  --font-body: var(--fonte-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
+  --font-display: var(--fonte-lexend), "DM Sans", system-ui, sans-serif;
+  --font-body: var(--fonte-dmsans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --b: 2px;                                  /* borda de tinta */
+  --hard: 3px 3px 0 var(--shadow-c);         /* sombra dura (discreta) */
+  --hard-s: 2px 2px 0 var(--shadow-c);
+  --r-xs: 6px; --r-sm: 6px; --r-md: 10px; --r-lg: 14px;
 }
 
+
 /* ---------- 5. Cores categóricas (áreas do OpenAlex e tipos de instituição) ---------- */
-/* Fixas (não seguem a paleta): precisam ser distintas entre si. Usadas no mapa, nas legendas e nos gráficos. */
+/* Fixas e distintas entre si, em tons próximos aos da paleta (lavanda, verde, azul, coral, mostarda…). */
 :root {
-  --area-0: #0f6e5a; --area-1: #8bb043; --area-2: #3f7fbf; --area-3: #c75b8f; --area-4: #7d5cc6;
-  --area-5: #e0912b; --area-6: #2aa7a0; --area-7: #b5473a; --area-8: #6b7a33; --area-9: #8a6d4b;
+  --area-0: #8f6ee8; --area-1: #6fcf97; --area-2: #5b8def; --area-3: #f07a63; --area-4: #f2c94c;
+  --area-5: #e88ac0; --area-6: #4fb6b0; --area-7: #b5473a; --area-8: #9aae3c; --area-9: #a07d5a;
 }

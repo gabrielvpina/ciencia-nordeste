@@ -50,3 +50,6 @@ export function fatia(cx: number, cy: number, r: number, r0: number, a0: number,
   const grande = a1 - a0 > Math.PI ? 1 : 0;
   return `M${p(r, a0)} A${r},${r} 0 ${grande} 1 ${p(r, a1)} L${p(r0, a1)} A${r0},${r0} 0 ${grande} 0 ${p(r0, a0)} Z`;
 }
+
+/** Unidades do viewBox por quilômetro na direção leste-oeste, numa latitude (para a escala gráfica). */
+export const unidadesPorKm = (lat: number) => P.kx / (111.32 * Math.cos((lat * Math.PI) / 180));

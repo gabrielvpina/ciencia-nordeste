@@ -311,3 +311,24 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - programas em cards;
   - publicações e teses numa linha do tempo por ano.
 - **Cores:** as cores categóricas (`--area-0…9`) passaram para `tokens.css`, para valerem fora do mapa (treemap, cards, perfis).
+
+## D-031 — Estética "neo-brutalismo suave e sóbrio" (branch `ui`)
+
+- **Base:** fundo liso levemente tingido pela paleta (distinto dos cards) e tinta azul-marinho.
+- **Cards:** borda de 2 px, cantos de 14 px e sombra dura de 3 px, sem desfoque.
+- **Controles em pílula:** o item ativo vira uma pílula na cor de destaque, com contorno.
+- **Divisórias** tracejadas.
+- **Paleta Azul** (`--h: 222`): azul para dados e controles; lima como marca-texto só no que merece atenção (top 3, callouts, seleção). Lavanda, Coral e Verde ficam disponíveis via `data-palette`.
+- **Tipografia:** Lexend nos títulos e números, DM Sans no texto, via `next/font` (servidas pelo próprio site).
+- **Mapa:**
+  - sombra dura em tinta no lugar do relevo e do brilho;
+  - cones e nós com contorno;
+  - selos do ranking como círculos com contorno;
+  - escala gráfica (200 km a 9° S) e seta do norte;
+  - fundo com anéis estáticos e gride de latitude/longitude rotulado;
+  - callouts, legenda e dica com borda e sombra dura.
+- **Tela inicial:**
+  - os quatro KPIs (com etiqueta de fonte) ficam à direita, acima dos seletores;
+  - as Áreas ficam à esquerda;
+  - as laterais têm a mesma largura (290 px).
+- **Ícone e favicon:** na paleta (azul, marinho e lima). O ícone do cabeçalho é desenhado com os tokens e acompanha o tema.

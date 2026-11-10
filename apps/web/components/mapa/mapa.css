@@ -1,7 +1,7 @@
 /* Mapa próprio do Nordeste — toda a aparência vem destas variáveis. Para mudar o visual, altere só aqui. */
 /* As cores das áreas (--area-0 … --area-9) ficam em app/tokens.css, junto com a paleta. */
 .mn-caixa, .mn {
-  /* tudo derivado dos tokens da paleta (app/tokens.css); claro e escuro vêm de lá (na caixa, para valer também na legenda) */
+  /* tudo derivado dos tokens da paleta (app/tokens.css) (na caixa, para valer também na legenda) */
   --mn-fundo: transparent;
   --mn-estado: var(--seq-1, #dcefe9);
   --mn-estado-borda: var(--map-edge, #ffffff);

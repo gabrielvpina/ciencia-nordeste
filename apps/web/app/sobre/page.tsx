@@ -23,7 +23,7 @@ export default async function Sobre() {
         <div>
           <p className="autor-rotulo">Quem faz o Ciência Nordeste</p>
           <h2 id="autor-nome">Gabriel Victor Pina Rodrigues</h2>
-          <p>Bioinformata entre a virologia e a genômica. Doutorando em Genética e Biologia Molecular na Universidade Estadual de Santa Cruz (UESC), em Ilhéus, Bahia, onde estuda a descoberta de vírus em dados públicos de sequenciamento.</p>
+          <p>Cientista de Dados e Bioinformata, atua nas áreas da virologia e genômica. Doutorando em Genética e Biologia Molecular na Universidade Estadual de Santa Cruz (UESC), em Ilhéus, Bahia, onde estuda a descoberta de vírus em dados públicos de sequenciamento.</p>
           <ul className="redes">
             {REDES.map((r) => (
               <li key={r.nome}><a href={r.url} target="_blank" rel="noopener noreferrer" title={r.titulo}>

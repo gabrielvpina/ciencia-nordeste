@@ -233,8 +233,6 @@ main:has(.explorar-pagina) { max-width: 1320px; }
 .tm-item:hover { filter: brightness(1.08) saturate(1.2); text-decoration: none; outline: 2px solid var(--fg); outline-offset: -2px; z-index: 1; }
 .tm-sigla { font: 600 .74rem var(--font-display); white-space: nowrap; overflow: hidden; }
 .tm-val { font-size: .7rem; font-variant-numeric: tabular-nums; opacity: .8; }
-:root[data-theme="dark"] .tm-item { color: hsl(var(--h) 30% 95%); background: color-mix(in srgb, var(--cor) 55%, var(--panel)); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tm-item { color: hsl(var(--h) 30% 95%); background: color-mix(in srgb, var(--cor) 55%, var(--panel)); } }
 
 /* cards de instituição */
 .grade-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
@@ -325,11 +323,9 @@ h2 small.meta { font-family: var(--font-body); font-weight: 400; font-size: .76r
 .seg button.intervalo { background: var(--accent-soft); color: var(--fg); border-radius: 6px; }
 @media (max-width: 760px) { .controles-mapa .ctrl { width: 100%; } .seg button { padding: 7px 11px; } }
 
-/* seletor de tema no cabeçalho */
+/* ações do cabeçalho (link do GitHub) */
 .nav { margin-left: auto; }
 .topo-acoes { display: flex; align-items: center; gap: 8px; }
-.seg-tema button { display: inline-flex; align-items: center; padding: 5px 9px; min-height: 30px; }
-.seg-tema svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .botao-icone { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .botao-icone:hover { border-color: var(--accent-vivo); color: var(--accent); }
 .botao-icone svg { width: 18px; height: 18px; fill: currentColor; }

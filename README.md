@@ -17,18 +17,12 @@ Repositório aberto da pesquisa em **ciências da vida** do Nordeste: saúde, bi
 Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/telas/inicio-escuro.webp">
-    <img src="assets/telas/inicio.webp" alt="Tela inicial: busca, áreas, mapa de publicações por instituição no Nordeste e seletores do mapa" width="900">
-  </picture>
+  <img src="assets/telas/inicio.webp" alt="Tela inicial: busca, áreas, mapa de publicações por instituição no Nordeste e seletores do mapa" width="900">
   <br><sub>Tela inicial: busca por pesquisador, instituição, programa ou tema, e mapa da produção por instituição.</sub>
 </p>
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/telas/programa-producao-escuro.webp">
-    <img src="assets/telas/programa-producao.webp" alt="Programa de pós-graduação, aba Produção: publicações por ano e estrato Qualis" width="900">
-  </picture>
+  <img src="assets/telas/programa-producao.webp" alt="Programa de pós-graduação, aba Produção: publicações por ano e estrato Qualis" width="900">
   <br><sub>Programa de pós-graduação, aba <b>Produção</b>: publicações por ano e estrato Qualis Periódicos 2021–2024 (D-033).</sub>
 </p>
 

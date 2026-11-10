@@ -361,3 +361,10 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **App:** programas e pesquisadores ganham duas abas na coluna principal: **Rede de colaboração** (o mapa de antes) e **Produção** (`?ver=producao`). A produção mostra colunas empilhadas por ano (altura = volume, segmentos = faixa Qualis A1–A2, A3–A4, B1–B2, B3–B4, C e "sem Qualis"), a distribuição pelos nove estratos, as revistas mais usadas com o estrato e uma tabela com os números. No programa, conta a produção dos docentes do último ano-base, o mesmo critério do mapa de rede.
 - **Cores:** rampa ordinal de um só azul (A1–A2 mais escuro no tema claro, mais claro no escuro) e cinza para "sem Qualis", validadas com o validador de paletas (`--ordinal`) contra os cards dos dois temas. Ficam fixas em `--qualis-*` e não seguem a troca de paleta do site.
 - **Uso responsável:** o Qualis classifica revistas para a avaliação de programas, não artigos nem pessoas. A tela diz isso, e o site não faz ranking de pesquisadores por estrato.
+
+## D-034 — Site só no tema claro
+
+- **Decisão:** o site tem um único tema, o claro. Saem o seletor claro/escuro do cabeçalho (`components/SeletorTema.tsx`), o script que aplicava a escolha salva (`cn-tema` no `localStorage`) e todos os estilos do tema escuro (`prefers-color-scheme: dark` e `data-theme="dark"` em `app/tokens.css` e `app/globals.css`).
+- **Sistema em modo escuro:** o site continua claro. `color-scheme: light` no `:root` mantém também os controles nativos do navegador (barras de rolagem, campos) no claro.
+- **Cabeçalho:** fica só o link para o repositório no GitHub.
+- **Revoga** a parte de tema escuro das decisões de interface anteriores (D-031). A paleta (`data-palette`) e os tokens claros não mudam. As telas do README passam a ser só claras; o logo do README mantém a variante escura, que segue o tema do GitHub do leitor, não o do site.

@@ -10,8 +10,9 @@
 [data-palette="coral"]     { --h: 8;   --s: 75%; --hh: 265; --hs: 70%; --hl: 80%; }
 [data-palette="verde"]     { --h: 158; --s: 45%; --hh: 45;  --hs: 90%; --hl: 66%; }
 
-/* ---------- 2. Tema claro ---------- */
+/* ---------- 2. Tema (só claro: o site não tem tema escuro, D-034) ---------- */
 :root {
+  color-scheme: light;
   --bg: hsl(var(--h) 24% 88%);   /* fundo liso, levemente tingido pela paleta (distinto dos cards) */
   --panel: #fbfcfe;        /* cards */
   --sand: hsl(var(--h) 20% 92%);   /* superfície neutra (esmaecido, cabeçalhos) */
@@ -41,43 +42,11 @@
   --shadow-card: 3px 3px 0 var(--shadow-c);
   --ok: #2f7d4f; --warn: #b07c0f; --crit: #d0503c;
   /* Qualis (D-033): rampa ordinal de um tom, A1–A2 (0) mais escuro → C (4) mais claro; "sem Qualis" em cinza.
-     Validada com o validador do skill de dataviz (--ordinal) contra o card claro (#fbfcfe). Fixa: não segue a paleta do site. */
+     Validada com o validador do skill de dataviz (--ordinal) contra o card (#fbfcfe). Fixa: não segue a paleta do site. */
   --qualis-0: #0d366b; --qualis-1: #1c5cab; --qualis-2: #2a78d6; --qualis-3: #5598e7; --qualis-4: #86b6ef; --qualis-sem: #a9abb8;
 }
 
-/* ---------- 3. Tema escuro: o marinho vira fundo, a borda recua ---------- */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: hsl(var(--h) 34% 7%); --panel: hsl(var(--h) 28% 15%); --sand: #2a2f4a; --sand-2: #383e5e; --line: hsl(var(--h) 22% 26%);
-    --fg: #eceaf5; --muted: #a3a6bf; --stroke: #4a5075; --shadow-c: #0b0d17;
-    --accent: hsl(var(--h) 85% 80%); --accent-vivo: hsl(var(--h) 75% 72%); --accent-soft: hsl(var(--h) 30% 24%);
-    --on-accent: #161929;
-    --flow: hsl(var(--hh) 70% 68%); --flow-soft: hsl(var(--hh) 30% 22%); --on-hl: #161929;
-    --seq-0: hsl(var(--h) 20% 21%); --seq-1: hsl(var(--h) 26% 29%); --seq-2: hsl(var(--h) 32% 40%);
-    --seq-3: hsl(var(--h) 45% 55%); --seq-4: hsl(var(--h) 72% 72%);
-    --map-edge: #0f1120; --map-side: #0b0d17; --ring: #383e5e;
-    --shadow-card: 3px 3px 0 var(--shadow-c);
-    --ok: #7fd3a2; --warn: #e6c260; --crit: #e98a78;
-    --qualis-0: #cde2fb; --qualis-1: #9ec5f4; --qualis-2: #6da7ec; --qualis-3: #3987e5; --qualis-4: #256abf; --qualis-sem: #5a6079;   /* no escuro, A1–A2 é o mais claro; validada contra o card escuro */
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: hsl(var(--h) 34% 7%); --panel: hsl(var(--h) 28% 15%); --sand: #2a2f4a; --sand-2: #383e5e; --line: hsl(var(--h) 22% 26%);
-  --fg: #eceaf5; --muted: #a3a6bf; --stroke: #4a5075; --shadow-c: #0b0d17;
-  --accent: hsl(var(--h) 85% 80%); --accent-vivo: hsl(var(--h) 75% 72%); --accent-soft: hsl(var(--h) 30% 24%);
-  --on-accent: #161929;
-  --flow: hsl(var(--hh) 70% 68%); --flow-soft: hsl(var(--hh) 30% 22%); --on-hl: #161929;
-  --seq-0: hsl(var(--h) 20% 21%); --seq-1: hsl(var(--h) 26% 29%); --seq-2: hsl(var(--h) 32% 40%);
-  --seq-3: hsl(var(--h) 45% 55%); --seq-4: hsl(var(--h) 72% 72%);
-  --map-edge: #0f1120; --map-side: #0b0d17; --ring: #383e5e;
-  --shadow-card: 3px 3px 0 var(--shadow-c);
-  --ok: #7fd3a2; --warn: #e6c260; --crit: #e98a78;
-  --qualis-0: #cde2fb; --qualis-1: #9ec5f4; --qualis-2: #6da7ec; --qualis-3: #3987e5; --qualis-4: #256abf; --qualis-sem: #5a6079;
-  color-scheme: dark;
-}
-
-/* ---------- 4. Estrutura e tipografia ---------- */
+/* ---------- 3. Estrutura e tipografia ---------- */
 :root {
   --font-display: var(--fonte-lexend), "DM Sans", system-ui, sans-serif;
   --font-body: var(--fonte-dmsans), system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -88,7 +57,7 @@
 }
 
 
-/* ---------- 5. Cores categóricas (áreas do OpenAlex e tipos de instituição) ---------- */
+/* ---------- 4. Cores categóricas (áreas do OpenAlex e tipos de instituição) ---------- */
 /* Fixas e distintas entre si, em tons próximos aos da paleta (lavanda, verde, azul, coral, mostarda…). */
 :root {
   --area-0: #8f6ee8; --area-1: #6fcf97; --area-2: #5b8def; --area-3: #f07a63; --area-4: #f2c94c;

@@ -312,23 +312,29 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - publicações e teses numa linha do tempo por ano.
 - **Cores:** as cores categóricas (`--area-0…9`) passaram para `tokens.css`, para valerem fora do mapa (treemap, cards, perfis).
 
-## D-031 — Estética "neo-brutalismo suave e sóbrio" (branch `ui`)
+## D-031 — Estética "neo-brutalismo suave e sóbrio" e nova tela inicial (branch `ui`)
 
-- **Base:** fundo liso levemente tingido pela paleta (distinto dos cards) e tinta azul-marinho.
-- **Cards:** borda de 2 px, cantos de 14 px e sombra dura de 3 px, sem desfoque.
+- **Base visual** (`apps/web/app/tokens.css`):
+  - fundo liso levemente tingido pela paleta (distinto dos cards) e tinta azul-marinho;
+  - cards com borda de 2 px, cantos de 14 px e sombra dura de 3 px, sem desfoque;
+  - divisórias tracejadas; etiquetas em azul-claro com contorno fino.
 - **Controles em pílula:** o item ativo vira uma pílula na cor de destaque, com contorno.
-- **Divisórias** tracejadas.
-- **Paleta Azul** (`--h: 222`): azul para dados e controles; lima como marca-texto só no que merece atenção (top 3, callouts, seleção). Lavanda, Coral e Verde ficam disponíveis via `data-palette`.
-- **Tipografia:** Lexend nos títulos e números, DM Sans no texto, via `next/font` (servidas pelo próprio site).
+- **Paleta Azul** (`--h: 222`): azul para dados e controles; lima como marca-texto só no que merece atenção (top 3 e seleção). Lavanda, Coral e Verde ficam disponíveis via `data-palette`.
+- **Tipografia:** Lexend nos títulos e números, DM Sans no texto, via `next/font` (servidas pelo próprio site). Marca "Ciência **Nordeste**" com contraste de peso.
+- **Ícone e favicon:** na paleta (azul, marinho e lima). O ícone do cabeçalho é desenhado com os tokens e acompanha o tema.
+- **Tela inicial:**
+  - busca no topo, com até 4 sugestões por grupo ("mais N") e altura máxima;
+  - três colunas: **Áreas** (270 px) e **Produção por ano** | **mapa** | **KPIs** (pesquisadores e publicações), **Seletores do mapa** e **Instituição selecionada**;
+  - o card do mapa tem a largura do desenho (o desenho é limitado pela altura), e a área do mapa ocupa a altura da janela;
+  - Produção por ano: publicações únicas de cada ano no filtro de estado e área, a partir de `mv_uf_ano_area` (migração 0009); clicar num ano filtra o período;
+  - Instituição selecionada: números no filtro e no total, pesquisadores, programas, áreas principais e subunidades (`/api/instituicao-resumo`); substitui a barra que ficava sobre o mapa.
 - **Mapa:**
   - sombra dura em tinta no lugar do relevo e do brilho;
-  - cones e nós com contorno;
-  - selos do ranking como círculos com contorno;
-  - escala gráfica (200 km a 9° S) e seta do norte;
   - fundo com anéis estáticos e gride de latitude/longitude rotulado;
-  - callouts, legenda e dica com borda e sombra dura.
-- **Tela inicial:**
-  - os quatro KPIs (com etiqueta de fonte) ficam à direita, acima dos seletores;
-  - as Áreas ficam à esquerda;
-  - as laterais têm a mesma largura (290 px).
-- **Ícone e favicon:** na paleta (azul, marinho e lima). O ícone do cabeçalho é desenhado com os tokens e acompanha o tema.
+  - escala gráfica e seta do norte;
+  - no modo Produção, **bolhas** (padrão; área ∝ publicações, menores por cima, raio mínimo clicável) ou **cilindros** (altura comprimida; vizinhos próximos em tons diferentes; área de clique ampliada);
+  - selos do ranking como círculos com contorno, com o top 3 em lima;
+  - sem callouts fixos;
+  - legenda abaixo do mapa e dica com borda e sombra dura.
+- **Filtro de estado:** isola o estado escolhido e o amplia na área do mapa. Só as posições são reescaladas (cilindros, bolhas, rótulos e bordas mantêm o tamanho); o gride (1°/2°) e a escala gráfica acompanham o zoom.
+- **Programas:** linhas tracejadas e fundo alternado separando cada área na matriz área × conceito, com cabeçalho alinhado.

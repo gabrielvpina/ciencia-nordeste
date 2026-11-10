@@ -19,3 +19,8 @@ ingest/relatorios/
 apps/web/node_modules/
 apps/web/.next/
 apps/web/tsconfig.tsbuildinfo
+
+# saídas do Quarto e documentos gerados
+.quarto/
+*.pdf
+

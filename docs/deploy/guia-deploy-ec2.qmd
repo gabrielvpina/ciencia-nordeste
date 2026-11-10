@@ -1,0 +1,454 @@
+---
+title: "Ciência Nordeste no ar"
+subtitle: "Guia passo a passo: do computador local a uma instância EC2 da AWS, com domínio do Registro.br e HTTPS"
+author: "Gabriel Victor Pina Rodrigues"
+date: 2026-11-09
+lang: pt-BR
+format:
+  typst:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    papersize: a4
+    margin:
+      x: 2.2cm
+      y: 2.2cm
+    fontsize: 10.5pt
+---
+
+# Antes de começar
+
+Este guia leva o projeto do seu computador para um servidor na AWS e o deixa acessível em `https://seudominio.com.br`. Siga as seções na ordem. Cada comando indica **onde** rodar:
+
+- **[local]**: no seu computador, na pasta do projeto (`~/ciencia-nordeste`);
+- **[servidor]**: na instância EC2, depois de conectar por SSH;
+- **[navegador]**: no console da AWS, no painel do Registro.br ou no GitHub.
+
+Ao longo do texto, troque:
+
+| No guia | Pelo seu valor |
+|---|---|
+| `seudominio.com.br` | o domínio registrado no Registro.br |
+| `IP_ELASTICO` | o IP fixo da instância (Seção 2.5) |
+| `chave-ciencia.pem` | o arquivo da chave SSH baixado na Seção 2.3 |
+
+**Visão geral da arquitetura em produção.** O servidor roda os mesmos containers do ambiente local (`db`, `embed`, `web`), mais o **Caddy**, que recebe o tráfego nas portas 80 e 443, obtém o certificado HTTPS sozinho (Let's Encrypt) e repassa as requisições para o app. O banco e o serviço de embeddings ficam só na rede interna do Docker.
+
+```
+Internet ──> Caddy (80/443, HTTPS) ──> web (Next.js) ──> db (Postgres + pgvector)
+                                                     └──> embed (busca por tema)
+```
+
+**O que fica no seu computador, e não no servidor:** a ingestão dos dados e o cálculo dos vetores. Eles exigem mais memória e horas de processamento. O servidor recebe o banco pronto, por meio do backup (Seção 6).
+
+**Tempo total estimado:** 1h30 a 2h na primeira vez, contando a espera pela propagação do DNS.
+
+# Criar a instância EC2
+
+## Escolher a região
+
+**[navegador]** No [console da AWS](https://console.aws.amazon.com/), escolha a região no canto superior direito:
+
+- **América do Sul (São Paulo), `sa-east-1`**: menor latência para o público do Nordeste; cerca de 50% mais cara;
+- **Leste dos EUA (N. Virgínia), `us-east-1`**: mais barata, com latência um pouco maior.
+
+Todos os recursos deste guia (instância, IP, grupo de segurança) precisam estar na **mesma região**.
+
+## Iniciar a instância
+
+**[navegador]** Vá em **EC2 → Instâncias → Executar instâncias** e preencha:
+
+| Campo | Valor |
+|---|---|
+| Nome | `ciencia-nordeste` |
+| Imagem (AMI) | **Ubuntu Server 24.04 LTS**, arquitetura **64 bits (x86)** |
+| Tipo de instância | **t3.medium** (2 vCPU, 4 GB). Para mais folga: t3.large |
+| Par de chaves | criar novo (Seção 2.3) |
+| Armazenamento | **40 GiB, gp3** |
+
+## Criar o par de chaves SSH
+
+**[navegador]** Em **Par de chaves → Criar novo par de chaves**: nome `chave-ciencia`, tipo **ED25519**, formato **.pem**. O navegador baixa `chave-ciencia.pem`. **Guarde esse arquivo**: sem ele não há acesso ao servidor, e a AWS não guarda cópia.
+
+**[local]** Mova a chave para um lugar seguro e restrinja as permissões:
+
+```bash
+mkdir -p ~/.ssh
+mv ~/Downloads/chave-ciencia.pem ~/.ssh/
+chmod 400 ~/.ssh/chave-ciencia.pem
+```
+
+## Configurar o grupo de segurança (firewall)
+
+**[navegador]** Em **Configurações de rede → Editar**, crie um grupo de segurança `ciencia-nordeste-web` com estas regras de entrada:
+
+| Tipo | Porta | Origem | Para quê |
+|---|---|---|---|
+| SSH | 22 | **Meu IP** | acesso administrativo, só do seu IP |
+| HTTP | 80 | 0.0.0.0/0 e ::/0 | validação do certificado e redirecionamento para HTTPS |
+| HTTPS | 443 | 0.0.0.0/0 e ::/0 | o site |
+
+**Não abra a porta 5432 (Postgres) nem a 3000 (app).** Ela só existe na rede interna do Docker.
+
+Clique em **Executar instância** e aguarde o estado **Em execução**.
+
+## Fixar o IP (IP elástico)
+
+O IP público de uma instância muda quando ela é parada e iniciada de novo. Para o domínio apontar sempre para o mesmo endereço:
+
+**[navegador]** **EC2 → IPs elásticos → Alocar endereço IP elástico → Alocar**. Depois, selecione o IP e clique em **Ações → Associar endereço IP elástico**, escolha a instância `ciencia-nordeste` e confirme.
+
+Anote esse endereço: é o `IP_ELASTICO` do restante do guia.
+
+> A AWS cobra pelos endereços IPv4 públicos (cerca de US$ 3,60 por mês por IP), associados ou não. Se desligar o projeto de vez, libere o IP elástico para parar a cobrança.
+
+## Configurar um alerta de custo
+
+**[navegador]** Em **Billing → Budgets → Create budget → Monthly cost budget**, defina um valor (por exemplo, US$ 50) e um e-mail para alerta. Assim, uma cobrança inesperada não passa despercebida.
+
+# Preparar o servidor
+
+## Conectar por SSH
+
+**[local]**
+
+```bash
+ssh -i ~/.ssh/chave-ciencia.pem ubuntu@IP_ELASTICO
+```
+
+Na primeira conexão, responda `yes` para confirmar a impressão digital do servidor. Para não repetir o caminho da chave, acrescente ao arquivo `~/.ssh/config` do seu computador:
+
+```
+Host ciencia
+    HostName IP_ELASTICO
+    User ubuntu
+    IdentityFile ~/.ssh/chave-ciencia.pem
+```
+
+A partir daí, basta `ssh ciencia` (e `scp arquivo ciencia:` para copiar arquivos).
+
+## Atualizar o sistema e ajustar o fuso
+
+**[servidor]**
+
+```bash
+sudo apt-get update && sudo apt-get -y upgrade
+sudo timedatectl set-timezone America/Recife
+sudo apt-get install -y unattended-upgrades git
+sudo dpkg-reconfigure -f noninteractive unattended-upgrades   # atualizações de segurança automáticas
+```
+
+## Criar 2 GB de swap
+
+Com 4 GB de RAM, a swap serve de seguro para picos, principalmente durante o build da imagem do serviço de embeddings.
+
+**[servidor]**
+
+```bash
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+free -h      # a linha "Swap" deve mostrar 2,0Gi
+```
+
+## Instalar o Docker
+
+Use o repositório oficial do Docker. O pacote `docker.io` do Ubuntu traz uma versão do Compose antiga demais para a configuração de produção do projeto (`!reset` exige o Compose 2.24 ou mais novo).
+
+**[servidor]**
+
+```bash
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+  https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker ubuntu
+```
+
+Saia (`exit`) e conecte de novo, para o grupo `docker` valer. Confira:
+
+```bash
+docker run --rm hello-world
+docker compose version      # 2.24 ou mais novo
+```
+
+# Levar o código para o servidor
+
+O repositório `gabrielvpina/ciencia-nordeste` é privado. O jeito mais seguro de o servidor lê-lo é uma **chave de implantação (deploy key)**: uma chave SSH que só dá acesso de leitura a este repositório.
+
+**[servidor]** Gere a chave e mostre a parte pública:
+
+```bash
+ssh-keygen -t ed25519 -C "deploy ciencia-nordeste" -f ~/.ssh/deploy_ciencia -N ""
+cat ~/.ssh/deploy_ciencia.pub
+```
+
+**[navegador]** No GitHub, abra o repositório → **Settings → Deploy keys → Add deploy key**. Título `servidor-ec2`, cole a chave pública e **não** marque *Allow write access*.
+
+**[servidor]** Configure o uso da chave e clone:
+
+```bash
+cat >> ~/.ssh/config <<'EOF'
+Host github.com
+    IdentityFile ~/.ssh/deploy_ciencia
+    IdentitiesOnly yes
+EOF
+git clone git@github.com:gabrielvpina/ciencia-nordeste.git ~/ciencia-nordeste
+cd ~/ciencia-nordeste
+```
+
+# Configurar a produção
+
+## Arquivo `.env` do servidor
+
+O `.env` (segredos) nunca entra no git. **[local]** Copie o seu para o servidor como ponto de partida:
+
+```bash
+scp .env ciencia:~/ciencia-nordeste/.env
+```
+
+**[servidor]** Edite com `nano ~/ciencia-nordeste/.env` e ajuste:
+
+```bash
+# senha nova e forte só para o servidor (gere com: openssl rand -base64 24)
+POSTGRES_PASSWORD=<senha-forte>
+# endereço público (usado no sitemap e nos links absolutos)
+SITE_URL=https://seudominio.com.br
+# faz todos os comandos "docker compose" (e os scripts do projeto) usarem a configuração de produção
+COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml:docker-compose.https.yml
+```
+
+Mantenha `POSTGRES_DB` e `POSTGRES_USER` iguais aos do seu computador. A chave do OpenAlex (`OPENALEX_API_KEY`) não é usada pelo app e pode ser apagada do servidor.
+
+```bash
+chmod 600 ~/ciencia-nordeste/.env
+```
+
+## Proxy HTTPS (Caddy)
+
+**[servidor]** Crie a pasta `deploy/` com dois arquivos. Ela fica fora do git: acrescente `deploy/` ao `.git/info/exclude` do servidor, para não aparecer como alteração.
+
+```bash
+cd ~/ciencia-nordeste
+mkdir -p deploy && echo "deploy/" >> .git/info/exclude
+
+cat > deploy/Caddyfile <<'EOF'
+www.seudominio.com.br {
+    redir https://seudominio.com.br{uri} permanent
+}
+
+seudominio.com.br {
+    encode zstd gzip
+    reverse_proxy web:3000
+}
+EOF
+
+cat > docker-compose.https.yml <<'EOF'
+# Produção: Caddy na frente do app, com HTTPS automático (Let's Encrypt).
+services:
+  caddy:
+    image: caddy:2.8.4
+    restart: unless-stopped
+    depends_on: [web]
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  caddy_data:
+  caddy_config:
+EOF
+echo "docker-compose.https.yml" >> .git/info/exclude
+```
+
+> Troque `seudominio.com.br` pelo seu domínio nas três ocorrências do `Caddyfile`.
+
+# Levar os dados para o servidor
+
+O servidor recebe três coisas do seu computador:
+
+- o **banco** pronto (dump do Postgres, dentro do pacote de backup);
+- o **registro de IDs** e as **decisões de revisão**, para o `backup.sh` funcionar também no servidor;
+- as **fotos** dos pesquisadores.
+
+## Gerar o pacote e copiar
+
+**[local]** Com o Docker do seu computador ligado:
+
+```bash
+./scripts/backup.sh          # gera ~/Backups/ciencia-nordeste/ciencia-nordeste-backup-<data>.tar.gz (~400 MB)
+PACOTE=$(ls -t ~/Backups/ciencia-nordeste/ciencia-nordeste-backup-*.tar.gz | head -1)
+scp "$PACOTE" ciencia:~/
+tar -czf /tmp/fotos.tgz -C ingest/dados fotos
+scp /tmp/fotos.tgz ciencia:~/
+```
+
+## Restaurar no servidor
+
+**[servidor]**
+
+```bash
+cd ~/ciencia-nordeste
+mkdir -p ingest/dados && tar -xzf ~/fotos.tgz -C ingest/dados        # fotos
+PACOTE=$(ls -t ~/ciencia-nordeste-backup-*.tar.gz | head -1)
+./scripts/restaurar.sh "$PACOTE"                                        # 1) só confere os checksums
+./scripts/restaurar.sh "$PACOTE" --ids --banco --forcar                 # 2) restaura IDs, decisões e banco
+```
+
+O passo 2 sobe só o Postgres, recria o banco a partir do dump (extensões, tabelas, índices e visões materializadas, inclusive a busca vetorial) e grava os IDs em `ingest/dados/`. Confira:
+
+```bash
+docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT count(*) FROM works"'
+# deve mostrar o mesmo total de publicações do seu computador (ex.: 111164)
+```
+
+# Subir o site
+
+**[servidor]**
+
+```bash
+cd ~/ciencia-nordeste
+docker compose up -d --build
+```
+
+O primeiro build leva de 10 a 20 minutos. A imagem do serviço `embed` baixa o PyTorch e o modelo de linguagem (cerca de 3,7 GB). Acompanhe com:
+
+```bash
+docker compose ps                 # db, embed e web devem ficar "healthy"; caddy "running"
+docker compose logs -f caddy      # Ctrl+C para sair
+```
+
+Enquanto o DNS (Seção 8) não aponta para o servidor, o Caddy registra erros ao tentar obter o certificado. Isso é esperado: ele tenta de novo sozinho.
+
+Teste o app pela rede interna, antes do DNS:
+
+```bash
+docker compose exec caddy wget -qO- http://web:3000/api/mapa | head -c 200; echo
+```
+
+# Apontar o domínio do Registro.br
+
+## Conferir quem responde pelo DNS do domínio
+
+**[navegador]** Entre em [registro.br](https://registro.br) com sua conta → **Painel** → clique no domínio. Na seção **DNS**, veja os **servidores DNS**:
+
+- se forem os do próprio Registro.br (`a.auto.dns.br`, `b.auto.dns.br`), siga a Seção 8.2;
+- se forem de outro provedor (Cloudflare, AWS Route 53 etc.), crie os mesmos registros da Seção 8.2 no painel desse provedor;
+- se ainda não houver DNS configurado, escolha **Utilizar os servidores DNS do Registro.br**.
+
+## Criar os registros
+
+**[navegador]** No domínio, abra **DNS → Configurar zona DNS** (ou **Editar zona**). O nome exato do botão pode variar com as atualizações do painel. Clique em **Nova entrada** e crie:
+
+| Tipo | Nome | Dados / valor | Para quê |
+|---|---|---|---|
+| **A** | *(vazio)* | `IP_ELASTICO` | `seudominio.com.br` → servidor |
+| **CNAME** | `www` | `seudominio.com.br.` | `www.seudominio.com.br` → mesmo lugar |
+
+Se o painel não aceitar CNAME, crie um segundo registro **A** com nome `www` e o mesmo `IP_ELASTICO`. Salve as alterações.
+
+Se o domínio tem e-mail (registros MX), **não apague os registros existentes**. Só acrescente estes.
+
+## Esperar a propagação
+
+As mudanças no DNS do Registro.br costumam valer em alguns minutos, mas podem levar algumas horas. **[local]** Teste:
+
+```bash
+dig +short seudominio.com.br          # deve responder IP_ELASTICO
+dig +short www.seudominio.com.br
+```
+
+Assim que o domínio responder com o IP do servidor, o Caddy obtém o certificado HTTPS automaticamente, em poucos minutos. Acesse `https://seudominio.com.br`.
+
+# Conferir que está tudo certo
+
+- [ ] `https://seudominio.com.br` abre com o cadeado (HTTPS válido);
+- [ ] `http://seudominio.com.br` e `https://www.seudominio.com.br` redirecionam para o endereço principal;
+- [ ] o mapa carrega, e os filtros de estado e período funcionam;
+- [ ] a busca encontra uma instituição (ex.: "UFPE") e a busca por tema responde (ex.: "dengue");
+- [ ] um perfil de pesquisador abre e mostra a foto, quando houver;
+- [ ] `https://seudominio.com.br/sitemap.xml` lista endereços com o seu domínio;
+- [ ] a porta 5432 **não** responde de fora: **[local]** `nc -zv IP_ELASTICO 5432` deve falhar.
+
+# Rotina de manutenção
+
+## Backups automáticos no servidor
+
+**[servidor]** Agende um backup diário às 3h (guarda os 14 mais recentes em `~/Backups/ciencia-nordeste`):
+
+```bash
+(crontab -l 2>/dev/null; echo "0 3 * * * cd ~/ciencia-nordeste && ./scripts/backup.sh >> ~/backup.log 2>&1") | crontab -
+```
+
+Para ter uma cópia fora da máquina, baixe periodicamente para o seu computador. **[local]**
+
+```bash
+scp "ciencia:~/Backups/ciencia-nordeste/$(ssh ciencia 'ls -t ~/Backups/ciencia-nordeste | head -1')" ~/Backups/ciencia-nordeste/
+```
+
+Opcionalmente, crie **snapshots do disco (EBS)** pelo console: **EC2 → Volumes → Ações → Criar snapshot**, ou de forma automática, com o *Amazon Data Lifecycle Manager*.
+
+## Publicar uma nova versão do código
+
+Depois de enviar os commits para o GitHub (`git push`):
+
+**[servidor]**
+
+```bash
+cd ~/ciencia-nordeste
+git pull
+docker compose up -d --build web      # só o app; o "embed" só precisa de rebuild se servicos/embed/ mudar
+./scripts/migrar.sh                   # aplica migrações novas, se houver
+```
+
+## Atualizar os dados
+
+A atualização roda **no seu computador**, porque precisa de mais memória e de horas de processamento. O servidor só recebe o resultado.
+
+1. **[local]** `./scripts/atualizar_dados.sh` (veja `ingest/README.md`) e confira o relatório em `ingest/relatorios/atualizacao-<data>.md`.
+2. **[local]** `./scripts/backup.sh`, depois copie o pacote e as fotos para o servidor, como na Seção 6.1.
+3. **[servidor]** `./scripts/restaurar.sh PACOTE --ids --banco --forcar` e, para as fotos, `tar -xzf ~/fotos.tgz -C ingest/dados`.
+4. **[servidor]** `docker compose restart web`, para o app reler o banco.
+
+Durante a restauração do banco (alguns minutos) o site pode responder com erro. Prefira um horário de pouco acesso.
+
+## Comandos úteis
+
+| Para | Comando **[servidor]** |
+|---|---|
+| ver o estado dos serviços | `docker compose ps` |
+| ver logs do app | `docker compose logs -f --tail 100 web` |
+| reiniciar tudo | `docker compose restart` |
+| uso de memória | `docker stats --no-stream` e `free -h` |
+| espaço em disco | `df -h /` e `docker system df` |
+| liberar espaço de imagens antigas | `docker image prune -f` e `docker builder prune -f` |
+
+# Segurança: resumo
+
+- Acesso SSH só por chave e só do seu IP. Se o seu IP mudar, atualize a regra da porta 22 no grupo de segurança.
+- A senha do Postgres do servidor é diferente da local, e o banco não fica exposto à internet.
+- O `.env` do servidor tem permissão `600` e nunca vai para o git.
+- O login por ORCID continua **desligado** até a produção estar estável (`LOGIN_HABILITADO` ausente no `.env`). Quando for ligar, crie um cliente de **produção** no ORCID com o endereço `https://seudominio.com.br` como *redirect URI*.
+- Mantenha as atualizações automáticas de segurança do Ubuntu (Seção 3.2) e reinicie o servidor quando o sistema pedir (`sudo reboot`; os containers voltam sozinhos).
+
+# Problemas comuns
+
+**O site não abre e o navegador acusa erro de certificado.** O DNS ainda não propagou ou aponta para outro IP. Confira com `dig +short seudominio.com.br` e veja `docker compose logs caddy`.
+
+**`docker compose up` falha com "!reset".** O Docker Compose é antigo. Reinstale pelo repositório oficial (Seção 3.4).
+
+**O build do `embed` é interrompido ("Killed").** Faltou memória. Confira se a swap está ativa (`free -h`) e repita `docker compose build embed`.
+
+**A busca por tema diz "só texto".** O serviço `embed` não está saudável. Veja `docker compose ps` e `docker compose logs embed`; ele leva cerca de 1 minuto para carregar o modelo depois de iniciar.
+
+**`restaurar.sh` diz que os checksums não conferem.** A cópia foi corrompida na transferência. Copie o pacote de novo com `scp`.
+
+**Perdi o acesso SSH (IP mudou).** No console da AWS, edite o grupo de segurança e troque a origem da porta 22 pelo seu IP atual (**Meu IP**).

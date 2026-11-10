@@ -29,6 +29,8 @@
 .mn-estado-ativo { fill: var(--mn-estado-ativo); stroke: var(--mn-barra); stroke-width: 3; }
 .mn-estado:hover { fill: var(--mn-estado-ativo); }
 .mn-estado-apagado { opacity: var(--mn-estado-apagado-opacidade); }
+.mn-estado-clicavel { cursor: pointer; }   /* clique no estado = filtro de estado (tela inicial) */
+.mn-estado-clicavel:focus-visible { outline: none; stroke: var(--accent); stroke-width: 4; }
 .mn-modo-areas .mn-estado[style] { fill: color-mix(in srgb, var(--mn-estado-area) calc(var(--mn-intensidade) * 70%), var(--mn-estado)); }
 .mn-sigla { fill: var(--mn-sigla); font-size: 22px; font-weight: 600; paint-order: stroke; stroke: var(--mn-estado); stroke-width: 5px; stroke-linejoin: round; text-anchor: middle; letter-spacing: .05em; pointer-events: none; }
 .mn-modo-areas .mn-sigla { opacity: 0; }

@@ -20,6 +20,7 @@ type Props = {
   onSelecionar?: (id: string | null) => void;    // sem isto, o clique abre o perfil
   destaque?: string | null;                      // realce vindo de fora (ex.: mouse sobre um nome no ranking)
   forma?: "colunas" | "bolhas";                  // modo densidade: cilindros (relevo) ou bolhas (área ∝ publicações)
+  onSelecionarUf?: (uf: string) => void;         // clique num estado: o mesmo filtro dos botões de estado (tela inicial)
 };
 
 type Ponto = PontoInst & { x: number; y: number };
@@ -46,7 +47,7 @@ const TIPOS: Record<string, string> = {
   organizacao_sem_fins_lucrativos: "Organização sem fins lucrativos", financiador: "Financiador", outro: "Outro",
 };
 
-export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, hrefInstituicao = (id) => `/instituicao/${id}`, selecionado, onSelecionar, destaque, forma = "colunas" }: Props) {
+export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, hrefInstituicao = (id) => `/instituicao/${id}`, selecionado, onSelecionar, destaque, forma = "colunas", onSelecionarUf }: Props) {
   const caixa = useRef<HTMLDivElement>(null);
   const [dica, setDica] = useState<(Dica & { x: number; y: number }) | null>(null);
   const [foco, setFoco] = useState<string | null>(null);     // instituição sob o mouse
@@ -178,7 +179,8 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
       return { titulo: e.nome, linhas: u ? [["Publicações", fmt(u.total)], ...(top ? [["Maior área", rotuloArea(top[0])] as [string, string]] : [])] : [] };
     }
     const ps = totalUf(e.uf);
-    return { titulo: e.nome, linhas: [["Instituições", fmt(ps.length)], ["Publicações (soma)", fmt(ps.reduce((s, p) => s + p.works, 0))]] };
+    return { titulo: e.nome, linhas: [["Instituições", fmt(ps.length)], ["Publicações (soma)", fmt(ps.reduce((s, p) => s + p.works, 0))]],
+      ...(onSelecionarUf && !zoom ? { nota: ufAtiva === e.uf ? "Clique para ver todos os estados" : "Clique para filtrar este estado" } : {}) };
   };
 
   return (
@@ -213,10 +215,18 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
         <g className="mn-estados">
           {estadosVisiveis.map((e) => {
             const intens = modo === "areas" && areaAtiva ? (porUf.get(e.uf)?.fatias.get(areaAtiva) ?? 0) / maxAreaUf : 0;
+            // Estado clicável = segunda entrada do filtro de estado. Com o estado isolado (zoom), o clique volta a só limpar a seleção,
+            // para um clique entre as bolhas não desfazer o filtro sem querer (para sair, use "Todos").
+            const clicavel = !!onSelecionarUf && modo !== "rede" && !zoom;
+            const filtrar = clicavel ? {
+              role: "button", tabIndex: 0, "aria-label": `${ufAtiva === e.uf ? "Ver todos os estados" : `Filtrar por ${e.nome}`}`,
+              onClick: (ev: React.MouseEvent) => { ev.stopPropagation(); onSelecionarUf!(e.uf); },
+              onKeyDown: (ev: React.KeyboardEvent) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onSelecionarUf!(e.uf); } },
+            } : {};
             return (
-              <path key={e.uf} d={e.path} transform={matriz} vectorEffect="non-scaling-stroke" className={`mn-estado${ufAtiva === e.uf && !zoom ? " mn-estado-ativo" : ""}${ufAtiva && ufAtiva !== e.uf ? " mn-estado-apagado" : ""}`}
+              <path key={e.uf} d={e.path} transform={matriz} vectorEffect="non-scaling-stroke" className={`mn-estado${clicavel ? " mn-estado-clicavel" : ""}${ufAtiva === e.uf && !zoom ? " mn-estado-ativo" : ""}${ufAtiva && ufAtiva !== e.uf ? " mn-estado-apagado" : ""}`}
                 style={intens ? ({ "--mn-intensidade": intens.toFixed(3) } as React.CSSProperties) : undefined}
-                {...(modo === "rede" ? {} : comDica(() => dicaEstado(e)))} />
+                {...(modo === "rede" ? {} : comDica(() => dicaEstado(e)))} {...filtrar} />
             );
           })}
         </g>

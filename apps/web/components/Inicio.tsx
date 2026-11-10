@@ -210,7 +210,8 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
           </div>
           <div className="mapa-palco">
             <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined}
-              selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} forma={forma} />
+              selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} forma={forma}
+              onSelecionarUf={(x) => setUf(uf === x ? "" : x)} />
           </div>
         </section>
 

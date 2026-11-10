@@ -36,7 +36,7 @@ const [VX, VY, VW, VH] = VIEWBOX;
 const ANEL = { cx: VW / 2, cy: VH / 2 + 10, r: 600 };
 
 // Margens extras: topo para as barras do litoral norte; direita, no modo rede, para as âncoras externas.
-const topoExtra = (modo: ModoMapa) => (modo === "densidade" ? 75 : 30);
+const topoExtra = (modo: ModoMapa) => (modo === "densidade" ? 60 : 30);
 const viewBox = (modo: ModoMapa) => [VX - 20, VY - topoExtra(modo), VW + (modo === "rede" ? 250 : 40), VH + topoExtra(modo) + 60];
 const ANCORA_BRASIL: [number, number] = [70, VH - 60];
 const ancoraExterior = (i: number): [number, number] => [VW + 150, 230 + i * 110];
@@ -51,7 +51,7 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
   const [dica, setDica] = useState<(Dica & { x: number; y: number }) | null>(null);
   const [foco, setFoco] = useState<string | null>(null);     // instituição sob o mouse
   const svgRef = useRef<SVGSVGElement>(null);
-  const [tam, setTam] = useState({ w: 0, h: 0 });            // tamanho do SVG (para os callouts em HTML)
+  const [tam, setTam] = useState({ w: 0, h: 0 });            // tamanho do SVG (escala da legenda)
   useEffect(() => {
     const el = svgRef.current;
     if (!el) return;
@@ -409,15 +409,12 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
             </g>
           );
         })()}
-        {/* pulsos nas 3 maiores (destaques com callout) */}
+        {/* pulsos nas 3 maiores */}
         {modo === "densidade" && !selecionado && principais.slice(0, 3).map((p) => (
           <circle key={p.id} cx={p.x} cy={p.y} r={7} className="mn-pulso" aria-hidden />
         ))}
       </svg>
 
-      {modo === "densidade" && !selecionado && tam.w >= 640 && (
-        <Callouts pontos={principais.slice(0, 3)} topoDe={topoDe} vb={viewBox(modo)} tam={tam} />
-      )}
       <Legenda modo={modo} altura={altura} raioBolha={bolhas ? raioBolha : undefined} maxWorks={maxWorks} escala={tam.w ? Math.min(tam.w / viewBox(modo)[2], tam.h / viewBox(modo)[3]) : 0.5} />
 
       {dica && (
@@ -456,35 +453,6 @@ function semColisao<T extends { x: number; y: number }>(itens: T[], limite: numb
   return ok;
 }
 
-
-/** Cartões HTML para as 3 maiores, ligados à ponta da barra por linha pontilhada (como na inspiração). */
-function Callouts({ pontos, topoDe, vb, tam }: { pontos: Ponto[]; topoDe: (p: Ponto) => number; vb: number[]; tam: { w: number; h: number } }) {
-  const esc = Math.min(tam.w / vb[2], tam.h / vb[3]);
-  const ox = (tam.w - vb[2] * esc) / 2 - vb[0] * esc, oy = (tam.h - vb[3] * esc) / 2 - vb[1] * esc;
-  const L = 168, A = 52, GAP = 10;
-  const itens = pontos.map((p, i) => {
-    const ax = ox + p.x * esc, ay = oy + topoDe(p) * esc;
-    const direita = ax > tam.w * 0.5;
-    const x = Math.max(8, Math.min(tam.w - L - 8, direita ? ax + 70 : ax - 70 - L));
-    return { p, i, ax, ay, x, y: ay - A / 2, direita };
-  });
-  // empilha sem sobrepor (ordem vertical), dentro da caixa
-  [...itens].sort((a, b) => a.y - b.y).reduce((ultimo, it) => { it.y = Math.max(it.y, ultimo + GAP, 8); return it.y + A; }, -Infinity);
-  for (const it of itens) it.y = Math.min(it.y, tam.h - A - 8);
-  return (
-    <>
-      <svg className="mn-callout-linhas" width={tam.w} height={tam.h} aria-hidden>
-        {itens.map((it) => <path key={it.p.id} d={`M${it.ax},${it.ay} L${it.direita ? it.x : it.x + L},${it.y + A / 2}`} />)}
-      </svg>
-      {itens.map((it) => (
-        <div key={it.p.id} className="mn-callout" style={{ left: it.x, top: it.y, width: L }} aria-hidden>
-          <span className="mn-callout-ico"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7" /></svg></span>
-          <span><b>{fmt(it.p.works)}</b><span>{String(it.i + 1).padStart(2, "0")} · {(it.p.sigla ?? it.p.nome).split(",")[0]}<br />publicações</span></span>
-        </div>
-      ))}
-    </>
-  );
-}
 
 /** Legenda em caixa no canto do mapa, por modo. */
 function Legenda({ modo, altura, raioBolha, maxWorks, escala }: { modo: ModoMapa; altura: (w: number) => number; raioBolha?: (w: number) => number; maxWorks: number; escala: number }) {

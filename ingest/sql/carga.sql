@@ -232,3 +232,4 @@ REFRESH MATERIALIZED VIEW mv_work_inst;
 REFRESH MATERIALIZED VIEW mv_mapa_producao;
 REFRESH MATERIALIZED VIEW mv_mapa_colaboracao;
 REFRESH MATERIALIZED VIEW mv_inst_externo;
+REFRESH MATERIALIZED VIEW mv_uf_ano_area;      -- depende de mv_work_inst

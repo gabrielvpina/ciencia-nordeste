@@ -7,6 +7,7 @@ import MapaNordeste from "@/components/mapa/MapaNordeste";
 import type { DadosMapa, ModoMapa, PontoInst } from "@/components/mapa/tipos";
 import type { ResultadoBusca } from "@/app/api/busca/route";
 import type { ResultadoTema } from "@/lib/vetorial";
+import type { ResumoInstituicao } from "@/app/api/instituicao-resumo/route";
 import { UFS, fmt } from "@/lib/areas";
 
 type Resumo = { pesquisadores: string; works: string; instituicoes: string; programas: string; teses: string };
@@ -82,6 +83,14 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
 
   useEffect(() => { if (selecionado && !dados.pontos.some((p) => p.id === selecionado)) setSelecionado(null); }, [dados, selecionado]);
   const sel = selecionado ? ranking.find((p) => p.id === selecionado) : undefined;
+  const [resumoSel, setResumoSel] = useState<ResumoInstituicao | null>(null);
+  useEffect(() => {
+    if (!selecionado) { setResumoSel(null); return; }
+    const ctl = new AbortController();
+    fetch(`/api/instituicao-resumo?id=${selecionado}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : null)).then(setResumoSel).catch(() => {});
+    return () => ctl.abort();
+  }, [selecionado]);
+  const maxAno = Math.max(1, ...(dados.anos ?? []).map((a) => a.works));
   const m = MODOS.find((x) => x.id === modo)!;
   const tudo = de === ANOS[0] && ate === ANOS[ANOS.length - 1];
 
@@ -137,6 +146,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
       </section>
 
       <div className="cockpit">
+
         <div className="col col-esq">
           <section className="painel-card">
             <h2>Áreas <span className="tag">OpenAlex</span></h2>
@@ -153,6 +163,25 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
               ))}
             </ul>
           </section>
+
+          <section className="painel-card">
+            <h2>Produção por ano <span className="tag">{uf || "Nordeste"}</span></h2>
+            <p className="linha-cap">publicações únicas{area ? ` · ${rotuloArea(area).toLowerCase()}` : ""} · clique num ano para filtrar</p>
+            <div className="anos-colunas" role="group" aria-label="Publicações por ano">
+              {ANOS.map((a) => {
+                const v = dados.anos?.find((x) => x.ano === a)?.works ?? 0;
+                const dentro = a >= de && a <= ate;
+                return (
+                  <button key={a} type="button" className={`ano-col${dentro ? " dentro" : ""}`} onClick={() => { setDe(a); setAte(a); }}
+                    title={`${a}: ${fmt(v)} publicações`} aria-pressed={de === a && ate === a}>
+                    <span className="ano-val">{v >= 1000 ? `${(v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : fmt(v)}</span>
+                    <span className="ano-barra"><i style={{ height: `${(100 * v) / maxAno}%` }} /></span>
+                    <span className="ano-rot">{a}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
         <section className="painel-card mapa-card" aria-busy={carregando}>
@@ -164,22 +193,6 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
             </div>
           </div>
           <div className="mapa-palco">
-            {sel && (
-              <div className="selbar" aria-live="polite">
-                <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
-                <span className="txt">
-                  <b>{sel.nome}</b>
-                  <span>{sel.uf} · {fmt(sel.works)} publicações · {ranking.indexOf(sel) + 1}ª posição</span>
-                  {subunidades.get(sel.id) && (
-                    <span className="subs">Subunidades: {subunidades.get(sel.id)!.map((s, k) => (
-                      <a key={s.id} href={`/instituicao/${s.id}`}>{k ? ", " : ""}{s.sigla ?? s.nome} ({fmt(s.works)})</a>
-                    ))}</span>
-                  )}
-                </span>
-                <a className="botao" href={`/instituicao/${sel.id}`}>Perfil e rede →</a>
-                <button type="button" className="x" onClick={() => setSelecionado(null)} aria-label="Limpar seleção">×</button>
-              </div>
-            )}
             <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined}
               selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} forma={forma} />
           </div>
@@ -230,6 +243,45 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
             </div>
             {(uf || area || !tudo) && (
               <button type="button" className="chip chip-limpar" onClick={() => { setUf(""); setArea(""); setDe(ANOS[0]); setAte(ANOS[ANOS.length - 1]); }}>limpar filtros</button>
+            )}
+          </section>
+
+          <section className="painel-card detalhe-sel" aria-live="polite">
+            <h2>Instituição selecionada <span className="tag">{sel ? `${ranking.indexOf(sel) + 1}ª` : "mapa"}</span></h2>
+            {!sel ? (
+              <p className="detalhe-vazio">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 1v4M12 19v4M1 12h4M19 12h4" /></svg>
+                Clique numa bolha do mapa para ver os números da instituição, suas áreas e subunidades.
+              </p>
+            ) : (
+              <>
+                <div className="detalhe-topo">
+                  <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
+                  <div><b>{sel.nome}</b><span>{[resumoSel?.municipio, sel.uf].filter(Boolean).join(" · ")}</span></div>
+                </div>
+                <dl className="detalhe-dl">
+                  <div><dt>no filtro</dt><dd>{fmt(sel.works)}<small> publ.</small></dd></div>
+                  <div><dt>total 2022–26</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
+                  <div><dt>pesquisadores</dt><dd>{resumoSel ? fmt(resumoSel.pesquisadores) : "…"}</dd></div>
+                  <div><dt>programas de pós</dt><dd>{resumoSel ? fmt(resumoSel.programas) : "…"}</dd></div>
+                </dl>
+                {resumoSel && resumoSel.areas.length > 0 && (
+                  <ul className="detalhe-areas">
+                    {resumoSel.areas.map((a) => (
+                      <li key={a.f}><i style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(a.f))})` }} />{rotuloArea(a.f)}<span>{fmt(a.n)}</span></li>
+                    ))}
+                  </ul>
+                )}
+                {subunidades.get(sel.id) && (
+                  <p className="detalhe-subs">Subunidades: {subunidades.get(sel.id)!.map((x, k) => (
+                    <a key={x.id} href={`/instituicao/${x.id}`}>{k ? ", " : ""}{x.sigla ?? x.nome}</a>
+                  ))}</p>
+                )}
+                <div className="detalhe-acoes">
+                  <a className="botao-primario" href={`/instituicao/${sel.id}`}>Perfil e rede →</a>
+                  <button type="button" className="chip" onClick={() => setSelecionado(null)}>limpar</button>
+                </div>
+              </>
             )}
           </section>
         </div>

@@ -565,3 +565,54 @@ a.kpi:hover, .card-inst:hover, .card-prog:hover { transform: translate(-1px, -1p
 /* seletor de forma (cilindros/bolhas) */
 .grade-seg.cols-2 { grid-template-columns: repeat(2, 1fr); }
 .grade-seg.forma { margin-top: 6px; }
+
+/* mapa maior: duas colunas — mapa | coluna lateral (KPIs, seletores, áreas) */
+.cockpit { grid-template-columns: minmax(0, 1fr) 320px; }
+.mapa-palco { height: clamp(560px, calc(100vh - 150px), 1000px); }   /* ao rolar até o mapa, ele ocupa a janela */
+.mapa-card .mapa-topo { padding-top: 10px; }
+.mapa-card .mn-legenda-caixa { margin: 4px 12px 12px; padding: 7px 12px; }
+@media (max-width: 1240px) { .cockpit { grid-template-columns: minmax(0, 1fr) 300px; } .mapa-card { grid-column: auto; grid-row: auto; } .col-dir { grid-row: auto; } }
+@media (max-width: 960px) { .cockpit { grid-template-columns: minmax(0, 1fr); } .mapa-palco { height: 520px; } }
+
+/* card do mapa só com a largura de que o desenho precisa (o desenho é limitado pela altura);
+   a largura que sobra fica para as colunas laterais: áreas | mapa | KPIs e seletores */
+.cockpit { grid-template-columns: minmax(250px, 1fr) auto 320px; }
+.mapa-card { width: clamp(560px, calc((100vh - 150px) * 0.8 + 60px), 900px); }   /* só a largura do desenho */
+@media (max-width: 1240px) {
+  .cockpit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .mapa-card { width: auto; grid-column: 1 / -1; grid-row: 1; }
+  .col-esq, .col-dir { grid-row: 2; }
+}
+@media (max-width: 960px) { .cockpit { grid-template-columns: minmax(0, 1fr); } .col-esq, .col-dir { grid-row: auto; } }
+
+/* ---------- cards da tela inicial: produção por ano e instituição selecionada ---------- */
+.cockpit { grid-template-columns: 270px auto 320px; justify-content: center; }
+.anos-colunas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; align-items: end; }
+.ano-col { display: grid; grid-template-rows: auto 96px auto; gap: 4px; justify-items: center; border: 0; background: none; padding: 0; cursor: pointer; font: inherit; color: var(--fg); }
+.ano-val { font: 600 .68rem var(--font-display); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ano-barra { position: relative; width: 70%; height: 96px; border: var(--b) solid var(--stroke); border-radius: 8px 8px 3px 3px; background: var(--panel); overflow: hidden; }
+.ano-barra i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--sand-2); border-top: var(--b) solid var(--stroke); }
+.ano-col.dentro .ano-barra i { background: var(--accent-vivo); }
+.ano-col.dentro .ano-val { color: var(--fg); }
+.ano-col:hover .ano-barra { box-shadow: var(--hard-s); }
+.ano-rot { font: 600 .74rem var(--font-display); }
+.detalhe-vazio { display: flex; gap: 10px; align-items: flex-start; margin: 0; font-size: .8rem; color: var(--muted); }
+.detalhe-vazio svg { flex: none; width: 26px; height: 26px; fill: none; stroke: var(--fg); stroke-width: 1.6; }
+.detalhe-topo { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.detalhe-topo b { display: block; font: 600 .9rem/1.25 var(--font-display); }
+.detalhe-topo span { font-size: .74rem; color: var(--muted); }
+.detalhe-dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin: 0 0 10px; }
+.detalhe-dl div { border-top: 2px dashed var(--line); padding-top: 6px; }
+.detalhe-dl dt { font-size: .68rem; color: var(--muted); }
+.detalhe-dl dd { margin: 0; font: 600 1.05rem var(--font-display); font-variant-numeric: tabular-nums; }
+.detalhe-dl dd small { font: 400 .68rem var(--font-body); color: var(--muted); }
+.detalhe-areas { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 3px; font-size: .78rem; }
+.detalhe-areas li { display: flex; align-items: center; gap: 6px; }
+.detalhe-areas i { width: 9px; height: 9px; border-radius: 2px; border: 1.5px solid var(--stroke); flex: none; }
+.detalhe-areas span { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+.detalhe-subs { font-size: .76rem; color: var(--muted); margin: 0 0 10px; }
+.detalhe-acoes { display: flex; gap: 8px; align-items: center; }
+.botao-primario { display: inline-block; padding: 6px 14px; border: var(--b) solid var(--stroke); border-radius: 999px; background: var(--accent-vivo); color: var(--on-accent); font-weight: 600; font-size: .82rem; box-shadow: var(--hard-s); }
+.botao-primario:hover { text-decoration: none; transform: translate(-1px, -1px); }
+@media (max-width: 1240px) { .cockpit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (max-width: 960px) { .cockpit { grid-template-columns: minmax(0, 1fr); } }

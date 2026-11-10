@@ -15,4 +15,5 @@ export type DadosMapa = {
   ligacoes?: Ligacao[];
   areas?: AreaUf[];
   rede?: { origem: string[]; parceiros: { id: string; works: number }[]; externos: Externo[] };
+  anos?: { ano: number; works: number }[];       // publicações únicas por ano (filtro de estado e área; todos os anos)
 };

@@ -1,6 +1,6 @@
 import type { DadosMapa, Externo } from "@/components/mapa/tipos";
 import { q } from "@/lib/db";
-import type { Filtros } from "@/lib/filtros";
+import { ANO_MAX, ANO_MIN, type Filtros } from "@/lib/filtros";
 
 const nomePais = (() => {
   const dn = new Intl.DisplayNames(["pt-BR"], { type: "region" });
@@ -30,7 +30,17 @@ export async function dadosMapa(f: Filtros): Promise<DadosMapa> {
   const areas = await q<{ uf: string; field: string; works: number }>(
     `SELECT i.uf, m.field, sum(m.works)::int AS works FROM mv_mapa_producao m JOIN institutions i ON i.id = m.institution_id
       WHERE m.year BETWEEN $1 AND $2 AND m.field IS NOT NULL GROUP BY 1, 2`, [f.de, f.ate]);
-  return { pontos: f.uf ? pontos.filter((p) => p.uf === f.uf) : pontos, ligacoes, areas };
+  // Produção por ano: todos os anos do recorte, para o card mostrar a série inteira.
+  const anos = f.uf
+    ? await q<{ ano: number; works: number }>(
+        `SELECT year AS ano, sum(works)::int AS works FROM mv_uf_ano_area
+          WHERE uf = $1 AND year BETWEEN $2 AND $3${f.area ? " AND field = $4" : ""} GROUP BY 1 ORDER BY 1`,
+        f.area ? [f.uf, ANO_MIN, ANO_MAX, f.area] : [f.uf, ANO_MIN, ANO_MAX])
+    : await q<{ ano: number; works: number }>(
+        `SELECT year AS ano, count(*)::int AS works FROM works
+          WHERE year BETWEEN $1 AND $2${f.area ? " AND primary_field = $3" : ""} GROUP BY 1 ORDER BY 1`,
+        f.area ? [ANO_MIN, ANO_MAX, f.area] : [ANO_MIN, ANO_MAX]);
+  return { pontos: f.uf ? pontos.filter((p) => p.uf === f.uf) : pontos, ligacoes, areas, anos };
 }
 
 type Tipo = "pesquisador" | "instituicao" | "programa";

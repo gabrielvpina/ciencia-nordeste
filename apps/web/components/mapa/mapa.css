@@ -108,15 +108,6 @@
 /* rede em foco: tracejado animado, como os fluxos da inspiração */
 .mn-com-foco .mn-arco.mn-arco-foco, .mn-arco-externo { stroke-dasharray: 9 7; animation: mn-fluxo 1.1s linear infinite; }
 @keyframes mn-fluxo { to { stroke-dashoffset: -16; } }
-/* callouts (HTML sobre o SVG) */
-.mn-callout-linhas { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: visible; }
-.mn-callout-linhas path { stroke: var(--fg, #222); stroke-width: 1; fill: none; stroke-dasharray: 2 3; opacity: .6; }
-.mn-callout { position: absolute; z-index: 3; display: flex; align-items: center; gap: 10px; padding: 7px 10px 7px 7px; background: var(--panel, #fff);
-  border: 1px solid var(--line, #ddd); border-radius: 12px; box-shadow: var(--shadow-card); pointer-events: none; transition: left .4s, top .4s; }
-.mn-callout-ico { width: 34px; height: 34px; border-radius: 9px; background: var(--flow, #e0912b); display: grid; place-items: center; flex: none; }
-.mn-callout-ico svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; }
-.mn-callout b { display: block; font-family: var(--font-display, inherit); font-size: 1.05rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.mn-callout b + span { display: block; font-size: .68rem; color: var(--muted, #666); line-height: 1.3; }
 /* legenda em caixa */
 .mn-legenda-caixa { position: static; flex: none; margin: 6px 12px 12px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end; max-width: calc(100% - 24px);
   font-size: .72rem; color: var(--muted, #666); background: color-mix(in srgb, var(--panel, #fff) 88%, transparent); border: 1px solid var(--line, #ddd); border-radius: 12px; padding: 9px 12px; }
@@ -193,10 +184,6 @@
 .mn-norte text { font: 700 20px var(--font-display); }
 /* dica, callouts e legenda: borda de tinta e sombra dura */
 .mn-dica { border: var(--b) solid var(--stroke); border-radius: 10px; box-shadow: var(--hard-s); }
-.mn-callout { border: var(--b) solid var(--stroke); border-radius: 10px; box-shadow: var(--hard-s); }
-.mn-callout-ico { border: var(--b) solid var(--stroke); border-radius: 50%; background: var(--flow); }
-.mn-callout-ico svg { stroke: var(--on-hl); }
-.mn-callout-linhas path { stroke: var(--mn-tinta); stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 1; }
 .mn-legenda-caixa { background: var(--panel); border: var(--b) solid var(--stroke); border-radius: 10px; box-shadow: var(--hard-s); margin: 6px 16px 16px 12px; }
 .mn-legenda-caixa .ttl { font-weight: 600; }
 .mn-legenda-caixa .bola { border: 1.5px solid var(--stroke); }

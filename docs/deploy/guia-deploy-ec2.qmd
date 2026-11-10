@@ -404,6 +404,15 @@ Depois de enviar os commits para o GitHub (`git push`):
 
 ```bash
 cd ~/ciencia-nordeste
+./scripts/publicar.sh --sim           # mostra o que vai mudar
+./scripts/publicar.sh                 # git pull, rebuild do que mudou, migrações, reinício e teste do site
+```
+
+O script reconstrói o `web` só quando `apps/web/` muda e o `embed` só quando `servicos/embed/` muda. No fim, testa o app por dentro e o endereço do `SITE_URL`. Se a nova versão também trouxer dados novos, passe o pacote de backup (veja a seção seguinte): `./scripts/publicar.sh ~/ciencia-nordeste-backup-<data>.tar.gz`.
+
+Sem o script, os passos são:
+
+```bash
 git pull
 docker compose up -d --build web      # só o app; o "embed" só precisa de rebuild se servicos/embed/ mudar
 ./scripts/migrar.sh                   # aplica migrações novas, se houver

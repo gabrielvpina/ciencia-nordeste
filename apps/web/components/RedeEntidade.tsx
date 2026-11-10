@@ -29,11 +29,6 @@ export default function RedeEntidade({ tipo, id, nome }: { tipo: "pesquisador" |
         {rede ? <MapaNordeste modo="rede" dados={rede} titulo={`Rede de colaboração de ${nome}`} />
           : <p className="meta centro">{erro ? "Não foi possível carregar a rede." : "Carregando rede…"}</p>}
       </div>
-      <div className="mn-legenda legenda-rede">
-        <span><i style={{ background: "var(--mn-origem, #e0912b)", borderRadius: "50%" }} />origem</span>
-        <span><i style={{ background: "var(--mn-no, #0f6e5a)", borderRadius: "50%" }} />parceiros no Nordeste (espessura = publicações em comum)</span>
-        <span><i style={{ background: "var(--mn-arco-externo, #e0912b)" }} />coautoria fora do NE (Brasil e exterior; posições ilustrativas)</span>
-      </div>
     </section>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-// Tela inicial: busca em destaque no topo; abaixo, um painel em três colunas — filtros e áreas | mapa | ranking.
+// Tela inicial: busca em destaque no topo; abaixo, um painel em três colunas — áreas | mapa | seletores e filtros do mapa.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AREAS_ORDEM, rotuloArea } from "@/components/mapa/areas";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
@@ -81,8 +81,9 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
   useEffect(() => { if (selecionado && !dados.pontos.some((p) => p.id === selecionado)) setSelecionado(null); }, [dados, selecionado]);
   const sel = selecionado ? ranking.find((p) => p.id === selecionado) : undefined;
   const m = MODOS.find((x) => x.id === modo)!;
-  const maxRank = Math.max(1, ranking[0]?.works ?? 1);
-  const maxArea = Math.max(1, areasUf[0]?.n ?? 1);
+  const tudo = de === ANOS[0] && ate === ANOS[ANOS.length - 1];
+
+    const maxArea = Math.max(1, areasUf[0]?.n ?? 1);
   const temNome = res && (res.pesquisadores.length || res.instituicoes.length || res.programas.length);
   const temTema = tema && (tema.pesquisadores.length || tema.publicacoes.length);
   const mostrarResultados = termo.trim().length >= 2;
@@ -143,23 +144,6 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
       <div className="cockpit">
         <div className="col col-esq">
           <section className="painel-card">
-            <h2>Filtros</h2>
-            <label className="rotulo-campo">Estado
-              <select className="campo" value={uf} onChange={(e) => setUf(e.target.value)}>
-                <option value="">Todo o Nordeste</option>
-                {UFS.map(([s, n]) => <option key={s} value={s}>{n}</option>)}
-              </select>
-            </label>
-            <div className="linha-campos">
-              <label className="rotulo-campo">De
-                <select className="campo" value={de} onChange={(e) => setDe(Number(e.target.value))}>{ANOS.map((a) => <option key={a}>{a}</option>)}</select>
-              </label>
-              <label className="rotulo-campo">Até
-                <select className="campo" value={ate} onChange={(e) => setAte(Number(e.target.value))}>{ANOS.map((a) => <option key={a}>{a}</option>)}</select>
-              </label>
-            </div>
-          </section>
-          <section className="painel-card">
             <h2>Áreas <small>{uf || "Nordeste"} · clique para filtrar</small></h2>
             <ul className="barras-area">
               {areasUf.map(({ f, i, n }) => (
@@ -179,12 +163,7 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
           <div className="mapa-topo">
             <div className="mapa-titulo">
               {m.titulo}
-              <small>{fmt(total)} instituições{area ? ` · ${rotuloArea(area)}` : ""}{uf ? ` · ${uf}` : ""} · {de}–{ate}{carregando ? " · atualizando…" : ""}</small>
-            </div>
-            <div className="seg" role="tablist" aria-label="Modo do mapa">
-              {MODOS.map((x) => (
-                <button key={x.id} role="tab" aria-selected={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)}>{x.rotulo}</button>
-              ))}
+              <small>{fmt(total)} instituições{area ? ` · ${rotuloArea(area)}` : ""}{uf ? ` · ${uf}` : ""} · {de === ate ? de : `${de}–${ate}`}{carregando ? " · atualizando…" : ""}</small>
             </div>
           </div>
           <div className="mapa-palco">
@@ -207,26 +186,45 @@ export default function Inicio({ resumo, inicial }: { resumo: Resumo; inicial: D
             <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined}
               selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} />
           </div>
-          <p className="mapa-legenda">{m.legenda}</p>
         </section>
 
         <div className="col col-dir">
-          <section className="painel-card">
-            <h2>Ranking <small>publicações{area ? ` · ${rotuloArea(area).toLowerCase()}` : ""}</small></h2>
-            <ol className="ranking">
-              {ranking.slice(0, 12).map((p, i) => (
-                <li key={p.id} className={`${i < 3 ? "top" : ""}${p.id === selecionado ? " sel" : ""}`}
-                  onPointerEnter={() => setDestaque(p.id)} onPointerLeave={() => setDestaque(null)}>
-                  <button type="button" onClick={() => setSelecionado(p.id === selecionado ? null : p.id)} title={p.nome}>
-                    <span className="pos">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="nome">{p.sigla?.split(",")[0] ?? p.nome}<small>{p.uf}{subunidades.get(p.id) ? ` · +${subunidades.get(p.id)!.length} sub.` : ""}</small></span>
-                    <span className="val">{fmt(p.works)}</span>
-                    <span className="barra"><i style={{ width: `${(100 * p.works) / maxRank}%` }} /></span>
+          <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
+            <h2>Seletores do mapa</h2>
+            <div className="filtro">
+              <span className="lbl">Modo</span>
+              <div className="grade-seg cols-1" role="tablist" aria-label="Modo do mapa">
+                {MODOS.map((x) => (
+                  <button key={x.id} role="tab" aria-selected={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)}>
+                    <b>{x.rotulo}</b><small>{x.titulo}</small>
                   </button>
-                </li>
-              ))}
-            </ol>
-            <p className="meta mais"><a href="/instituicoes">Todas as instituições →</a></p>
+                ))}
+              </div>
+            </div>
+            <div className="filtro">
+              <span className="lbl">Estado</span>
+              <div className="grade-seg cols-5" role="group" aria-label="Estado">
+                <button className={!uf ? "ativo" : ""} aria-pressed={!uf} onClick={() => setUf("")} title="Todos os estados do Nordeste">Todos</button>
+                {UFS.map(([s, n]) => <button key={s} className={uf === s ? "ativo" : ""} aria-pressed={uf === s} onClick={() => setUf(uf === s ? "" : s)} title={n}>{s}</button>)}
+              </div>
+            </div>
+            <div className="filtro">
+              <span className="lbl">Período <small>{de === ate ? de : `${de}–${ate}`}</small></span>
+              <div className={`faixa-anos${de === ANOS[ANOS.length - 1] ? " inicio-no-fim" : ""}`}>
+                <div className="fa-trilho" aria-hidden>
+                  <i style={{ left: `${(100 * (de - ANOS[0])) / (ANOS.length - 1)}%`, right: `${(100 * (ANOS[ANOS.length - 1] - ate)) / (ANOS.length - 1)}%` }} />
+                </div>
+                <input type="range" className="fa-inicio" min={ANOS[0]} max={ANOS[ANOS.length - 1]} step={1} value={de}
+                  onChange={(e) => setDe(Math.min(Number(e.target.value), ate))} aria-label="Início do período" aria-valuetext={String(de)} />
+                <input type="range" className="fa-fim" min={ANOS[0]} max={ANOS[ANOS.length - 1]} step={1} value={ate}
+                  onChange={(e) => setAte(Math.max(Number(e.target.value), de))} aria-label="Fim do período" aria-valuetext={String(ate)} />
+                <div className="fa-marcas" aria-hidden>{ANOS.map((a) => <span key={a} className={a >= de && a <= ate ? "dentro" : ""}>{a}</span>)}</div>
+              </div>
+            </div>
+            {(uf || area || !tudo) && (
+              <button type="button" className="chip chip-limpar" onClick={() => { setUf(""); setArea(""); setDe(ANOS[0]); setAte(ANOS[ANOS.length - 1]); }}>limpar filtros</button>
+            )}
+            <p className="meta mais"><a href="/instituicoes">Ver todas as instituições →</a></p>
           </section>
         </div>
       </div>

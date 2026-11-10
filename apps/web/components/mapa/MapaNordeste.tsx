@@ -26,10 +26,15 @@ type Dica = { titulo: string; sub?: string; linhas?: [string, string][]; nota?: 
 
 const fmt = (n: number) => n.toLocaleString("pt-BR");
 const VISIVEIS_POR_CIDADE = 4;   // por cidade, as N maiores ficam sempre à mostra
-const ALTURA_MAX = 250;       // altura da barra mais alta (unidades do viewBox)
+// Siglas de estados pequenos saem para o oceano com linha-guia (deslocamento em unidades do viewBox).
+const ROTULO_FORA: Record<string, [number, number]> = { AL: [78, 18], SE: [74, 40] };
+const ALTURA_MAX = 150;       // altura do cone mais alto (unidades do viewBox), além da altura mínima
+const ALTURA_MIN = 14;
 const [VX, VY, VW, VH] = VIEWBOX;
+// Anéis decorativos de fundo (centro e raio no viewBox).
+const ANEL = { cx: VW / 2, cy: VH / 2 + 10, r: 600 };
 // Margens extras: topo para as barras do litoral norte; direita, no modo rede, para as âncoras externas.
-const viewBox = (modo: ModoMapa) => [VX - 20, VY - (modo === "densidade" ? 120 : 30), VW + (modo === "rede" ? 250 : 40), VH + (modo === "densidade" ? 140 : 50)];
+const viewBox = (modo: ModoMapa) => [VX - 20, VY - (modo === "densidade" ? 75 : 30), VW + (modo === "rede" ? 250 : 40), VH + 50];
 const ANCORA_BRASIL: [number, number] = [70, VH - 60];
 const ancoraExterior = (i: number): [number, number] => [VW + 150, 230 + i * 110];
 const TIPOS: Record<string, string> = {
@@ -42,6 +47,15 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
   const caixa = useRef<HTMLDivElement>(null);
   const [dica, setDica] = useState<(Dica & { x: number; y: number }) | null>(null);
   const [foco, setFoco] = useState<string | null>(null);     // instituição sob o mouse
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [tam, setTam] = useState({ w: 0, h: 0 });            // tamanho do SVG (para os callouts em HTML)
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setTam({ w: el.clientWidth, h: el.clientHeight }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const tempo = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => () => clearTimeout(tempo.current), []);
 
@@ -61,7 +75,7 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
     setDica(null);
     // subunidade à mostra: vai direto ao perfil (selecioná-la esconderia a própria subunidade)
     if (onSelecionar && !subsAtuais.current.has(id)) onSelecionar(id === selecionado ? null : id);
-    else window.location.assign(hrefInstituicao(id));
+    else window.open(hrefInstituicao(id), "_blank", "noopener");
   };
   const acionavel = (id: string, rotulo: string) => ({
     role: "button", tabIndex: 0, "aria-label": rotulo,
@@ -111,7 +125,8 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 
   const subsAtuais = useRef(new Set<string>());
   subsAtuais.current = new Set(subs.map((p) => p.id));
-  const altura = (w: number) => Math.max(5, ALTURA_MAX * Math.sqrt(w / maxWorks));
+  // Alturas comprimidas (expoente 0,45) e com mínimo: as diferenças continuam visíveis sem picos discrepantes.
+  const altura = (w: number) => ALTURA_MIN + ALTURA_MAX * Math.pow(w / maxWorks, 0.45);
   const ativo = foco ?? destaque ?? null;
   const dicaInst = (p: Ponto): Dica => {
     const n = filhos.get(p.id)?.length ?? 0;
@@ -150,8 +165,22 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 
   return (
     <div className="mn-caixa" ref={caixa}>
-      <svg className={`mn mn-modo-${modo}${selecionado ? " mn-com-selecao" : ""}`} viewBox={viewBox(modo).join(" ")} role="img"
+      <svg ref={svgRef} className={`mn mn-modo-${modo}${selecionado ? " mn-com-selecao" : ""}`} viewBox={viewBox(modo).join(" ")} role="img"
         aria-label={titulo ?? "Mapa do Nordeste"} preserveAspectRatio="xMidYMid meet" onClick={() => onSelecionar?.(null)}>
+        {/* anéis decorativos (HUD): sólido, de marcações, tracejado e dois arcos girando em sentidos opostos */}
+        <g className="mn-aneis" aria-hidden>
+          <circle className="mn-anel-suave" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 0.78} />
+          <circle className="mn-anel-marcas" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 0.9} />
+          <circle className="mn-anel" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r} />
+          <circle className="mn-anel" cx={ANEL.cx} cy={ANEL.cy} r={ANEL.r * 1.08} style={{ opacity: 0.5 }} />
+          <g className="mn-gira" style={{ transformOrigin: `${ANEL.cx}px ${ANEL.cy}px` }}>
+            <path className="mn-anel-arco" d={arcoCirculo(ANEL.cx, ANEL.cy, ANEL.r, -0.5, 0.6)} />
+            <path className="mn-anel-seta" transform={`translate(${ANEL.cx + ANEL.r * 1.08 * Math.sin(2.4)} ${ANEL.cy - ANEL.r * 1.08 * Math.cos(2.4)}) rotate(${(2.4 * 180) / Math.PI})`} d="M-10,-7 L0,7 L10,-7 Z" />
+          </g>
+          <g className="mn-gira-inverso" style={{ transformOrigin: `${ANEL.cx}px ${ANEL.cy}px` }}>
+            <path className="mn-anel-arco" style={{ opacity: 0.55 }} d={arcoCirculo(ANEL.cx, ANEL.cy, ANEL.r * 1.08, 2.6, 3.3)} />
+          </g>
+        </g>
         {/* espessura da placa: cópias dos estados deslocadas para baixo, com sombra (pseudo-3D) */}
         <g className="mn-placa" aria-hidden>
           {[16, 12, 8, 4].map((d) => (
@@ -169,14 +198,23 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
           })}
         </g>
         <g className="mn-siglas" aria-hidden>
-          {ESTADOS.map((e) => <text key={e.uf} x={e.centro[0]} y={e.centro[1]} className="mn-sigla">{e.uf}</text>)}
+          {ESTADOS.map((e) => {
+            const [dx, dy] = ROTULO_FORA[e.uf] ?? [0, 0];
+            const [x, y] = [e.centro[0] + dx, e.centro[1] + dy];
+            return (
+              <g key={e.uf}>
+                {(dx || dy) ? <><path className="mn-guia" d={`M${e.centro[0]},${e.centro[1]} L${x - 18},${y - 7}`} /><circle className="mn-guia-ponto" cx={e.centro[0]} cy={e.centro[1]} r={3} /></> : null}
+                <text x={x} y={y} className="mn-sigla">{e.uf}</text>
+              </g>
+            );
+          })}
         </g>
 
         {modo === "densidade" && (
           <g className="mn-barras">
             {[...principais, ...subs].sort((a, b) => a.y - b.y).map((p) => {
               const h = altura(p.works);
-              const w = 3 + 5 * Math.sqrt(p.works / maxWorks);
+              const w = 6 + 10 * Math.sqrt(p.works / maxWorks);     // base larga: legível, sem fidelidade de escala
               const ehSub = subs.includes(p);
               const n = (filhos.get(p.id)?.length ?? 0) + (menores.get(p.id)?.length ?? 0);
               const cls = ["mn-barra",
@@ -188,8 +226,8 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
                 <g key={p.id} className={cls} {...acionavel(p.id, `${p.nome}: ${fmt(p.works)} publicações`)} {...comDica(() => dicaInst(p), p.id)}>
                   {ehSub && <line x1={porId.get(selecionado!)!.x} y1={porId.get(selecionado!)!.y} x2={p.x} y2={p.y} className="mn-sub-linha" />}
                   {n > 0 && !ehSub && <circle cx={p.x} cy={p.y} r={7 + w} className="mn-sub-anel" />}
-                  <path d={`M${p.x - w},${p.y} L${p.x},${p.y - h} L${p.x + w},${p.y} Z`} />
-                  <circle cx={p.x} cy={p.y} r={2.4} className="mn-base" />
+                  <path d={cone(p.x, p.y, w, h)} />
+                  <path d={`M${p.x},${p.y - h} L${p.x + w},${p.y} A${w},${w * 0.38} 0 0 1 ${p.x},${p.y + w * 0.38} Z`} className="mn-cone-sombra" />
                   <rect x={p.x - w - 4} y={p.y - h - 4} width={2 * w + 8} height={h + 8} className="mn-alvo" />
                 </g>
               );
@@ -235,7 +273,7 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
                 );
               })}
               {nos.map((p) => (
-                <circle key={p.id} cx={p.x} cy={p.y} r={2.5 + 9 * Math.sqrt(p.works / maxWorks)}
+                <circle key={p.id} cx={p.x} cy={p.y} r={5 + 15 * Math.sqrt(p.works / maxWorks)}
                   className={`mn-no${p.id === centro ? " mn-no-foco" : ""}${centro && !vizinhos.has(p.id) && p.id !== centro ? " mn-no-apagado" : ""}`}
                   {...acionavel(p.id, p.nome)}
                   {...comDica(() => ({ ...dicaInst(p), linhas: [...(dicaInst(p).linhas ?? []), ["Ligações no mapa", fmt(grau.get(p.id) ?? 0)]] }), p.id)} />
@@ -309,21 +347,30 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
                 );
               })}
               {parceiros.map(({ id, works, p }) => (
-                <circle key={id} cx={p.x} cy={p.y} r={3 + 9 * Math.sqrt(works / maxP)} className={`mn-no${foco === id ? " mn-no-foco" : ""}`}
+                <circle key={id} cx={p.x} cy={p.y} r={5 + 14 * Math.sqrt(works / maxP)} className={`mn-no${foco === id ? " mn-no-foco" : ""}`}
                   {...acionavel(id, p.nome)} {...comDica(() => dicaParceiro(p, works), id)} />
               ))}
               {semColisao(parceiros.slice(0, 10).map(({ p }) => ({ p, x: p.x, y: p.y - 14 })), 6).map(({ p, x, y }) => <text key={p.id} x={x} y={y} className="mn-rotulo">{p.sigla ?? p.nome.slice(0, 16)}</text>)}
               {origem.map((p) => (
                 <g key={p.id}>
-                  <circle cx={p.x} cy={p.y} r={11} className="mn-pulso" />
-                  <circle cx={p.x} cy={p.y} r={11} className="mn-origem" {...acionavel(p.id, p.nome)} {...comDica(() => ({ titulo: p.nome, sub: "origem da rede" }))} />
+                  <circle cx={p.x} cy={p.y} r={15} className="mn-pulso" />
+                  <circle cx={p.x} cy={p.y} r={15} className="mn-origem" {...acionavel(p.id, p.nome)} {...comDica(() => ({ titulo: p.nome, sub: "origem da rede" }))} />
                 </g>
               ))}
               {o && <text x={o.x} y={o.y + 32} className="mn-rotulo mn-rotulo-origem">{o.sigla ?? o.nome}</text>}
             </g>
           );
         })()}
+        {/* pulsos nas 3 maiores (destaques com callout) */}
+        {modo === "densidade" && !selecionado && principais.slice(0, 3).map((p) => (
+          <circle key={p.id} cx={p.x} cy={p.y} r={7} className="mn-pulso" aria-hidden />
+        ))}
       </svg>
+
+      {modo === "densidade" && !selecionado && tam.w >= 640 && (
+        <Callouts pontos={principais.slice(0, 3)} altura={altura} vb={viewBox(modo)} tam={tam} />
+      )}
+      <Legenda modo={modo} altura={altura} maxWorks={maxWorks} escala={tam.w ? Math.min(tam.w / viewBox(modo)[2], tam.h / viewBox(modo)[3]) : 0.5} />
 
       {dica && (
         <div className="mn-dica" role="tooltip"
@@ -364,4 +411,92 @@ function semColisao<T extends { x: number; y: number }>(itens: T[], limite: numb
 function xy(p: { lat: number; lon: number }) {
   const [x, y] = projetar(p.lat, p.lon);
   return { x, y };
+}
+
+/** Arco de circunferência (ângulos em radianos, 0 = topo, sentido horário). */
+function arcoCirculo(cx: number, cy: number, r: number, a0: number, a1: number) {
+  const p = (a: number) => `${(cx + r * Math.sin(a)).toFixed(1)},${(cy - r * Math.cos(a)).toFixed(1)}`;
+  return `M${p(a0)} A${r},${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p(a1)}`;
+}
+
+/** Cartões HTML para as 3 maiores, ligados à ponta da barra por linha pontilhada (como na inspiração). */
+function Callouts({ pontos, altura, vb, tam }: { pontos: Ponto[]; altura: (w: number) => number; vb: number[]; tam: { w: number; h: number } }) {
+  const esc = Math.min(tam.w / vb[2], tam.h / vb[3]);
+  const ox = (tam.w - vb[2] * esc) / 2 - vb[0] * esc, oy = (tam.h - vb[3] * esc) / 2 - vb[1] * esc;
+  const L = 168, A = 52, GAP = 10;
+  const itens = pontos.map((p, i) => {
+    const ax = ox + p.x * esc, ay = oy + (p.y - altura(p.works)) * esc;
+    const direita = ax > tam.w * 0.5;
+    const x = Math.max(8, Math.min(tam.w - L - 8, direita ? ax + 70 : ax - 70 - L));
+    return { p, i, ax, ay, x, y: ay - A / 2, direita };
+  });
+  // empilha sem sobrepor (ordem vertical), dentro da caixa
+  [...itens].sort((a, b) => a.y - b.y).reduce((ultimo, it) => { it.y = Math.max(it.y, ultimo + GAP, 8); return it.y + A; }, -Infinity);
+  for (const it of itens) it.y = Math.min(it.y, tam.h - A - 8);
+  return (
+    <>
+      <svg className="mn-callout-linhas" width={tam.w} height={tam.h} aria-hidden>
+        {itens.map((it) => <path key={it.p.id} d={`M${it.ax},${it.ay} L${it.direita ? it.x : it.x + L},${it.y + A / 2}`} />)}
+      </svg>
+      {itens.map((it) => (
+        <div key={it.p.id} className="mn-callout" style={{ left: it.x, top: it.y, width: L }} aria-hidden>
+          <span className="mn-callout-ico"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7" /></svg></span>
+          <span><b>{fmt(it.p.works)}</b><span>{String(it.i + 1).padStart(2, "0")} · {(it.p.sigla ?? it.p.nome).split(",")[0]}<br />publicações</span></span>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/** Legenda em caixa no canto do mapa, por modo. */
+function Legenda({ modo, altura, maxWorks, escala }: { modo: ModoMapa; altura: (w: number) => number; maxWorks: number; escala: number }) {
+  if (modo === "densidade") {
+    const refs = [100, 1000, 10000].filter((v) => v <= maxWorks * 1.05);
+    const k = Math.min(1, 24 / Math.max(1, ...refs.map((v) => altura(v) * escala)));   // a legenda não passa de 24 px
+    const hMax = Math.max(...refs.map((v) => altura(v) * escala * k), 10);
+    return (
+      <div className="mn-legenda-caixa">
+        <div>
+          <div className="ttl">Publicações (altura do cone, escala comprimida)</div>
+          <svg className="lg-svg" width={refs.length * 58} height={hMax + 6} aria-hidden>
+            {refs.map((v, i) => {
+              const h = Math.max(3, altura(v) * escala * k), x = 8 + i * 58;
+              return <g key={v}><path className="lg-pico" d={cone(x, hMax + 1, 5, h)} /><text x={x + 9} y={hMax - 2}>{fmt(v)}</text></g>;
+            })}
+          </svg>
+        </div>
+        <div className="chave">
+          <span><i className="bola" style={{ background: "var(--mn-barra-hover)" }} />Top 3</span>
+          <span><i className="bola" style={{ background: "var(--mn-barra)" }} />Posição no ranking</span>
+          <span><i className="anel" />Tem subunidades</span>
+        </div>
+      </div>
+    );
+  }
+  if (modo === "ligacoes") return (
+    <div className="mn-legenda-caixa">
+      <div className="ttl">Coautoria entre instituições</div>
+      <div className="chave"><span><i className="traco" />Espessura = publicações em comum</span><span><i className="tracejado" />Rede em foco</span></div>
+    </div>
+  );
+  if (modo === "areas") return (
+    <div className="mn-legenda-caixa">
+      <div className="ttl">Produção do estado por área</div>
+      <div className="chave"><span><i className="rosca" />Tamanho = publicações do estado; cores = áreas</span></div>
+    </div>
+  );
+  return (
+    <div className="mn-legenda-caixa">
+      <div className="chave">
+        <span><i className="bola" style={{ background: "var(--mn-origem)" }} />Origem</span>
+        <span><i className="bola" style={{ background: "var(--mn-no)" }} />Parceiras no NE</span>
+        <span><i className="tracejado" />Coautoria fora do NE (posição ilustrativa)</span>
+      </div>
+    </div>
+  );
+}
+
+/** Cone: triângulo com base elíptica (visto levemente de cima). */
+function cone(x: number, y: number, w: number, h: number) {
+  return `M${x - w},${y} L${x},${y - h} L${x + w},${y} A${w},${w * 0.38} 0 0 1 ${x - w},${y} Z`;
 }

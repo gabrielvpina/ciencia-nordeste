@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./tokens.css";
 import "./globals.css";
+import SeletorTema from "@/components/SeletorTema";
 import { RECURSOS } from "@/lib/recursos";
 
 // Fontes baixadas no build e servidas pelo próprio site (nenhuma chamada ao Google em tempo de execução).
@@ -16,7 +17,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${sora.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${sora.variable}`} suppressHydrationWarning>
+      <head>
+        {/* todos os links abrem em nova aba */}
+        <base target="_blank" />
+        {/* aplica o tema salvo antes da primeira pintura */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("cn-tema");if(t==="claro"||t==="escuro")document.documentElement.setAttribute("data-theme",t==="claro"?"light":"dark")}catch(e){}` }} />
+      </head>
       <body>
         <header className="topo">
           <a href="/" className="marca">
@@ -28,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <nav className="nav">
             <a href="/">Mapa</a><a href="/instituicoes">Instituições</a><a href="/programas">Programas</a><a href="/sobre">Sobre</a>
           </nav>
+          <SeletorTema />
         </header>
         <main>{children}</main>
         <footer>

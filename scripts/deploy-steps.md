@@ -10,3 +10,8 @@ git pull                                   # só desta vez: o script ainda não 
 ./scripts/publicar.sh --sim ~/ciencia-nordeste-backup-*.tar.gz     # mostra o plano
 ./scripts/publicar.sh ~/ciencia-nordeste-backup-*.tar.gz           # publica código + dados do Qualis
 Se houver mais de um backup na pasta do servidor, troque o * pelo nome do arquivo.
+
+Na mão, o equivalente é:
+cd ~/ciencia-nordeste
+git pull
+docker compose up -d --build web

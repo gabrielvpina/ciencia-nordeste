@@ -3,7 +3,7 @@
 Verifica, para cada caminho:
   - exclusão: nenhum resultado da instituição informada nem das ligadas a ela (institution_relations parent/child e
     v_instituicao_vinculo);
-  - diversidade: no máximo 2 pesquisadores por instituição no banner;
+  - diversidade: no banner, instituições diferentes (até 2 da mesma só se faltar gente);
   - coerência temática: fração dos pesquisadores do banner cuja publicação de exemplo traz algum termo esperado (PT/EN);
   - índice de compatibilidade do 1º e do último do banner (calibração: não pode ficar 99 para todo mundo);
   - latência no servidor;

@@ -388,9 +388,9 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Match:**
   - **Núcleo obrigatório:** 2 ou mais publicações que casem método e sub-objeto, sem alargar o nicho para completar a lista. Por isso o banner mostra **até 5** pesquisadores.
   - **Índice de 0 a 100, em escala fixa** = 0,30 cobertura das demais facetas + 0,20 concentração no nicho + 0,20 volume + 0,30 afinidade. A afinidade é o cosseno do perfil temático com a frase do nicho, entre os percentis 90 e 99,9 da população.
-  - **Proeminência:** só desempata, com no máximo 3 pontos de ordem e sem entrar no índice.
+  - **Ordem (pedido do responsável):** entre os que passam no índice mínimo, quem tem **mais produção** vem antes. A ordem soma índice + 20 × produção total no período (escala log, cheia em 100 publicações) + 3 × proeminência (h-index, docência na pós, bolsa PQ). O índice mostrado não muda, então a ordem nem sempre segue o índice.
   - **Exclusão:** fica de fora a instituição do usuário e as ligadas a ela (parent/child do ROR e vínculo de subunidade).
-  - **Diversidade:** no máximo 2 pesquisadores por instituição no banner.
+  - **Diversidade:** o banner traz **instituições diferentes**. Só repete uma instituição (até 2 pessoas) se faltar gente para completar 5. A lista estendida aceita até 3 por instituição.
   - **Filtro Qualis:** respeita o D-035.
 - **Perfil temático** (`researcher_embeddings`, migração 0012): média dos vetores das publicações, ponderada por recência × autoria × tamanho da equipe, para 35.806 pesquisadores.
 - **Ambiente no título e no nicho:** só entra quando a pessoa diz que um lugar é essencial na pesquisa (pergunta "Algum ambiente é essencial na sua pesquisa?"). Com "Não, minha pesquisa não depende de um lugar", o título e o nicho ficam gerais (ex.: "Bioinformática de vírus"; "Sentinela dos anfíbios e répteis" em vez de "Sentinela da mata atlântica").

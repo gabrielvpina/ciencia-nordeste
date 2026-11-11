@@ -18,8 +18,13 @@ export const CONCENTRACAO_CHEIA = 0.5;   // metade da produção no nicho = conc
 export const VOLUME_CHEIO = 15;          // publicações no nicho que dão o volume máximo
 export const MIN_NICHO = 2;              // publicações que casam o núcleo (método e sub-objeto) para entrar
 export const MIN_INDICE = 35;            // abaixo disto, não aparece (o banner mostra "até 5")
-export const PESO_PROEMINENCIA = 3;      // pontos de ordenação (não do índice) dados pela proeminência (0–1)
-export const POR_INSTITUICAO = { banner: 2, lista: 3 };   // diversidade
+// Ordem (não muda o índice mostrado): entre os que passam no mínimo de compatibilidade, quem tem mais produção vem antes
+// (pedido do responsável). ordem = índice + PESO_PRODUCAO × produção + PESO_PROEMINENCIA × proeminência
+export const PESO_PRODUCAO = 20;         // produção total no período, em escala log: 100 publicações = 1
+export const PRODUCAO_CHEIA = 100;
+export const PESO_PROEMINENCIA = 3;      // h-index, docência na pós, bolsa PQ (0–1)
+// Diversidade: no banner, primeiro uma pessoa por instituição; só repete instituição se faltar gente para completar 5.
+export const POR_INSTITUICAO = { banner: 1, banner_max: 2, lista: 3 };
 export const N = { banner: 5, lista: 15 };
 
 export type Filtro = { tipo: "ne" } | { tipo: "uf" } | { tipo: "raio"; km: number };
@@ -103,8 +108,9 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
               i.id AS instituicao_id, i.acronym AS sigla, i.name AS instituicao, m.name AS municipio, i.uf, i.latitude AS lat, i.longitude AS lon,
               (SELECT 6371 * 2 * asin(sqrt(power(sin(radians(i.latitude - o.lat) / 2), 2)
                       + cos(radians(o.lat)) * cos(radians(i.latitude)) * power(sin(radians(i.longitude - o.lon) / 2), 2))) FROM origem o) AS distancia_km,
-              (0.4 * least(1, ln(1 + coalesce(s.works_count_period, 0)) / ln(51)) + 0.3 * least(1, coalesce(s.h_index_openalex, 0) / 30.0)
-                 + 0.15 * r.is_capes_faculty::int + 0.15 * (r.pq_category_latest IS NOT NULL)::int) AS proeminencia
+              least(1, ln(1 + coalesce(s.works_count_period, 0)) / ln(${1 + PRODUCAO_CHEIA})) AS producao,
+              (0.5 * least(1, coalesce(s.h_index_openalex, 0) / 30.0)
+                 + 0.25 * r.is_capes_faculty::int + 0.25 * (r.pq_category_latest IS NOT NULL)::int) AS proeminencia
          FROM cand c JOIN researchers r ON r.id = c.rid AND NOT r.is_hidden
          JOIN tot t ON t.rid = c.rid JOIN cob cb ON cb.rid = c.rid
          LEFT JOIN sims sm ON sm.rid = c.rid
@@ -126,21 +132,28 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
   const t2 = Date.now();
   const elegiveis = linhas
     .filter((l) => l.indice >= MIN_INDICE)
-    .map((l) => ({ ...l, ordem: l.indice + PESO_PROEMINENCIA * Number((l as unknown as { proeminencia: number }).proeminencia) }))
+    .map((l) => {
+      const x = l as unknown as { producao: number; proeminencia: number };
+      return { ...l, ordem: l.indice + PESO_PRODUCAO * Number(x.producao) + PESO_PROEMINENCIA * Number(x.proeminencia) };
+    })
     .sort((a, b) => b.ordem - a.ordem);
-  const diverso = (max: number, n: number) => {
-    const conta = new Map<string, number>(), out: typeof elegiveis = [];
-    for (const l of elegiveis) {
-      const k = l.instituicao_id ?? `sem-${l.id}`;
-      if ((conta.get(k) ?? 0) >= max) continue;
-      conta.set(k, (conta.get(k) ?? 0) + 1);
-      out.push(l);
-      if (out.length >= n) break;
+  /** Seleção diversa: percorre a ordem aceitando até `max` por instituição; se não completar `n`, tenta de novo com `teto`. */
+  const diverso = (max: number, n: number, teto = max) => {
+    const conta = new Map<string, number>(), out: typeof elegiveis = [], usados = new Set<string>();
+    for (let limite = max; limite <= teto && out.length < n; limite++) {
+      for (const l of elegiveis) {
+        if (out.length >= n) break;
+        const k = l.instituicao_id ?? `sem-${l.id}`;
+        if (usados.has(l.id) || (conta.get(k) ?? 0) >= limite) continue;
+        conta.set(k, (conta.get(k) ?? 0) + 1);
+        usados.add(l.id);
+        out.push(l);
+      }
     }
-    return out;
+    return out.sort((a, b) => b.ordem - a.ordem);
   };
   const lista = diverso(POR_INSTITUICAO.lista, N.lista);
-  const banner = diverso(POR_INSTITUICAO.banner, N.banner);
+  const banner = diverso(POR_INSTITUICAO.banner, N.banner, POR_INSTITUICAO.banner_max);
 
   // detalhes só de quem vai aparecer: exemplos de publicações do nicho, programa de pós e "desde"
   const ids_mostrar = [...new Set([...banner, ...lista].map((l) => l.id))];

@@ -176,7 +176,27 @@ As combinações completas são milhões, então não dá para percorrer todas, 
 5. **Separação:** trocar só as respostas de perfil não muda nenhum resultado do match.
 6. **Títulos:** todas as combinações de habitat × estilo × vínculo × objeto geram um título neutro (sem "(a)", sem palavras marcadas como de gênero e sem nomes licenciados), que cabe no banner.
 
-A checagem estática (estrutura, ids, sem órfãos, opções por tela, sintagmas e formas dos títulos) continua no `scripts/verificar.sh`.
+A checagem estática continua no `scripts/verificar.sh`. Ela confere estrutura, ids, opções por tela (por objeto, quando filtradas) e sintagmas. Também confere os títulos (completos, neutros, sem nomes licenciados, até 42 caracteres) e que as perguntas de perfil não têm sinais de match.
+
+**Primeira validação da v2** (`arvore.json` versão 3; relatório em `ingest/relatorios/quiz_validacao.md`):
+
+| Item | Resultado |
+|---|---|
+| Telas | 11, contando a instituição |
+| Sub-objetos | 42 |
+| Pares do núcleo (método × sub-objeto) | 336 |
+| Títulos principais | 115 |
+| ids inexistentes | 0 |
+| Pesquisadores por par, sem a maior instituição | mediana 74 (mínimo 0, máximo 3.700) |
+| Pares vazios | 1 (Estatística, modelos e IA × Cavalos) |
+| Pares com 1 a 4 pesquisadores | 20 (ex.: Bioinformática × Plantas medicinais, Clínica × Aranhas e ácaros) |
+| Sub-objetos irmãos com Jaccard > 0,5 | 1 (Campo × Grãos e farinhas vs. Campo × Ingredientes funcionais: 0,54; 22 e 18 pesquisadores) |
+| Métodos diferentes no mesmo sub-objeto | Jaccard mediano 0,00, máximo 0,64 (só aviso: Genética e Bioinformática se sobrepõem em bovinos, por exemplo) |
+
+Ajustes feitos durante a validação:
+- um foco novo, "Monitoramento e mapeamento", porque Solo, água e clima tinha um foco só;
+- sinais mais específicos para farinhas e para ingredientes funcionais;
+- a ordem do encaixe passou a usar **só as publicações do nicho** (que casam método e sub-objeto), e não toda a produção do pesquisador naquela área. É também o que o match vai usar.
 
 ## Privacidade
 

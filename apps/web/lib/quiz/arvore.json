@@ -1,137 +1,273 @@
 {
- "versao": 2,
- "evento": "proposta inicial (etapa 13)",
- "raiz": "modo",
- "pesos_profundidade": [
-  1.0,
-  1.5,
-  2.0,
-  2.5,
-  3.0,
-  3.5
+ "versao": 3,
+ "estrutura": "facetas (v2 do desenho, docs/etapas/13-quiz-alinhamento.md)",
+ "telas": [
+  "habitat",
+  "metodo",
+  "objeto",
+  "sub_objeto",
+  "estilo",
+  "foco",
+  "escala",
+  "ambiente",
+  "vinculo",
+  "impacto"
  ],
+ "nucleo": [
+  "metodo",
+  "sub_objeto"
+ ],
+ "pesos_faceta": {
+  "metodo": 2.0,
+  "objeto": 1.0,
+  "sub_objeto": 2.5,
+  "foco": 1.2,
+  "escala": 0.6,
+  "ambiente": 0.8,
+  "impacto": 0.5
+ },
  "perguntas": {
-  "modo": {
-   "texto": "Como é o seu trabalho no dia a dia?",
+  "habitat": {
+   "bloco": "perfil",
+   "faceta": "habitat",
+   "texto": "Num dia perfeito de trabalho, onde você está?",
    "opcoes": [
     {
-     "id": "modo.campo",
-     "rotulo": "Campo",
-     "descricao": "lavouras, criações, matas, rios e mar",
-     "icone": "campo",
-     "proxima": "campo_objeto",
+     "id": "habitat.campo",
+     "rotulo": "No campo, de botas",
+     "descricao": "lavoura, mata, rio ou mar",
+     "visual": {
+      "cor": "campo"
+     }
+    },
+    {
+     "id": "habitat.bancada",
+     "rotulo": "Na bancada, de jaleco",
+     "descricao": "pipetas, placas e protocolos",
+     "visual": {
+      "cor": "bancada"
+     }
+    },
+    {
+     "id": "habitat.computador",
+     "rotulo": "No computador",
+     "descricao": "códigos, planilhas e modelos",
+     "visual": {
+      "cor": "computador"
+     }
+    },
+    {
+     "id": "habitat.pessoas",
+     "rotulo": "Com pessoas",
+     "descricao": "pacientes, comunidades, equipes",
+     "visual": {
+      "cor": "pessoas"
+     }
+    },
+    {
+     "id": "habitat.colecoes",
+     "rotulo": "Entre coleções e artigos",
+     "descricao": "acervos, herbários, bibliotecas",
+     "visual": {
+      "cor": "colecoes"
+     }
+    }
+   ]
+  },
+  "metodo": {
+   "bloco": "nicho",
+   "faceta": "metodo",
+   "texto": "Qual é a sua ferramenta principal?",
+   "opcoes": [
+    {
+     "id": "metodo.campo",
+     "rotulo": "Campo e observação",
      "sinais": {
       "termos": [
        "field",
        "campo",
-       "semiarid",
-       "semiárido",
-       "caatinga"
+       "inventory",
+       "inventário",
+       "sampling",
+       "amostragem",
+       "occurrence",
+       "ocorrência",
+       "monitoring",
+       "monitoramento",
+       "survey",
+       "levantamento"
       ],
-      "frase": "pesquisa de campo no semiárido"
+      "frase": "trabalho de campo, coleta e observação"
      },
-     "perfil": "Explorador(a) de campo",
-     "arte": {
-      "camada": "fundo",
-      "id": "campo"
-     }
+     "nicho": "Pesquisa de campo"
     },
     {
-     "id": "modo.bancada",
-     "rotulo": "Bancada de laboratório",
-     "descricao": "experimentos, análises e ensaios",
-     "icone": "bancada",
-     "proxima": "bancada_objeto",
+     "id": "metodo.bancada",
+     "rotulo": "Experimentos de bancada",
      "sinais": {
       "termos": [
        "in vitro",
-       "in vivo"
+       "in vivo",
+       "assay",
+       "ensaio",
+       "experimental",
+       "rats",
+       "ratos",
+       "mice",
+       "camundongos",
+       "cell line",
+       "linhagem celular",
+       "antimicrobial activity",
+       "atividade antimicrobiana"
       ],
-      "frase": "experimentos de laboratório"
+      "frase": "experimentos de laboratório in vitro e in vivo"
      },
-     "perfil": "Investigador(a) de bancada",
-     "arte": {
-      "camada": "fundo",
-      "id": "bancada"
-     }
+     "nicho": "Experimentação de bancada"
     },
     {
-     "id": "modo.pacientes",
-     "rotulo": "Atendimento a pacientes",
-     "descricao": "consultório, hospital, clínica ou reabilitação",
-     "icone": "pacientes",
-     "proxima": "pac_area",
+     "id": "metodo.genetica",
+     "rotulo": "Genética e biologia molecular",
+     "sinais": {
+      "topics": [
+       "T10012",
+       "T10434",
+       "T10261",
+       "T10594",
+       "T11229"
+      ],
+      "termos": [
+       "gene",
+       "genetic",
+       "genétic",
+       "polymorphism",
+       "polimorfismo",
+       "pcr",
+       "gene expression",
+       "expressão gênica",
+       "molecular marker",
+       "marcador molecular",
+       "dna",
+       "mutation",
+       "mutação"
+      ],
+      "frase": "genética e biologia molecular"
+     },
+     "nicho": "Genética"
+    },
+    {
+     "id": "metodo.bioinfo",
+     "rotulo": "Bioinformática e genômica",
      "sinais": {
       "termos": [
-       "patients",
-       "pacientes",
-       "case report",
-       "relato de caso"
+       "genome",
+       "genoma",
+       "genomic",
+       "genômic",
+       "sequencing",
+       "sequenciamento",
+       "transcriptom",
+       "metagenom",
+       "phylogen",
+       "filogen",
+       "bioinformatic",
+       "rna-seq",
+       "next-generation"
       ],
-      "frase": "atendimento clínico de pacientes"
+      "frase": "bioinformática, genomas e sequenciamento"
      },
-     "perfil": "Cientista do cuidado",
-     "arte": {
-      "camada": "fundo",
-      "id": "clinica"
-     }
+     "nicho": "Bioinformática"
     },
     {
-     "id": "modo.ensaios",
-     "rotulo": "Ensaios clínicos",
-     "descricao": "testar tratamentos e intervenções",
-     "icone": "ensaios",
-     "proxima": "ens_area",
+     "id": "metodo.dados",
+     "rotulo": "Estatística, modelos e IA",
      "sinais": {
-      "termos": [
-       "randomized",
-       "randomised",
-       "clinical trial",
-       "ensaio clínico",
-       "placebo",
-       "double-blind",
-       "duplo-cego"
+      "topics": [
+       "T11396",
+       "T11636",
+       "T10616",
+       "T11164",
+       "T11819"
       ],
-      "frase": "ensaio clínico randomizado"
-     },
-     "perfil": "Testador(a) de evidências",
-     "arte": {
-      "camada": "fundo",
-      "id": "ensaio"
-     }
-    },
-    {
-     "id": "modo.dados",
-     "rotulo": "Dados e computação",
-     "descricao": "programação, estatística, genomas, imagens",
-     "icone": "dados",
-     "proxima": "dados_tipo",
-     "sinais": {
       "termos": [
        "machine learning",
        "deep learning",
        "artificial intelligence",
        "inteligência artificial",
-       "in silico",
-       "bioinformatic",
-       "computational",
+       "neural network",
+       "rede neural",
        "modeling",
-       "modelagem"
+       "modelagem",
+       "prediction",
+       "predição",
+       "forecast",
+       "statistical",
+       "estatístic",
+       "remote sensing",
+       "sensoriamento"
       ],
-      "frase": "análise computacional de dados"
+      "frase": "modelagem estatística, aprendizado de máquina e inteligência artificial"
      },
-     "perfil": "Decifrador(a) de dados",
-     "arte": {
-      "camada": "fundo",
-      "id": "dados"
-     }
+     "nicho": "Ciência de dados"
     },
     {
-     "id": "modo.populacoes",
-     "rotulo": "Saúde de populações",
-     "descricao": "epidemiologia, vigilância, serviços de saúde",
-     "icone": "populacoes",
-     "proxima": "pop_tema",
+     "id": "metodo.quimica",
+     "rotulo": "Química e compostos",
+     "sinais": {
+      "topics": [
+       "T12657",
+       "T10225",
+       "T10035",
+       "T10211",
+       "T10163"
+      ],
+      "termos": [
+       "compound",
+       "composto",
+       "extract",
+       "extrato",
+       "essential oil",
+       "óleo essencial",
+       "synthesis",
+       "síntese",
+       "phytochemical",
+       "fitoquímic",
+       "chromatograph",
+       "cromatograf",
+       "bioactive",
+       "bioativ",
+       "molecular docking"
+      ],
+      "frase": "química de produtos naturais e compostos bioativos"
+     },
+     "nicho": "Química"
+    },
+    {
+     "id": "metodo.clinica",
+     "rotulo": "Clínica e intervenções",
+     "sinais": {
+      "termos": [
+       "patients",
+       "pacientes",
+       "randomized",
+       "randomised",
+       "clinical trial",
+       "ensaio clínico",
+       "case report",
+       "relato de caso",
+       "treatment",
+       "tratamento",
+       "intervention",
+       "intervenção",
+       "therapy",
+       "terapia"
+      ],
+      "frase": "pesquisa clínica, tratamentos e ensaios clínicos"
+     },
+     "nicho": "Pesquisa clínica"
+    },
+    {
+     "id": "metodo.epidemio",
+     "rotulo": "Epidemiologia e saúde coletiva",
      "sinais": {
       "subfields": [
        "2739",
@@ -147,3410 +283,94 @@
        "ecological study",
        "estudo ecológico",
        "surveillance",
-       "vigilância"
+       "vigilância",
+       "incidence",
+       "incidência",
+       "risk factors",
+       "fatores de risco",
+       "mortality",
+       "mortalidade"
       ],
-      "frase": "epidemiologia e saúde coletiva"
+      "frase": "epidemiologia, vigilância e saúde coletiva"
      },
-     "perfil": "Sentinela da saúde coletiva",
-     "arte": {
-      "camada": "fundo",
-      "id": "populacoes"
-     }
+     "nicho": "Epidemiologia"
     }
-   ],
-   "pular": "geral_area"
+   ]
   },
-  "geral_area": {
-   "texto": "Sem problema. Qual grande área mais te atrai?",
+  "objeto": {
+   "bloco": "nicho",
+   "faceta": "objeto",
+   "texto": "O que você estuda?",
    "opcoes": [
     {
-     "id": "geral.agrarias",
-     "rotulo": "Agrárias e biológicas",
-     "icone": "planta",
-     "proxima": "campo_objeto",
-     "sinais": {
-      "fields": [
-       "11"
-      ],
-      "frase": "ciências agrárias e biológicas"
-     },
-     "perfil": "Naturalista",
-     "arte": {
-      "camada": "fundo",
-      "id": "campo"
-     }
-    },
-    {
-     "id": "geral.saude",
-     "rotulo": "Saúde humana",
-     "icone": "coracao",
-     "proxima": "pac_area",
-     "sinais": {
-      "fields": [
-       "27"
-      ],
-      "frase": "saúde humana"
-     },
-     "perfil": "Cientista da saúde",
-     "arte": {
-      "camada": "fundo",
-      "id": "clinica"
-     }
-    },
-    {
-     "id": "geral.biomedicina",
-     "rotulo": "Biomedicina e genética",
-     "icone": "dna",
-     "proxima": "bancada_objeto",
-     "sinais": {
-      "fields": [
-       "13",
-       "24"
-      ],
-      "frase": "biomedicina e genética"
-     },
-     "perfil": "Cientista da vida",
-     "arte": {
-      "camada": "fundo",
-      "id": "bancada"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "campo_objeto": {
-   "texto": "O que você estuda no campo?",
-   "opcoes": [
-    {
-     "id": "campo.insetos",
-     "rotulo": "Insetos",
-     "icone": "inseto",
-     "proxima": "insetos_foco",
-     "sinais": {
-      "subfields": [
-       "1109"
-      ],
-      "termos": [
-       "insect",
-       "inseto"
-      ],
-      "frase": "insetos"
-     },
-     "perfil": "entomologia",
-     "arte": {
-      "camada": "elemento",
-      "id": "inseto"
-     }
-    },
-    {
-     "id": "campo.producao",
-     "rotulo": "Animais de produção",
-     "descricao": "bovinos, cabras, ovelhas, aves, porcos",
-     "icone": "bovino",
-     "proxima": "animais_foco",
-     "sinais": {
-      "subfields": [
-       "1103"
-      ],
-      "termos": [
-       "cattle",
-       "bovino",
-       "goat",
-       "caprino",
-       "sheep",
-       "ovino",
-       "poultry",
-       "frango",
-       "swine",
-       "suíno"
-      ],
-      "frase": "bovinos, caprinos, ovinos e aves de produção"
-     },
-     "perfil": "zootecnia",
-     "arte": {
-      "camada": "elemento",
-      "id": "bovino"
-     }
-    },
-    {
-     "id": "campo.plantas",
-     "rotulo": "Plantas e lavouras",
-     "icone": "planta",
-     "proxima": "plantas_grupo",
+     "id": "objeto.plantas",
+     "rotulo": "Plantas",
      "sinais": {
       "subfields": [
        "1110",
        "1102",
        "1108"
       ],
-      "frase": "plantas cultivadas"
+      "termos": [
+       "plant",
+       "planta"
+      ],
+      "frase": "plantas"
      },
-     "perfil": "fitotecnia",
-     "arte": {
-      "camada": "elemento",
-      "id": "planta"
+     "sintagma": {
+      "artigo": "as",
+      "nome": "plantas"
      }
     },
     {
-     "id": "campo.solo",
-     "rotulo": "Solo e água",
-     "icone": "solo",
-     "proxima": "solo_foco",
+     "id": "objeto.insetos",
+     "rotulo": "Insetos e outros invertebrados",
      "sinais": {
       "subfields": [
-       "1111"
+       "1109"
       ],
       "termos": [
-       "soil",
-       "solo"
-      ],
-      "frase": "solo e água na agricultura"
-     },
-     "perfil": "ciência do solo",
-     "arte": {
-      "camada": "elemento",
-      "id": "solo"
-     }
-    },
-    {
-     "id": "campo.fauna",
-     "rotulo": "Fauna e flora silvestres",
-     "icone": "folha",
-     "proxima": "fauna_grupo",
-     "sinais": {
-      "subfields": [
-       "1105"
-      ],
-      "termos": [
-       "biodiversity",
-       "biodiversidade",
-       "species",
-       "espécie"
-      ],
-      "frase": "biodiversidade e ecologia de espécies silvestres"
-     },
-     "perfil": "biodiversidade",
-     "arte": {
-      "camada": "elemento",
-      "id": "fauna"
-     }
-    },
-    {
-     "id": "campo.aguas",
-     "rotulo": "Mar, rios e aquicultura",
-     "icone": "peixe",
-     "proxima": "aguas_foco",
-     "sinais": {
-      "subfields": [
-       "1104"
-      ],
-      "termos": [
-       "fish",
-       "peixe",
-       "aquaculture",
-       "aquicultura",
-       "marine",
-       "marinho"
-      ],
-      "frase": "ambientes aquáticos, peixes e aquicultura"
-     },
-     "perfil": "ciências aquáticas",
-     "arte": {
-      "camada": "elemento",
-      "id": "peixe"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "insetos_foco": {
-   "texto": "Que tipo de pesquisa com insetos?",
-   "opcoes": [
-    {
-     "id": "insetos.pragas",
-     "rotulo": "Pragas agrícolas e controle",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11065",
-       "T10135",
-       "T11641",
-       "T12043",
-       "T11436",
-       "T13125"
-      ],
-      "termos": [
-       "pest",
-       "praga",
-       "biological control",
-       "controle biológico",
-       "insecticide",
-       "inseticida"
-      ],
-      "frase": "pragas de insetos em culturas agrícolas e controle biológico"
-     },
-     "perfil": "pragas agrícolas",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pragas"
-     }
-    },
-    {
-     "id": "insetos.abelhas",
-     "rotulo": "Abelhas e produtos das abelhas",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11386",
-       "T12132"
-      ],
-      "termos": [
-       "bee",
-       "abelha",
-       "honey",
-       "mel",
-       "propolis",
-       "própolis",
-       "pollinat",
-       "poliniz"
-      ],
-      "frase": "abelhas, polinizadores, mel e própolis"
-     },
-     "perfil": "abelhas e polinizadores",
-     "arte": {
-      "camada": "detalhe",
-      "id": "abelha"
-     }
-    },
-    {
-     "id": "insetos.vetores",
-     "rotulo": "Mosquitos e vetores de doenças",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10166",
-       "T10296"
-      ],
-      "termos": [
-       "aedes",
-       "mosquito",
-       "vector",
-       "vetor",
-       "sandfl",
-       "flebotom",
-       "triatom"
-      ],
-      "frase": "mosquitos e insetos vetores de doenças"
-     },
-     "perfil": "entomologia médica",
-     "arte": {
-      "camada": "detalhe",
-      "id": "vetor"
-     }
-    },
-    {
-     "id": "insetos.taxonomia",
-     "rotulo": "Diversidade, taxonomia e ecologia",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10702",
-       "T11974",
-       "T11494",
-       "T12606",
-       "T12637",
-       "T12329",
-       "T13950",
-       "T12447"
-      ],
-      "termos": [
-       "new species",
-       "nova espécie",
-       "taxonomy",
-       "taxonomia",
-       "diversity",
-       "diversidade"
-      ],
-      "frase": "taxonomia e ecologia de insetos"
-     },
-     "perfil": "taxonomia de insetos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "lupa"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "animais_foco": {
-   "texto": "Qual é o seu foco com os animais?",
-   "opcoes": [
-    {
-     "id": "animais.nutricao",
-     "rotulo": "Nutrição e alimentação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10098",
-       "T10152",
-       "T13591",
-       "T12991"
-      ],
-      "termos": [
-       "diet",
-       "dieta",
-       "feed",
-       "ração",
-       "supplement",
-       "suplement",
-       "rumen",
-       "rúmen"
-      ],
-      "frase": "nutrição de ruminantes e alimentação animal"
-     },
-     "perfil": "nutrição animal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "racao"
-     }
-    },
-    {
-     "id": "animais.reproducao",
-     "rotulo": "Reprodução",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10584",
-       "T10116",
-       "T10364"
-      ],
-      "termos": [
-       "semen",
-       "sêmen",
-       "embryo",
-       "embrião",
-       "estrus",
-       "estro",
-       "oocyte",
-       "oócito"
-      ],
-      "frase": "reprodução animal, sêmen e embriões"
-     },
-     "perfil": "reprodução animal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "reproducao"
-     }
-    },
-    {
-     "id": "animais.produtos",
-     "rotulo": "Qualidade de carne e leite",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10333",
-       "T11226"
-      ],
-      "termos": [
-       "meat",
-       "carne",
-       "milk",
-       "leite",
-       "carcass",
-       "carcaça",
-       "mastitis",
-       "mastite"
-      ],
-      "frase": "qualidade da carne e do leite"
-     },
-     "perfil": "produtos de origem animal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "leite"
-     }
-    },
-    {
-     "id": "animais.ambiente",
-     "rotulo": "Bem-estar e clima",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12365",
-       "T10838",
-       "T14499",
-       "T13009"
-      ],
-      "termos": [
-       "heat stress",
-       "estresse térmico",
-       "welfare",
-       "bem-estar",
-       "thermal",
-       "térmico"
-      ],
-      "frase": "bem-estar animal e estresse térmico no semiárido"
-     },
-     "perfil": "bem-estar animal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "sol"
-     }
-    },
-    {
-     "id": "animais.genetica",
-     "rotulo": "Genética e melhoramento",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10594",
-       "T10012"
-      ],
-      "termos": [
-       "genetic",
-       "genétic",
-       "heritability",
-       "herdabilidade",
-       "breeding",
-       "melhoramento",
-       "genomic"
-      ],
-      "frase": "genética e melhoramento de animais de produção"
-     },
-     "perfil": "melhoramento animal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "dna"
-     }
-    },
-    {
-     "id": "animais.saude",
-     "rotulo": "Saúde e doenças dos animais",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11560",
-       "T12322",
-       "T11495",
-       "T12234"
-      ],
-      "termos": [
-       "disease",
-       "doença",
-       "infection",
-       "infecção",
-       "parasit",
-       "verminose"
-      ],
-      "frase": "doenças e sanidade de animais de produção"
-     },
-     "perfil": "sanidade animal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "estetoscopio"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "plantas_grupo": {
-   "texto": "Que grupo de plantas?",
-   "opcoes": [
-    {
-     "id": "plantas.frutiferas",
-     "rotulo": "Frutíferas e hortaliças",
-     "icone": "fruta",
-     "proxima": "plantas_foco",
-     "sinais": {
-      "topics": [
-       "T12795",
-       "T11796",
-       "T13069",
-       "T10473"
-      ],
-      "termos": [
-       "fruit",
-       "fruta",
-       "frutos",
-       "mango",
-       "manga",
-       "melon",
-       "melão",
-       "grape",
-       "uva",
-       "banana",
-       "papaya",
-       "mamão",
-       "acerola",
-       "guava",
-       "goiaba",
-       "passion fruit",
-       "maracujá",
-       "tomato",
-       "tomate",
-       "lettuce",
-       "alface",
-       "pepper",
-       "pimenta"
-      ],
-      "frase": "fruticultura e olericultura"
-     },
-     "perfil": "frutíferas e hortaliças",
-     "arte": {
-      "camada": "elemento",
-      "id": "fruta"
-     }
-    },
-    {
-     "id": "plantas.graos",
-     "rotulo": "Grãos, cana e algodão",
-     "icone": "grao",
-     "proxima": "plantas_foco",
-     "sinais": {
-      "topics": [
-       "T12431",
-       "T12243",
-       "T12571",
-       "T12742",
-       "T12305"
-      ],
-      "termos": [
-       "maize",
-       "milho",
-       "corn",
-       "soybean",
-       "soja",
-       "cowpea",
-       "feijão",
-       "bean",
-       "sorghum",
-       "sorgo",
-       "sugarcane",
-       "cana-de-açúcar",
-       "cotton",
-       "algodão",
-       "rice",
-       "arroz",
-       "cassava",
-       "mandioca",
-       "peanut",
-       "amendoim"
-      ],
-      "frase": "grãos e grandes culturas: milho, feijão-caupi, soja, sorgo, cana e algodão"
-     },
-     "perfil": "grandes culturas",
-     "arte": {
-      "camada": "elemento",
-      "id": "grao"
-     }
-    },
-    {
-     "id": "plantas.forrageiras",
-     "rotulo": "Forrageiras e pastagens",
-     "icone": "capim",
-     "proxima": "plantas_foco",
-     "sinais": {
-      "topics": [
-       "T13591",
-       "T13009"
-      ],
-      "termos": [
-       "forage",
-       "forragem",
-       "forrageira",
-       "pasture",
-       "pastagem",
-       "grass",
-       "capim",
-       "brachiaria",
-       "urochloa",
-       "cactus pear",
-       "palma forrageira",
-       "opuntia",
-       "nopalea",
-       "silage",
-       "silagem"
-      ],
-      "frase": "plantas forrageiras, pastagens e palma forrageira"
-     },
-     "perfil": "forragicultura",
-     "arte": {
-      "camada": "elemento",
-      "id": "capim"
-     }
-    },
-    {
-     "id": "plantas.nativas",
-     "rotulo": "Plantas da caatinga e nativas",
-     "icone": "cacto",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12618",
-       "T10385",
-       "T14049",
-       "T12870",
-       "T11880",
-       "T10431"
-      ],
-      "termos": [
-       "caatinga",
-       "native",
-       "nativa",
-       "semiarid",
-       "semiárido",
-       "dry forest",
-       "floresta seca",
-       "restinga",
-       "atlantic forest",
-       "mata atlântica"
-      ],
-      "frase": "plantas nativas da caatinga e da mata atlântica"
-     },
-     "perfil": "flora nativa",
-     "arte": {
-      "camada": "elemento",
-      "id": "cacto"
-     }
-    },
-    {
-     "id": "plantas.medicinais",
-     "rotulo": "Plantas medicinais",
-     "icone": "folha",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12657",
-       "T10431",
-       "T14521",
-       "T13090",
-       "T12721",
-       "T11613"
-      ],
-      "termos": [
-       "medicinal",
-       "ethnobotan",
-       "etnobotân",
-       "essential oil",
-       "óleo essencial",
-       "phytochemical",
-       "fitoquímic"
-      ],
-      "frase": "plantas medicinais, etnobotânica e fitoquímica"
-     },
-     "perfil": "plantas medicinais",
-     "arte": {
-      "camada": "elemento",
-      "id": "folha_medicinal"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "plantas_foco": {
-   "texto": "Qual é o seu foco?",
-   "opcoes": [
-    {
-     "id": "plantas_foco.melhoramento",
-     "rotulo": "Melhoramento e genética",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11229",
-       "T10012",
-       "T10240",
-       "T12571"
-      ],
-      "termos": [
-       "breeding",
-       "melhoramento",
-       "genotype",
-       "genótipo",
-       "cultivar",
-       "genetic diversity",
-       "diversidade genética"
-      ],
-      "frase": "melhoramento genético de plantas"
-     },
-     "perfil": "melhoramento",
-     "arte": {
-      "camada": "detalhe",
-      "id": "dna"
-     }
-    },
-    {
-     "id": "plantas_foco.pragas",
-     "rotulo": "Pragas e doenças",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10825",
-       "T11065",
-       "T12660",
-       "T11179",
-       "T10494",
-       "T11900",
-       "T11578",
-       "T10135",
-       "T11771",
-       "T11750"
-      ],
-      "termos": [
-       "pest",
-       "praga",
-       "disease",
-       "doença",
-       "fung",
-       "nematod",
-       "virus",
-       "pathogen",
-       "patógeno"
-      ],
-      "frase": "pragas e doenças de plantas"
-     },
-     "perfil": "fitossanidade",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pragas"
-     }
-    },
-    {
-     "id": "plantas_foco.manejo",
-     "rotulo": "Manejo, nutrição e irrigação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12113",
-       "T11404",
-       "T12407",
-       "T10014",
-       "T12344",
-       "T11098",
-       "T12436",
-       "T12792"
-      ],
-      "termos": [
-       "irrigation",
-       "irrigação",
-       "fertiliz",
-       "adubação",
-       "salinity",
-       "salinidade",
-       "water deficit",
-       "déficit hídrico"
-      ],
-      "frase": "manejo, nutrição e irrigação de plantas sob estresse hídrico e salino"
-     },
-     "perfil": "manejo e fisiologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "gota"
-     }
-    },
-    {
-     "id": "plantas_foco.produtos",
-     "rotulo": "Pós-colheita, produtos e compostos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10473",
-       "T12657",
-       "T10035",
-       "T12048",
-       "T14127"
-      ],
-      "termos": [
-       "postharvest",
-       "pós-colheita",
-       "fruit quality",
-       "qualidade de frutos",
-       "bioactive",
-       "bioativ",
-       "extract",
-       "extrato"
-      ],
-      "frase": "pós-colheita, qualidade e compostos bioativos"
-     },
-     "perfil": "pós-colheita e bioativos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "frasco"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "solo_foco": {
-   "texto": "Qual é o seu foco no solo e na água?",
-   "opcoes": [
-    {
-     "id": "solo.irrigacao",
-     "rotulo": "Irrigação e uso da água",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11404",
-       "T13391"
-      ],
-      "termos": [
-       "irrigation",
-       "irrigação",
-       "evapotranspiration",
-       "evapotranspiração",
-       "water use",
-       "uso da água",
-       "saline water",
-       "água salina"
-      ],
-      "frase": "irrigação e uso eficiente da água no semiárido"
-     },
-     "perfil": "irrigação",
-     "arte": {
-      "camada": "detalhe",
-      "id": "gota"
-     }
-    },
-    {
-     "id": "solo.fertilidade",
-     "rotulo": "Carbono, nutrientes e adubação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10004",
-       "T12294",
-       "T12792",
-       "T12310",
-       "T11275",
-       "T12754"
-      ],
-      "termos": [
-       "carbon",
-       "carbono",
-       "nitrogen",
-       "nitrogênio",
-       "fertiliz",
-       "adubação",
-       "organic matter",
-       "matéria orgânica",
-       "biochar"
-      ],
-      "frase": "fertilidade do solo, carbono e nutrientes"
-     },
-     "perfil": "fertilidade do solo",
-     "arte": {
-      "camada": "detalhe",
-      "id": "folha"
-     }
-    },
-    {
-     "id": "solo.mapeamento",
-     "rotulo": "Erosão, mapeamento e degradação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10889",
-       "T10770",
-       "T13102",
-       "T11164"
-      ],
-      "termos": [
-       "erosion",
-       "erosão",
-       "mapping",
-       "mapeamento",
-       "degradation",
-       "degradação",
-       "desertification",
-       "desertificação",
-       "geostatist"
-      ],
-      "frase": "erosão, degradação e mapeamento de solos"
-     },
-     "perfil": "pedologia e mapeamento",
-     "arte": {
-      "camada": "detalhe",
-      "id": "mapa"
-     }
-    },
-    {
-     "id": "solo.microbiologia",
-     "rotulo": "Microrganismos do solo",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10451",
-       "T11470",
-       "T10076"
-      ],
-      "termos": [
-       "mycorrhiz",
-       "micorriz",
-       "rhizobi",
-       "rizóbio",
-       "microbial",
-       "microbiana",
-       "bacteria",
-       "bactéria"
-      ],
-      "frase": "microrganismos do solo, micorrizas e fixação de nitrogênio"
-     },
-     "perfil": "microbiologia do solo",
-     "arte": {
-      "camada": "detalhe",
-      "id": "microbio"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "fauna_grupo": {
-   "texto": "Que grupo você estuda?",
-   "opcoes": [
-    {
-     "id": "fauna.herpeto",
-     "rotulo": "Anfíbios e répteis",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10332"
-      ],
-      "termos": [
-       "frog",
-       "anura",
-       "anuro",
-       "lizard",
-       "lagarto",
-       "snake",
-       "serpente",
-       "reptil",
-       "réptil",
-       "amphibian",
-       "anfíbio"
-      ],
-      "frase": "anfíbios e répteis"
-     },
-     "perfil": "herpetologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "lagarto"
-     }
-    },
-    {
-     "id": "fauna.mamiferos",
-     "rotulo": "Mamíferos e aves",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11228",
-       "T10699",
-       "T11665",
-       "T10174"
-      ],
-      "termos": [
-       "bat",
-       "morcego",
-       "primate",
-       "primata",
-       "mammal",
-       "mamífero",
-       "bird",
-       "ave",
-       "rodent",
-       "roedor"
-      ],
-      "frase": "mamíferos silvestres, morcegos, primatas e aves"
-     },
-     "perfil": "mastozoologia e ornitologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "morcego"
-     }
-    },
-    {
-     "id": "fauna.invertebrados",
-     "rotulo": "Aranhas, ácaros e outros invertebrados",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12447",
-       "T12361",
-       "T14399",
-       "T11926",
-       "T13950",
-       "T12606",
-       "T12132"
-      ],
-      "termos": [
-       "spider",
-       "aranha",
-       "mite",
-       "ácaro",
+       "insect",
+       "inseto",
        "invertebrate",
-       "invertebrado",
-       "cave",
-       "caverna"
+       "invertebrado"
       ],
-      "frase": "aranhas, ácaros e invertebrados"
+      "frase": "insetos e invertebrados"
      },
-     "perfil": "invertebrados",
-     "arte": {
-      "camada": "detalhe",
-      "id": "aranha"
+     "sintagma": {
+      "artigo": "os",
+      "nome": "insetos"
      }
     },
     {
-     "id": "fauna.flora",
-     "rotulo": "Flora, fungos e botânica",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10385",
-       "T14049",
-       "T12618",
-       "T12359",
-       "T11836"
-      ],
-      "termos": [
-       "flora",
-       "botan",
-       "botân",
-       "new species",
-       "nova espécie",
-       "fungi",
-       "fungos",
-       "fern",
-       "samambaia",
-       "bryophyte",
-       "briófita"
-      ],
-      "frase": "taxonomia e diversidade de plantas e fungos"
-     },
-     "perfil": "botânica",
-     "arte": {
-      "camada": "detalhe",
-      "id": "flor"
-     }
-    },
-    {
-     "id": "fauna.ecologia",
-     "rotulo": "Ecologia de comunidades e conservação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10487",
-       "T10385",
-       "T11880",
-       "T12417"
-      ],
-      "termos": [
-       "conservation",
-       "conservação",
-       "community",
-       "comunidade",
-       "restoration",
-       "restauração",
-       "landscape",
-       "paisagem"
-      ],
-      "frase": "ecologia de comunidades, conservação e restauração"
-     },
-     "perfil": "ecologia e conservação",
-     "arte": {
-      "camada": "detalhe",
-      "id": "arvore"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "aguas_foco": {
-   "texto": "Qual é o seu foco nas águas?",
-   "opcoes": [
-    {
-     "id": "aguas.aquicultura",
-     "rotulo": "Criação de peixes e camarões",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10450",
-       "T11088",
-       "T13391",
-       "T10506",
-       "T14405"
-      ],
-      "termos": [
-       "aquaculture",
-       "aquicultura",
-       "tilapia",
-       "tilápia",
-       "shrimp",
-       "camarão",
-       "fish farming",
-       "piscicultura"
-      ],
-      "frase": "aquicultura de peixes e camarões"
-     },
-     "perfil": "aquicultura",
-     "arte": {
-      "camada": "detalhe",
-      "id": "camarao"
-     }
-    },
-    {
-     "id": "aguas.pesca",
-     "rotulo": "Peixes, pesca e ecologia aquática",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10230",
-       "T12319",
-       "T11505"
-      ],
-      "termos": [
-       "fisher",
-       "pesca",
-       "reef",
-       "recife",
-       "estuar",
-       "mangrove",
-       "manguezal",
-       "coastal",
-       "costeir"
-      ],
-      "frase": "ecologia de peixes, pesca e ambientes costeiros"
-     },
-     "perfil": "ecologia aquática",
-     "arte": {
-      "camada": "detalhe",
-      "id": "anzol"
-     }
-    },
-    {
-     "id": "aguas.algas",
-     "rotulo": "Algas e compostos marinhos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11390",
-       "T12192"
-      ],
-      "termos": [
-       "seaweed",
-       "macroalga",
-       "alga",
-       "algae",
-       "marine",
-       "marinho",
-       "polysaccharide",
-       "polissacarídeo"
-      ],
-      "frase": "algas marinhas e seus compostos bioativos"
-     },
-     "perfil": "algas e bioprodutos marinhos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "alga"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "bancada_objeto": {
-   "texto": "Com o que você trabalha na bancada?",
-   "opcoes": [
-    {
-     "id": "bancada.micro",
-     "rotulo": "Microrganismos e parasitos",
-     "icone": "microscopio",
-     "proxima": "micro_foco",
-     "sinais": {
-      "fields": [
-       "24"
-      ],
-      "frase": "microbiologia e parasitologia"
-     },
-     "perfil": "microbiologia",
-     "arte": {
-      "camada": "elemento",
-      "id": "microscopio"
-     }
-    },
-    {
-     "id": "bancada.celulas",
-     "rotulo": "Células e moléculas",
-     "icone": "celula",
-     "proxima": "celulas_foco",
-     "sinais": {
-      "fields": [
-       "13"
-      ],
-      "termos": [
-       "cell",
-       "célula",
-       "gene",
-       "protein",
-       "proteína",
-       "molecular"
-      ],
-      "frase": "biologia celular e molecular"
-     },
-     "perfil": "biologia celular e molecular",
-     "arte": {
-      "camada": "elemento",
-      "id": "celula"
-     }
-    },
-    {
-     "id": "bancada.compostos",
-     "rotulo": "Compostos e fármacos",
-     "icone": "frasco",
-     "proxima": "compostos_foco",
-     "sinais": {
-      "fields": [
-       "30"
-      ],
-      "termos": [
-       "compound",
-       "composto",
-       "extract",
-       "extrato",
-       "activity",
-       "atividade"
-      ],
-      "frase": "compostos bioativos e fármacos"
-     },
-     "perfil": "farmacologia",
-     "arte": {
-      "camada": "elemento",
-      "id": "frasco"
-     }
-    },
-    {
-     "id": "bancada.alimentos",
-     "rotulo": "Alimentos",
-     "icone": "alimento",
-     "proxima": "alimentos_foco",
-     "sinais": {
-      "subfields": [
-       "1106",
-       "2916"
-      ],
-      "termos": [
-       "food",
-       "alimento"
-      ],
-      "frase": "ciência e tecnologia de alimentos"
-     },
-     "perfil": "ciência de alimentos",
-     "arte": {
-      "camada": "elemento",
-      "id": "alimento"
-     }
-    },
-    {
-     "id": "bancada.materiais",
-     "rotulo": "Materiais e biomateriais",
-     "icone": "cristal",
-     "proxima": "materiais_foco",
-     "sinais": {
-      "termos": [
-       "material",
-       "biomaterial",
-       "nanoparticle",
-       "nanopartícula",
-       "polymer",
-       "polímero"
-      ],
-      "frase": "materiais e biomateriais"
-     },
-     "perfil": "biomateriais",
-     "arte": {
-      "camada": "elemento",
-      "id": "cristal"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "micro_foco": {
-   "texto": "Que microrganismos ou parasitos?",
-   "opcoes": [
-    {
-     "id": "micro.bacterias",
-     "rotulo": "Bactérias e resistência a antibióticos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10147",
-       "T10195",
-       "T10897",
-       "T10593",
-       "T11000"
-      ],
-      "termos": [
-       "antibiotic",
-       "antibiótico",
-       "resistance",
-       "resistência",
-       "staphylococcus",
-       "klebsiella",
-       "biofilm",
-       "biofilme"
-      ],
-      "frase": "bactérias resistentes a antibióticos e biofilmes"
-     },
-     "perfil": "resistência bacteriana",
-     "arte": {
-      "camada": "detalhe",
-      "id": "bacteria"
-     }
-    },
-    {
-     "id": "micro.fungos",
-     "rotulo": "Fungos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10150",
-       "T11037",
-       "T11900"
-      ],
-      "termos": [
-       "candida",
-       "fungal",
-       "fúngic",
-       "antifungal",
-       "antifúngic",
-       "cryptococc",
-       "yeast",
-       "levedura"
-      ],
-      "frase": "fungos patogênicos e antifúngicos"
-     },
-     "perfil": "micologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "fungo"
-     }
-    },
-    {
-     "id": "micro.parasitos",
-     "rotulo": "Parasitos (leishmania, Chagas, vermes)",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10823",
-       "T10890",
-       "T10695",
-       "T11074",
-       "T11155",
-       "T10815",
-       "T11086"
-      ],
-      "termos": [
-       "leishmania",
-       "trypanosoma",
-       "chagas",
-       "schistosom",
-       "esquistossom",
-       "toxoplasma",
-       "helminth",
-       "helminto"
-      ],
-      "frase": "parasitos: leishmania, Trypanosoma cruzi, esquistossomo e toxoplasma"
-     },
-     "perfil": "parasitologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "parasita"
-     }
-    },
-    {
-     "id": "micro.virus",
-     "rotulo": "Vírus",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10118",
-       "T11754",
-       "T11780",
-       "T11767",
-       "T12159",
-       "T10494",
-       "T10151"
-      ],
-      "termos": [
-       "virus",
-       "vírus",
-       "viral",
-       "sars-cov-2",
-       "arbovirus",
-       "arbovírus",
-       "zika",
-       "dengue",
-       "chikungunya"
-      ],
-      "frase": "vírus e infecções virais"
-     },
-     "perfil": "virologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "virus"
-     }
-    },
-    {
-     "id": "micro.microbiota",
-     "rotulo": "Microbiota, probióticos e fermentação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10066",
-       "T10141",
-       "T10750"
-      ],
-      "termos": [
-       "microbiota",
-       "probiotic",
-       "probiótico",
-       "lactobacillus",
-       "fermented",
-       "fermentad",
-       "gut",
-       "intestinal"
-      ],
-      "frase": "microbiota intestinal, probióticos e fermentação"
-     },
-     "perfil": "microbiota e probióticos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "intestino"
-     }
-    },
-    {
-     "id": "micro.bioprodutos",
-     "rotulo": "Enzimas e bioprodutos microbianos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11617",
-       "T10252",
-       "T10404",
-       "T11103"
-      ],
-      "termos": [
-       "enzyme",
-       "enzima",
-       "lipase",
-       "bioprocess",
-       "bioprocesso",
-       "biosurfactant",
-       "biossurfactante",
-       "fermentation",
-       "fermentação"
-      ],
-      "frase": "enzimas e bioprodutos de microrganismos"
-     },
-     "perfil": "biotecnologia microbiana",
-     "arte": {
-      "camada": "detalhe",
-      "id": "engrenagem"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "celulas_foco": {
-   "texto": "Qual é o seu foco?",
-   "opcoes": [
-    {
-     "id": "celulas.cancer",
-     "rotulo": "Câncer",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10433",
-       "T10957",
-       "T10163",
-       "T10309",
-       "T10129"
-      ],
-      "termos": [
-       "cancer",
-       "câncer",
-       "tumor",
-       "carcinoma",
-       "cytotoxic",
-       "citotóxic",
-       "apoptosis",
-       "apoptose"
-      ],
-      "frase": "biologia do câncer e terapias antitumorais"
-     },
-     "perfil": "oncologia experimental",
-     "arte": {
-      "camada": "detalhe",
-      "id": "alvo"
-     }
-    },
-    {
-     "id": "celulas.genetica",
-     "rotulo": "Genética e genômica",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10012",
-       "T10434",
-       "T10261",
-       "T10554",
-       "T10945"
-      ],
-      "termos": [
-       "gene",
-       "genetic",
-       "genétic",
-       "polymorphism",
-       "polimorfismo",
-       "mutation",
-       "mutação",
-       "chromosom",
-       "cromossom"
-      ],
-      "frase": "genética humana, polimorfismos e variação cromossômica"
-     },
-     "perfil": "genética",
-     "arte": {
-      "camada": "detalhe",
-      "id": "dna"
-     }
-    },
-    {
-     "id": "celulas.imuno",
-     "rotulo": "Imunologia e inflamação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12159",
-       "T10308",
-       "T12322",
-       "T10196"
-      ],
-      "termos": [
-       "immune",
-       "imune",
-       "cytokine",
-       "citocina",
-       "inflammation",
-       "inflamação",
-       "macrophage",
-       "macrófago",
-       "lymphocyte",
-       "linfócito"
-      ],
-      "frase": "resposta imune e inflamação"
-     },
-     "perfil": "imunologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "escudo"
-     }
-    },
-    {
-     "id": "celulas.neuro",
-     "rotulo": "Cérebro e sistema nervoso",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10085",
-       "T10086",
-       "T10196",
-       "T10342",
-       "T10614"
-      ],
-      "termos": [
-       "neuro",
-       "brain",
-       "cérebro",
-       "neuron",
-       "neurônio",
-       "hippocamp",
-       "hipocamp",
-       "behavior",
-       "comportamento"
-      ],
-      "frase": "neurociência e sistema nervoso"
-     },
-     "perfil": "neurociência",
-     "arte": {
-      "camada": "detalhe",
-      "id": "cerebro"
-     }
-    },
-    {
-     "id": "celulas.reproducao",
-     "rotulo": "Reprodução e desenvolvimento",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10116",
-       "T10364",
-       "T11685",
-       "T10584",
-       "T11505"
-      ],
-      "termos": [
-       "sperm",
-       "esperma",
-       "oocyte",
-       "oócito",
-       "embryo",
-       "embrião",
-       "zebrafish",
-       "paulistinha",
-       "testis",
-       "testículo"
-      ],
-      "frase": "biologia da reprodução e do desenvolvimento"
-     },
-     "perfil": "biologia da reprodução",
-     "arte": {
-      "camada": "detalhe",
-      "id": "embriao"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "compostos_foco": {
-   "texto": "Qual é o seu foco?",
-   "opcoes": [
-    {
-     "id": "compostos.plantas",
-     "rotulo": "Extratos de plantas e antioxidantes",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12657",
-       "T13090",
-       "T10035",
-       "T11613",
-       "T11140",
-       "T12721"
-      ],
-      "termos": [
-       "extract",
-       "extrato",
-       "antioxidant",
-       "antioxidante",
-       "phenolic",
-       "fenólic",
-       "flavonoid",
-       "flavonoide"
-      ],
-      "frase": "extratos de plantas medicinais e atividade antioxidante"
-     },
-     "perfil": "produtos naturais",
-     "arte": {
-      "camada": "detalhe",
-      "id": "folha"
-     }
-    },
-    {
-     "id": "compostos.oleos",
-     "rotulo": "Óleos essenciais e antimicrobianos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10225",
-       "T11103"
-      ],
-      "termos": [
-       "essential oil",
-       "óleo essencial",
-       "antimicrobial",
-       "antimicrobiano",
-       "antibacterial",
-       "antibacteriano",
-       "terpen"
-      ],
-      "frase": "óleos essenciais e atividade antimicrobiana"
-     },
-     "perfil": "óleos essenciais",
-     "arte": {
-      "camada": "detalhe",
-      "id": "gota"
-     }
-    },
-    {
-     "id": "compostos.formulacao",
-     "rotulo": "Formulação e liberação de fármacos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10256",
-       "T10704",
-       "T10920"
-      ],
-      "termos": [
-       "nanoparticle",
-       "nanopartícula",
-       "drug delivery",
-       "liberação",
-       "formulation",
-       "formulação",
-       "nanoemulsion",
-       "nanoemulsão"
-      ],
-      "frase": "formulação e sistemas de liberação de fármacos"
-     },
-     "perfil": "tecnologia farmacêutica",
-     "arte": {
-      "camada": "detalhe",
-      "id": "capsula"
-     }
-    },
-    {
-     "id": "compostos.toxicologia",
-     "rotulo": "Toxicologia, venenos e pesticidas",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11353",
-       "T10875",
-       "T12429",
-       "T10433"
-      ],
-      "termos": [
-       "venom",
-       "veneno",
-       "envenom",
-       "peçonh",
-       "pesticide",
-       "agrotóxico",
-       "scorpion",
-       "escorpião",
-       "snake",
-       "serpente",
-       "genotox",
-       "mutagen",
-       "mutagên",
-       "ecotox"
-      ],
-      "frase": "toxicologia, venenos de animais e pesticidas"
-     },
-     "perfil": "toxicologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "escorpiao"
-     }
-    },
-    {
-     "id": "compostos.sintese",
-     "rotulo": "Síntese e desenho de moléculas",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10163"
-      ],
-      "termos": [
-       "synthesis",
-       "síntese",
-       "synthesized",
-       "sintetizad",
-       "derivative",
-       "derivado",
-       "hybrid",
-       "híbrido",
-       "analogue",
-       "análogo",
-       "thiosemicarbazon",
-       "tiossemicarbazon",
-       "chalcone",
-       "chalcona"
-      ],
-      "frase": "síntese química de novas moléculas e derivados bioativos"
-     },
-     "perfil": "química medicinal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "molecula"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "alimentos_foco": {
-   "texto": "Qual é o seu foco nos alimentos?",
-   "opcoes": [
-    {
-     "id": "alimentos.fermentados",
-     "rotulo": "Fermentados e probióticos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10141",
-       "T10750",
-       "T10066"
-      ],
-      "termos": [
-       "fermented",
-       "fermentad",
-       "probiotic",
-       "probiótico",
-       "cheese",
-       "queijo",
-       "yogurt",
-       "iogurte",
-       "kefir"
-      ],
-      "frase": "alimentos fermentados e probióticos"
-     },
-     "perfil": "alimentos fermentados",
-     "arte": {
-      "camada": "detalhe",
-      "id": "queijo"
-     }
-    },
-    {
-     "id": "alimentos.produtos",
-     "rotulo": "Composição e novos produtos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T14127",
-       "T10140",
-       "T12192",
-       "T10411",
-       "T11561",
-       "T12349"
-      ],
-      "termos": [
-       "flour",
-       "farinha",
-       "formulation",
-       "formulação",
-       "nutritional",
-       "nutricional",
-       "protein",
-       "proteína",
-       "fiber",
-       "fibra"
-      ],
-      "frase": "composição nutricional e desenvolvimento de novos produtos alimentícios"
-     },
-     "perfil": "desenvolvimento de alimentos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pao"
-     }
-    },
-    {
-     "id": "alimentos.conservacao",
-     "rotulo": "Secagem, embalagens e conservação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T12048",
-       "T10650",
-       "T10473",
-       "T12642"
-      ],
-      "termos": [
-       "drying",
-       "secagem",
-       "microencapsulation",
-       "microencapsulação",
-       "shelf life",
-       "vida de prateleira",
-       "coating",
-       "revestimento",
-       "film",
-       "filme"
-      ],
-      "frase": "secagem, microencapsulação e conservação de alimentos"
-     },
-     "perfil": "tecnologia de conservação",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pote"
-     }
-    },
-    {
-     "id": "alimentos.seguranca",
-     "rotulo": "Segurança e qualidade dos alimentos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11957",
-       "T10486",
-       "T12057",
-       "T12114"
-      ],
-      "termos": [
-       "food safety",
-       "segurança dos alimentos",
-       "salmonella",
-       "contamination",
-       "contaminação",
-       "hygiene",
-       "higiene",
-       "sensory",
-       "sensorial"
-      ],
-      "frase": "segurança, higiene e qualidade sensorial dos alimentos"
-     },
-     "perfil": "segurança dos alimentos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "escudo"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "materiais_foco": {
-   "texto": "Que materiais?",
-   "opcoes": [
-    {
-     "id": "materiais.odonto",
-     "rotulo": "Materiais odontológicos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10113",
-       "T11958",
-       "T10536"
-      ],
-      "termos": [
-       "resin",
-       "resina",
-       "composite",
-       "compósito",
-       "adhesive",
-       "adesivo",
-       "enamel",
-       "esmalte",
-       "dentin",
-       "dentina"
-      ],
-      "frase": "materiais dentários e restauradores"
-     },
-     "perfil": "materiais odontológicos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "dente"
-     }
-    },
-    {
-     "id": "materiais.curativos",
-     "rotulo": "Curativos e cicatrização",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10771",
-       "T11670",
-       "T11227"
-      ],
-      "termos": [
-       "wound",
-       "ferida",
-       "healing",
-       "cicatrização",
-       "dressing",
-       "curativo",
-       "hydrogel",
-       "hidrogel"
-      ],
-      "frase": "biomateriais para cicatrização de feridas"
-     },
-     "perfil": "biomateriais para cicatrização",
-     "arte": {
-      "camada": "detalhe",
-      "id": "curativo"
-     }
-    },
-    {
-     "id": "materiais.luz",
-     "rotulo": "Luz, laser e fotobiomodulação",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11566",
-       "T10957"
-      ],
-      "termos": [
-       "laser",
-       "photobiomodulation",
-       "fotobiomodulação",
-       "photodynamic",
-       "fotodinâmic",
-       "led"
-      ],
-      "frase": "laser, fotobiomodulação e terapia fotodinâmica"
-     },
-     "perfil": "fotobiologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "laser"
-     }
-    },
-    {
-     "id": "materiais.nano",
-     "rotulo": "Nanomateriais e polímeros",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10920",
-       "T10256",
-       "T12642",
-       "T12192"
-      ],
-      "termos": [
-       "nanoparticle",
-       "nanopartícula",
-       "polymer",
-       "polímero",
-       "chitosan",
-       "quitosana",
-       "nanocomposite",
-       "nanocompósito"
-      ],
-      "frase": "nanomateriais e polímeros biocompatíveis"
-     },
-     "perfil": "nanobiotecnologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "molecula"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "pac_area": {
-   "texto": "Em que área você atende?",
-   "opcoes": [
-    {
-     "id": "pac.odonto",
-     "rotulo": "Odontologia",
-     "icone": "dente",
-     "proxima": "odonto_foco",
-     "sinais": {
-      "fields": [
-       "35"
-      ],
-      "termos": [
-       "dental",
-       "dentist",
-       "oral",
-       "bucal",
-       "odontol"
-      ],
-      "frase": "odontologia"
-     },
-     "perfil": "odontologia",
-     "arte": {
-      "camada": "elemento",
-      "id": "dente"
-     }
-    },
-    {
-     "id": "pac.enfermagem",
-     "rotulo": "Enfermagem e cuidado",
-     "icone": "cuidado",
-     "proxima": "enf_foco",
-     "sinais": {
-      "fields": [
-       "29"
-      ],
-      "termos": [
-       "nursing",
-       "enfermagem",
-       "nurse",
-       "enfermeir"
-      ],
-      "frase": "enfermagem e cuidado"
-     },
-     "perfil": "enfermagem",
-     "arte": {
-      "camada": "elemento",
-      "id": "cuidado"
-     }
-    },
-    {
-     "id": "pac.reabilitacao",
-     "rotulo": "Reabilitação (fisio, fono, TO)",
-     "icone": "movimento",
-     "proxima": "reab_foco",
-     "sinais": {
-      "subfields": [
-       "3612",
-       "3616",
-       "2742",
-       "3609"
-      ],
-      "termos": [
-       "rehabilitation",
-       "reabilitação",
-       "physiotherap",
-       "fisioterap",
-       "speech",
-       "fonoaudiol"
-      ],
-      "frase": "reabilitação, fisioterapia e fonoaudiologia"
-     },
-     "perfil": "reabilitação",
-     "arte": {
-      "camada": "elemento",
-      "id": "movimento"
-     }
-    },
-    {
-     "id": "pac.medicina",
-     "rotulo": "Medicina",
-     "icone": "estetoscopio",
-     "proxima": "med_area",
-     "sinais": {
-      "fields": [
-       "27"
-      ],
-      "frase": "medicina clínica"
-     },
-     "perfil": "medicina",
-     "arte": {
-      "camada": "elemento",
-      "id": "estetoscopio"
-     }
-    },
-    {
-     "id": "pac.nutricao",
-     "rotulo": "Nutrição",
-     "icone": "prato",
-     "proxima": "nutri_foco",
-     "sinais": {
-      "subfields": [
-       "2916"
-      ],
-      "termos": [
-       "nutrition",
-       "nutrição",
-       "nutritional",
-       "nutricional",
-       "diet",
-       "dieta"
-      ],
-      "frase": "nutrição clínica"
-     },
-     "perfil": "nutrição",
-     "arte": {
-      "camada": "elemento",
-      "id": "prato"
-     }
-    },
-    {
-     "id": "pac.veterinaria",
-     "rotulo": "Veterinária",
-     "icone": "pata",
-     "proxima": "vet_foco",
-     "sinais": {
-      "fields": [
-       "34"
-      ],
-      "termos": [
-       "veterinar",
-       "dog",
-       "cão",
-       "cães",
-       "cat",
-       "gato",
-       "horse",
-       "equino"
-      ],
-      "frase": "medicina veterinária"
-     },
-     "perfil": "medicina veterinária",
-     "arte": {
-      "camada": "elemento",
-      "id": "pata"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "ens_area": {
-   "texto": "Em que área são os seus ensaios?",
-   "opcoes": [
-    {
-     "id": "ens.odonto",
-     "rotulo": "Odontologia",
-     "icone": "dente",
-     "proxima": "odonto_foco",
-     "sinais": {
-      "fields": [
-       "35"
-      ],
-      "termos": [
-       "dental",
-       "dentist",
-       "oral",
-       "bucal",
-       "odontol"
-      ],
-      "frase": "odontologia"
-     },
-     "perfil": "odontologia",
-     "arte": {
-      "camada": "elemento",
-      "id": "dente"
-     }
-    },
-    {
-     "id": "ens.enfermagem",
-     "rotulo": "Enfermagem e cuidado",
-     "icone": "cuidado",
-     "proxima": "enf_foco",
-     "sinais": {
-      "fields": [
-       "29"
-      ],
-      "termos": [
-       "nursing",
-       "enfermagem",
-       "nurse",
-       "enfermeir"
-      ],
-      "frase": "enfermagem e cuidado"
-     },
-     "perfil": "enfermagem",
-     "arte": {
-      "camada": "elemento",
-      "id": "cuidado"
-     }
-    },
-    {
-     "id": "ens.reabilitacao",
-     "rotulo": "Reabilitação (fisio, fono, TO)",
-     "icone": "movimento",
-     "proxima": "reab_foco",
-     "sinais": {
-      "subfields": [
-       "3612",
-       "3616",
-       "2742",
-       "3609"
-      ],
-      "termos": [
-       "rehabilitation",
-       "reabilitação",
-       "physiotherap",
-       "fisioterap",
-       "speech",
-       "fonoaudiol"
-      ],
-      "frase": "reabilitação, fisioterapia e fonoaudiologia"
-     },
-     "perfil": "reabilitação",
-     "arte": {
-      "camada": "elemento",
-      "id": "movimento"
-     }
-    },
-    {
-     "id": "ens.medicina",
-     "rotulo": "Medicina",
-     "icone": "estetoscopio",
-     "proxima": "med_area",
-     "sinais": {
-      "fields": [
-       "27"
-      ],
-      "frase": "medicina clínica"
-     },
-     "perfil": "medicina",
-     "arte": {
-      "camada": "elemento",
-      "id": "estetoscopio"
-     }
-    },
-    {
-     "id": "ens.nutricao",
-     "rotulo": "Nutrição",
-     "icone": "prato",
-     "proxima": "nutri_foco",
-     "sinais": {
-      "subfields": [
-       "2916"
-      ],
-      "termos": [
-       "nutrition",
-       "nutrição",
-       "nutritional",
-       "nutricional",
-       "diet",
-       "dieta"
-      ],
-      "frase": "nutrição clínica"
-     },
-     "perfil": "nutrição",
-     "arte": {
-      "camada": "elemento",
-      "id": "prato"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "odonto_foco": {
-   "texto": "Qual é o seu foco na odontologia?",
-   "opcoes": [
-    {
-     "id": "odonto.endo",
-     "rotulo": "Endodontia, implantes e cirurgia",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10536",
-       "T10359",
-       "T11562",
-       "T11787",
-       "T11035"
-      ],
-      "termos": [
-       "root canal",
-       "canal radicular",
-       "endodont",
-       "implant",
-       "implante",
-       "maxillofacial",
-       "bucomaxilo"
-      ],
-      "frase": "endodontia, implantes e cirurgia bucomaxilofacial"
-     },
-     "perfil": "endodontia e cirurgia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "bisturi"
-     }
-    },
-    {
-     "id": "odonto.orto",
-     "rotulo": "Ortodontia e ATM",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10356",
-       "T10852"
-      ],
-      "termos": [
-       "orthodont",
-       "ortodont",
-       "malocclusion",
-       "maloclusão",
-       "temporomandibular",
-       "bruxism",
-       "bruxismo"
-      ],
-      "frase": "ortodontia, oclusão e disfunção temporomandibular"
-     },
-     "perfil": "ortodontia e ATM",
-     "arte": {
-      "camada": "detalhe",
-      "id": "aparelho"
-     }
-    },
-    {
-     "id": "odonto.perio",
-     "rotulo": "Periodontia e patologia bucal",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10257",
-       "T11452",
-       "T12198",
-       "T11787"
-      ],
-      "termos": [
-       "periodont",
-       "gingiv",
-       "gengiv",
-       "oral cancer",
-       "câncer bucal",
-       "oral lesion",
-       "lesão bucal",
-       "mucositis",
-       "mucosite"
-      ],
-      "frase": "doença periodontal e patologia oral"
-     },
-     "perfil": "periodontia e estomatologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "lupa"
-     }
-    },
-    {
-     "id": "odonto.coletiva",
-     "rotulo": "Saúde bucal coletiva e materiais",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10368",
-       "T10113",
-       "T11958",
-       "T11363",
-       "T13457"
-      ],
-      "termos": [
-       "caries",
-       "cárie",
-       "oral health",
-       "saúde bucal",
-       "restoration",
-       "restaura",
-       "fluoride",
-       "flúor"
-      ],
-      "frase": "cárie, saúde bucal coletiva e materiais restauradores"
-     },
-     "perfil": "dentística e saúde bucal",
-     "arte": {
-      "camada": "detalhe",
-      "id": "escova"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "enf_foco": {
-   "texto": "Qual é o seu foco no cuidado?",
-   "opcoes": [
-    {
-     "id": "enf.feridas",
-     "rotulo": "Feridas e lesões de pele",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10771",
-       "T11670",
-       "T11227",
-       "T12769"
-      ],
-      "termos": [
-       "wound",
-       "ferida",
-       "pressure ulcer",
-       "lesão por pressão",
-       "diabetic foot",
-       "pé diabético",
-       "ostomy",
-       "estomia"
-      ],
-      "frase": "cuidado com feridas, lesões por pressão e pé diabético"
-     },
-     "perfil": "cuidado de feridas",
-     "arte": {
-      "camada": "detalhe",
-      "id": "curativo"
-     }
-    },
-    {
-     "id": "enf.seguranca",
-     "rotulo": "Segurança do paciente e UTI",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10508",
-       "T10867",
-       "T10641",
-       "T10218",
-       "T11000"
-      ],
-      "termos": [
-       "patient safety",
-       "segurança do paciente",
-       "intensive care",
-       "terapia intensiva",
-       "uti",
-       "sepsis",
-       "sepse",
-       "medication error"
-      ],
-      "frase": "segurança do paciente e cuidados intensivos"
-     },
-     "perfil": "cuidado crítico",
-     "arte": {
-      "camada": "detalhe",
-      "id": "monitor"
-     }
-    },
-    {
-     "id": "enf.paliativos",
-     "rotulo": "Cuidados paliativos e oncológicos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T13340",
-       "T10177",
-       "T10178",
-       "T13544"
-      ],
-      "termos": [
-       "palliative",
-       "paliativ",
-       "oncolog",
-       "cancer",
-       "câncer",
-       "end of life",
-       "fim de vida"
-      ],
-      "frase": "cuidados paliativos e enfermagem oncológica"
-     },
-     "perfil": "cuidados paliativos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "maos"
-     }
-    },
-    {
-     "id": "enf.educacao",
-     "rotulo": "Educação em saúde e processo de enfermagem",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T13117",
-       "T12790",
-       "T10186",
-       "T13111",
-       "T12831"
-      ],
-      "termos": [
-       "health education",
-       "educação em saúde",
-       "nursing diagnos",
-       "diagnóstico de enfermagem",
-       "validation",
-       "validação",
-       "educational technology",
-       "tecnologia educacional"
-      ],
-      "frase": "educação em saúde, tecnologias educacionais e diagnósticos de enfermagem"
-     },
-     "perfil": "educação em saúde",
-     "arte": {
-      "camada": "detalhe",
-      "id": "livro"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "reab_foco": {
-   "texto": "Qual é o seu foco na reabilitação?",
-   "opcoes": [
-    {
-     "id": "reab.movimento",
-     "rotulo": "Movimento, dor e equilíbrio",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10114",
-       "T10084",
-       "T10510",
-       "T11097",
-       "T10418"
-      ],
-      "termos": [
-       "balance",
-       "equilíbrio",
-       "gait",
-       "marcha",
-       "low back pain",
-       "dor lombar",
-       "stroke",
-       "avc",
-       "pelvic floor",
-       "assoalho pélvico"
-      ],
-      "frase": "fisioterapia, dor musculoesquelética, equilíbrio e marcha"
-     },
-     "perfil": "fisioterapia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "articulacao"
-     }
-    },
-    {
-     "id": "reab.fono",
-     "rotulo": "Voz, audição e deglutição",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10863",
-       "T10283",
-       "T11358",
-       "T10334"
-      ],
-      "termos": [
-       "voice",
-       "voz",
-       "hearing",
-       "audição",
-       "dysphagia",
-       "disfagia",
-       "speech",
-       "fala",
-       "language",
-       "linguagem"
-      ],
-      "frase": "fonoaudiologia: voz, audição, linguagem e deglutição"
-     },
-     "perfil": "fonoaudiologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "onda_som"
-     }
-    },
-    {
-     "id": "reab.exercicio",
-     "rotulo": "Exercício e desempenho",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10157",
-       "T11209",
-       "T11585",
-       "T10352",
-       "T12279"
-      ],
-      "termos": [
-       "exercise",
-       "exercício",
-       "training",
-       "treinamento",
-       "athlete",
-       "atleta",
-       "physical activity",
-       "atividade física"
-      ],
-      "frase": "exercício físico, treinamento e desempenho"
-     },
-     "perfil": "ciências do exercício",
-     "arte": {
-      "camada": "detalhe",
-      "id": "haltere"
-     }
-    },
-    {
-     "id": "reab.respiratoria",
-     "rotulo": "Respiração e cardiorrespiratória",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10322",
-       "T10143",
-       "T10051",
-       "T10745",
-       "T10234"
-      ],
-      "termos": [
-       "respiratory",
-       "respiratór",
-       "pulmonary",
-       "pulmonar",
-       "ventilation",
-       "ventilação",
-       "copd",
-       "dpoc",
-       "asthma",
-       "asma"
-      ],
-      "frase": "fisioterapia respiratória e cardiopulmonar"
-     },
-     "perfil": "fisioterapia cardiorrespiratória",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pulmao"
-     }
-    },
-    {
-     "id": "reab.desenvolvimento",
-     "rotulo": "Desenvolvimento infantil e neurológico",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10106",
-       "T11097",
-       "T11060",
-       "T12207"
-      ],
-      "termos": [
-       "autism",
-       "autismo",
-       "cerebral palsy",
-       "paralisia cerebral",
-       "child development",
-       "desenvolvimento infantil",
-       "assistive",
-       "assistiva"
-      ],
-      "frase": "desenvolvimento infantil, autismo e paralisia cerebral"
-     },
-     "perfil": "neurodesenvolvimento",
-     "arte": {
-      "camada": "detalhe",
-      "id": "blocos"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "med_area": {
-   "texto": "Que especialidade?",
-   "opcoes": [
-    {
-     "id": "med.cardio",
-     "rotulo": "Coração, diabetes e metabolismo",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10144",
-       "T10745",
-       "T10198",
-       "T10027",
-       "T10793",
-       "T10560",
-       "T10172",
-       "T10065",
-       "T10277"
-      ],
-      "termos": [
-       "hypertension",
-       "hipertensão",
-       "heart",
-       "cardíac",
-       "diabetes",
-       "cardiovascular",
-       "obesity",
-       "obesidade"
-      ],
-      "frase": "cardiologia, hipertensão, diabetes e metabolismo"
-     },
-     "perfil": "cardiometabolismo",
-     "arte": {
-      "camada": "detalhe",
-      "id": "coracao"
-     }
-    },
-    {
-     "id": "med.neuro",
-     "rotulo": "Neurologia e saúde mental",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10498",
-       "T10085",
-       "T10227",
-       "T10094",
-       "T10137",
-       "T10106",
-       "T10009",
-       "T10023",
-       "T11071",
-       "T11368"
-      ],
-      "termos": [
-       "neurolog",
-       "stroke",
-       "avc",
-       "epilepsy",
-       "epilepsia",
-       "depression",
-       "depressão",
-       "anxiety",
-       "ansiedade",
-       "dementia",
-       "demência"
-      ],
-      "frase": "neurologia, psiquiatria e saúde mental"
-     },
-     "perfil": "neurologia e psiquiatria",
-     "arte": {
-      "camada": "detalhe",
-      "id": "cerebro"
-     }
-    },
-    {
-     "id": "med.infecto",
-     "rotulo": "Infectologia",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10082",
-       "T10038",
-       "T12107",
-       "T11934",
-       "T10041",
-       "T12223",
-       "T10151"
-      ],
-      "termos": [
-       "hiv",
-       "aids",
-       "tuberculosis",
-       "tuberculose",
-       "leprosy",
-       "hanseníase",
-       "syphilis",
-       "sífilis",
-       "covid"
-      ],
-      "frase": "doenças infecciosas: HIV, tuberculose, hanseníase e sífilis"
-     },
-     "perfil": "infectologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "virus"
-     }
-    },
-    {
-     "id": "med.onco",
-     "rotulo": "Câncer e sangue",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10309",
-       "T10950",
-       "T10345",
-       "T10649",
-       "T10556",
-       "T10307",
-       "T10185",
-       "T10554",
-       "T10693"
-      ],
-      "termos": [
-       "leukemia",
-       "leucemia",
-       "lymphoma",
-       "linfoma",
-       "cancer",
-       "câncer",
-       "sickle cell",
-       "falciforme",
-       "transfusion",
-       "transfusão"
-      ],
-      "frase": "oncologia e hematologia: leucemias, linfomas e doença falciforme"
-     },
-     "perfil": "oncologia e hematologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "gota_sangue"
-     }
-    },
-    {
-     "id": "med.materno",
-     "rotulo": "Saúde da mulher e da criança",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10453",
-       "T12741",
-       "T11060",
-       "T10290",
-       "T10979",
-       "T10935",
-       "T10146",
-       "T11629",
-       "T10694"
-      ],
-      "termos": [
-       "pregnan",
-       "gestação",
-       "gestante",
-       "neonat",
-       "newborn",
-       "recém-nascido",
-       "breastfeeding",
-       "aleitamento",
-       "preterm",
-       "prematur"
-      ],
-      "frase": "obstetrícia, neonatologia e saúde da mulher"
-     },
-     "perfil": "saúde materno-infantil",
-     "arte": {
-      "camada": "detalhe",
-      "id": "bebe"
-     }
-    },
-    {
-     "id": "med.imuno_renal",
-     "rotulo": "Reumatologia, rim e transplante",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10308",
-       "T10200",
-       "T10105",
-       "T10291",
-       "T10684",
-       "T10373",
-       "T10408",
-       "T11330"
-      ],
-      "termos": [
-       "lupus",
-       "lúpus",
-       "arthritis",
-       "artrite",
-       "kidney",
-       "renal",
-       "dialysis",
-       "diálise",
-       "transplant",
-       "transplante"
-      ],
-      "frase": "reumatologia, nefrologia e transplante"
-     },
-     "perfil": "reumatologia e nefrologia",
-     "arte": {
-      "camada": "detalhe",
-      "id": "rim"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "nutri_foco": {
-   "texto": "Com que público?",
-   "opcoes": [
-    {
-     "id": "nutri.idosos",
-     "rotulo": "Idosos e envelhecimento",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10397",
-       "T11011",
-       "T12811"
-      ],
-      "termos": [
-       "older adult",
-       "idoso",
-       "elderly",
-       "aging",
-       "envelhecimento",
-       "sarcopenia",
-       "frailty",
-       "fragilidade"
-      ],
-      "frase": "nutrição no envelhecimento e sarcopenia"
-     },
-     "perfil": "nutrição e envelhecimento",
-     "arte": {
-      "camada": "detalhe",
-      "id": "bengala"
-     }
-    },
-    {
-     "id": "nutri.obesidade",
-     "rotulo": "Obesidade e cirurgia bariátrica",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10010",
-       "T10569",
-       "T10489",
-       "T12279"
-      ],
-      "termos": [
-       "obesity",
-       "obesidade",
-       "bariatric",
-       "bariátric",
-       "body composition",
-       "composição corporal",
-       "overweight",
-       "sobrepeso"
-      ],
-      "frase": "obesidade, composição corporal e cirurgia bariátrica"
-     },
-     "perfil": "nutrição e obesidade",
-     "arte": {
-      "camada": "detalhe",
-      "id": "fita"
-     }
-    },
-    {
-     "id": "nutri.materno",
-     "rotulo": "Crianças e gestantes",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10596",
-       "T10979",
-       "T13883",
-       "T11610"
-      ],
-      "termos": [
-       "child",
-       "criança",
-       "infant",
-       "lactente",
-       "breastfeeding",
-       "aleitamento",
-       "pregnan",
-       "gestante",
-       "stunting"
-      ],
-      "frase": "nutrição materno-infantil e aleitamento"
-     },
-     "perfil": "nutrição materno-infantil",
-     "arte": {
-      "camada": "detalhe",
-      "id": "mamadeira"
-     }
-    },
-    {
-     "id": "nutri.clinica",
-     "rotulo": "Nutrição clínica e hospitalar",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10858",
-       "T12745",
-       "T10915",
-       "T12873"
-      ],
-      "termos": [
-       "malnutrition",
-       "desnutrição",
-       "hospitalized",
-       "hospitalizad",
-       "enteral",
-       "parenteral",
-       "dietary",
-       "alimentar"
-      ],
-      "frase": "nutrição clínica, hospitalar e comportamento alimentar"
-     },
-     "perfil": "nutrição clínica",
-     "arte": {
-      "camada": "detalhe",
-      "id": "prancheta"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "vet_foco": {
-   "texto": "Que animais você atende?",
-   "opcoes": [
-    {
-     "id": "vet.pequenos",
-     "rotulo": "Cães e gatos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11580",
-       "T11149",
-       "T11905",
-       "T12249"
-      ],
-      "termos": [
-       "dog",
-       "cão",
-       "cães",
-       "canine",
-       "canin",
-       "cat",
-       "gato",
-       "feline",
-       "felin"
-      ],
-      "frase": "clínica e cirurgia de cães e gatos"
-     },
-     "perfil": "clínica de pequenos animais",
-     "arte": {
-      "camada": "detalhe",
-      "id": "osso"
-     }
-    },
-    {
-     "id": "vet.equinos",
-     "rotulo": "Cavalos",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T10872"
-      ],
-      "termos": [
-       "horse",
-       "cavalo",
-       "equine",
-       "equin",
-       "mare",
-       "égua"
-      ],
-      "frase": "medicina equina"
-     },
-     "perfil": "medicina equina",
-     "arte": {
-      "camada": "detalhe",
-      "id": "ferradura"
-     }
-    },
-    {
-     "id": "vet.producao",
+     "id": "objeto.producao",
      "rotulo": "Animais de produção",
-     "proxima": null,
      "sinais": {
-      "topics": [
-       "T11226",
-       "T11560",
-       "T10584",
-       "T12322",
-       "T11495"
+      "subfields": [
+       "1103"
       ],
       "termos": [
+       "livestock",
+       "rebanho",
        "cattle",
        "bovin",
        "goat",
        "caprin",
        "sheep",
        "ovin",
-       "mastitis",
-       "mastite"
+       "poultry",
+       "swine"
       ],
-      "frase": "clínica e sanidade de bovinos, caprinos e ovinos"
+      "frase": "animais de produção"
      },
-     "perfil": "buiatria",
-     "arte": {
-      "camada": "detalhe",
-      "id": "estetoscopio"
+     "sintagma": {
+      "artigo": "os",
+      "nome": "rebanhos"
      }
     },
     {
-     "id": "vet.silvestres",
-     "rotulo": "Animais silvestres e zoonoses",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11780",
-       "T11228",
-       "T10823",
-       "T11155",
-       "T12223"
-      ],
-      "termos": [
-       "wild",
-       "silvestre",
-       "zoonos",
-       "rabies",
-       "raiva",
-       "leishmaniasis",
-       "leishmaniose",
-       "one health",
-       "saúde única"
-      ],
-      "frase": "animais silvestres, zoonoses e saúde única"
-     },
-     "perfil": "saúde única e zoonoses",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pegada"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "dados_tipo": {
-   "texto": "Com que tipo de dado você trabalha?",
-   "opcoes": [
-    {
-     "id": "dados.genomas",
-     "rotulo": "Genomas e sequências",
-     "icone": "dna",
-     "proxima": "dados_aplicacao",
-     "sinais": {
-      "topics": [
-       "T10012",
-       "T10434",
-       "T10261"
-      ],
-      "termos": [
-       "genome",
-       "genoma",
-       "genomic",
-       "genômic",
-       "sequencing",
-       "sequenciamento",
-       "transcriptom",
-       "metagenom",
-       "phylogen",
-       "filogen",
-       "bioinformatic"
-      ],
-      "frase": "bioinformática, genomas e sequenciamento"
-     },
-     "perfil": "bioinformática",
-     "arte": {
-      "camada": "elemento",
-      "id": "dna"
-     }
-    },
-    {
-     "id": "dados.moleculas",
-     "rotulo": "Moléculas e fármacos no computador",
-     "icone": "molecula",
-     "proxima": "compostos_foco",
-     "sinais": {
-      "topics": [
-       "T10211"
-      ],
-      "termos": [
-       "molecular docking",
-       "docking",
-       "in silico",
-       "molecular dynamics",
-       "dinâmica molecular",
-       "qsar",
-       "admet"
-      ],
-      "frase": "modelagem molecular, docking e descoberta de fármacos in silico"
-     },
-     "perfil": "química computacional",
-     "arte": {
-      "camada": "elemento",
-      "id": "molecula"
-     }
-    },
-    {
-     "id": "dados.ia",
-     "rotulo": "Inteligência artificial e saúde digital",
-     "icone": "chip",
-     "proxima": "dados_aplicacao",
-     "sinais": {
-      "topics": [
-       "T11396",
-       "T11636",
-       "T10350",
-       "T11446",
-       "T10912",
-       "T10616"
-      ],
-      "termos": [
-       "machine learning",
-       "deep learning",
-       "artificial intelligence",
-       "inteligência artificial",
-       "neural network",
-       "rede neural",
-       "app",
-       "aplicativo",
-       "telemedicine",
-       "telessaúde"
-      ],
-      "frase": "inteligência artificial, aprendizado de máquina e saúde digital"
-     },
-     "perfil": "inteligência artificial",
-     "arte": {
-      "camada": "elemento",
-      "id": "chip"
-     }
-    },
-    {
-     "id": "dados.espaciais",
-     "rotulo": "Mapas, imagens e sensoriamento",
-     "icone": "satelite",
-     "proxima": "dados_aplicacao",
-     "sinais": {
-      "topics": [
-       "T11164",
-       "T10770",
-       "T11819",
-       "T10616"
-      ],
-      "termos": [
-       "remote sensing",
-       "sensoriamento remoto",
-       "satellite",
-       "satélite",
-       "spatial",
-       "espacial",
-       "gis",
-       "geoprocessamento",
-       "ndvi"
-      ],
-      "frase": "análise espacial, sensoriamento remoto e geoprocessamento"
-     },
-     "perfil": "geotecnologias",
-     "arte": {
-      "camada": "elemento",
-      "id": "satelite"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "dados_aplicacao": {
-   "texto": "Aplicado a quê?",
-   "opcoes": [
-    {
-     "id": "dados_ap.saude",
-     "rotulo": "Saúde humana",
-     "proxima": null,
-     "sinais": {
-      "fields": [
-       "27"
-      ],
-      "termos": [
-       "patients",
-       "pacientes",
-       "health",
-       "saúde",
-       "disease",
-       "doença"
-      ],
-      "frase": "saúde humana e doenças"
-     },
-     "perfil": "saúde humana",
-     "arte": {
-      "camada": "detalhe",
-      "id": "coracao"
-     }
-    },
-    {
-     "id": "dados_ap.agro",
-     "rotulo": "Agricultura e animais",
-     "proxima": null,
-     "sinais": {
-      "fields": [
-       "11",
-       "34"
-      ],
-      "termos": [
-       "crop",
-       "cultivo",
-       "plant",
-       "planta",
-       "cattle",
-       "bovino",
-       "agricultur",
-       "agrícola",
-       "soil",
-       "solo"
-      ],
-      "frase": "agricultura, plantas e animais de produção"
-     },
-     "perfil": "agro",
-     "arte": {
-      "camada": "detalhe",
-      "id": "folha"
-     }
-    },
-    {
-     "id": "dados_ap.ambiente",
-     "rotulo": "Ambiente e biodiversidade",
-     "proxima": null,
+     "id": "objeto.fauna",
+     "rotulo": "Fauna, flora e ecossistemas",
      "sinais": {
       "subfields": [
        "1105",
@@ -3561,429 +381,2213 @@
        "biodiversity",
        "biodiversidade",
        "species",
-       "espécie",
-       "ecolog",
-       "climate",
-       "clima",
-       "caatinga"
+       "espécie"
       ],
-      "frase": "ambiente, clima e biodiversidade"
+      "frase": "biodiversidade e ecossistemas"
      },
-     "perfil": "ambiente",
-     "arte": {
-      "camada": "detalhe",
-      "id": "arvore"
+     "sintagma": {
+      "artigo": "a",
+      "nome": "biodiversidade"
      }
     },
     {
-     "id": "dados_ap.patogenos",
-     "rotulo": "Micróbios e patógenos",
-     "proxima": null,
+     "id": "objeto.micro",
+     "rotulo": "Microrganismos e parasitos",
      "sinais": {
       "fields": [
        "24"
       ],
       "termos": [
-       "virus",
-       "vírus",
-       "bacteria",
-       "bactéria",
+       "microorganism",
+       "microrganismo",
        "pathogen",
        "patógeno",
-       "parasit",
-       "fung"
+       "parasit"
       ],
-      "frase": "microrganismos, vírus e patógenos"
+      "frase": "microrganismos e parasitos"
      },
-     "perfil": "patógenos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "virus"
+     "sintagma": {
+      "artigo": "os",
+      "nome": "micróbios"
+     }
+    },
+    {
+     "id": "objeto.humanos",
+     "rotulo": "Saúde humana",
+     "sinais": {
+      "fields": [
+       "27",
+       "36",
+       "29",
+       "35"
+      ],
+      "termos": [
+       "patients",
+       "pacientes",
+       "health",
+       "saúde"
+      ],
+      "frase": "saúde humana"
+     },
+     "sintagma": {
+      "artigo": "a",
+      "nome": "saúde humana"
+     }
+    },
+    {
+     "id": "objeto.alimentos",
+     "rotulo": "Alimentos",
+     "sinais": {
+      "subfields": [
+       "1106",
+       "2916"
+      ],
+      "termos": [
+       "food",
+       "alimento"
+      ],
+      "frase": "ciência dos alimentos"
+     },
+     "sintagma": {
+      "artigo": "os",
+      "nome": "alimentos"
+     }
+    },
+    {
+     "id": "objeto.ambiente",
+     "rotulo": "Solo, água e clima",
+     "sinais": {
+      "subfields": [
+       "1111"
+      ],
+      "fields": [
+       "23"
+      ],
+      "termos": [
+       "soil",
+       "solo",
+       "water",
+       "água",
+       "climate",
+       "clima"
+      ],
+      "frase": "solo, água e clima"
+     },
+     "sintagma": {
+      "artigo": "o",
+      "nome": "solo e a água"
      }
     }
-   ],
-   "pular": null
+   ]
   },
-  "pop_tema": {
-   "texto": "Qual tema da saúde coletiva?",
+  "sub_objeto": {
+   "bloco": "nicho",
+   "faceta": "sub_objeto",
+   "texto": "Mais especificamente?",
+   "depende_de": "objeto",
+   "opcoes_por": {
+    "objeto.plantas": [
+     {
+      "id": "sub.frutiferas",
+      "rotulo": "Frutíferas e hortaliças",
+      "sinais": {
+       "topics": [
+        "T12795",
+        "T11796",
+        "T13069"
+       ],
+       "termos": [
+        "fruit",
+        "fruta",
+        "frutos",
+        "mango",
+        "manga",
+        "melon",
+        "melão",
+        "grape",
+        "uva",
+        "banana",
+        "papaya",
+        "mamão",
+        "acerola",
+        "guava",
+        "goiaba",
+        "passion fruit",
+        "maracujá",
+        "tomato",
+        "tomate",
+        "lettuce",
+        "alface",
+        "pepper",
+        "pimenta",
+        "cashew",
+        "caju"
+       ],
+       "frase": "frutíferas e hortaliças"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "frutíferas"
+      },
+      "nicho": "de frutíferas e hortaliças"
+     },
+     {
+      "id": "sub.graos",
+      "rotulo": "Grãos e grandes culturas",
+      "sinais": {
+       "topics": [
+        "T12431",
+        "T12243",
+        "T12571",
+        "T12742",
+        "T12305"
+       ],
+       "termos": [
+        "maize",
+        "milho",
+        "corn",
+        "soybean",
+        "soja",
+        "cowpea",
+        "feijão",
+        "bean",
+        "sorghum",
+        "sorgo",
+        "sugarcane",
+        "cana-de-açúcar",
+        "cotton",
+        "algodão",
+        "rice",
+        "arroz",
+        "cassava",
+        "mandioca",
+        "peanut",
+        "amendoim"
+       ],
+       "frase": "milho, feijão-caupi, soja, sorgo, cana e algodão"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "grãos"
+      },
+      "nicho": "de grãos e grandes culturas"
+     },
+     {
+      "id": "sub.forrageiras",
+      "rotulo": "Forrageiras e pastagens",
+      "sinais": {
+       "topics": [
+        "T13591",
+        "T13009"
+       ],
+       "termos": [
+        "forage",
+        "forragem",
+        "forrageira",
+        "pasture",
+        "pastagem",
+        "grass",
+        "capim",
+        "brachiaria",
+        "urochloa",
+        "cactus pear",
+        "palma forrageira",
+        "opuntia",
+        "nopalea",
+        "silage",
+        "silagem"
+       ],
+       "frase": "forrageiras, pastagens e palma forrageira"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "forrageiras"
+      },
+      "nicho": "de forrageiras"
+     },
+     {
+      "id": "sub.nativas",
+      "rotulo": "Plantas nativas",
+      "sinais": {
+       "topics": [
+        "T12618",
+        "T10385",
+        "T14049",
+        "T12870",
+        "T11880",
+        "T12359"
+       ],
+       "termos": [
+        "caatinga",
+        "native",
+        "nativa",
+        "dry forest",
+        "floresta seca",
+        "restinga",
+        "atlantic forest",
+        "mata atlântica",
+        "flora"
+       ],
+       "frase": "plantas nativas da caatinga e da mata atlântica"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "flora nativa"
+      },
+      "nicho": "da flora nativa"
+     },
+     {
+      "id": "sub.medicinais",
+      "rotulo": "Plantas medicinais",
+      "sinais": {
+       "topics": [
+        "T12657",
+        "T10431",
+        "T14521",
+        "T13090",
+        "T12721",
+        "T11613"
+       ],
+       "termos": [
+        "medicinal",
+        "ethnobotan",
+        "etnobotân",
+        "essential oil",
+        "óleo essencial",
+        "phytochemical",
+        "fitoquímic",
+        "folk medicine",
+        "medicina popular"
+       ],
+       "frase": "plantas medicinais e etnobotânica"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "plantas medicinais"
+      },
+      "nicho": "de plantas medicinais"
+     }
+    ],
+    "objeto.insetos": [
+     {
+      "id": "sub.abelhas",
+      "rotulo": "Abelhas e polinizadores",
+      "sinais": {
+       "topics": [
+        "T11386",
+        "T12132"
+       ],
+       "termos": [
+        "bee",
+        "abelha",
+        "honey",
+        "mel",
+        "propolis",
+        "própolis",
+        "pollinat",
+        "poliniz",
+        "meliponin",
+        "apis"
+       ],
+       "frase": "abelhas, polinizadores, mel e própolis"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "abelhas"
+      },
+      "nicho": "de abelhas"
+     },
+     {
+      "id": "sub.pragas",
+      "rotulo": "Pragas agrícolas",
+      "sinais": {
+       "topics": [
+        "T11065",
+        "T10135",
+        "T11641",
+        "T12043",
+        "T11436",
+        "T13125"
+       ],
+       "termos": [
+        "pest",
+        "praga",
+        "biological control",
+        "controle biológico",
+        "insecticide",
+        "inseticida",
+        "spodoptera",
+        "whitefl",
+        "mosca-branca"
+       ],
+       "frase": "insetos-praga em culturas agrícolas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "pragas"
+      },
+      "nicho": "de insetos-praga"
+     },
+     {
+      "id": "sub.vetores",
+      "rotulo": "Mosquitos e vetores",
+      "sinais": {
+       "topics": [
+        "T10166",
+        "T10296"
+       ],
+       "termos": [
+        "aedes",
+        "mosquito",
+        "vector",
+        "vetor",
+        "sandfl",
+        "flebotom",
+        "triatom",
+        "culex",
+        "anopheles"
+       ],
+       "frase": "mosquitos e insetos vetores de doenças"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "mosquitos"
+      },
+      "nicho": "de mosquitos e vetores"
+     },
+     {
+      "id": "sub.aranhas",
+      "rotulo": "Aranhas, ácaros e afins",
+      "sinais": {
+       "topics": [
+        "T12447",
+        "T12361",
+        "T14399",
+        "T11926"
+       ],
+       "termos": [
+        "spider",
+        "aranha",
+        "mite",
+        "ácaro",
+        "arachnid",
+        "aracníd",
+        "scorpion",
+        "escorpião",
+        "tick",
+        "carrapato"
+       ],
+       "frase": "aranhas, ácaros, escorpiões e carrapatos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "aracnídeos"
+      },
+      "nicho": "de aracnídeos"
+     },
+     {
+      "id": "sub.insetos_div",
+      "rotulo": "Besouros, borboletas e outros insetos",
+      "sinais": {
+       "topics": [
+        "T10702",
+        "T11974",
+        "T11494",
+        "T12606",
+        "T12637",
+        "T12329",
+        "T13950"
+       ],
+       "termos": [
+        "beetle",
+        "besouro",
+        "coleoptera",
+        "butterfl",
+        "borboleta",
+        "lepidoptera",
+        "diptera",
+        "ant",
+        "formiga",
+        "hemiptera"
+       ],
+       "frase": "diversidade e taxonomia de insetos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "insetos"
+      },
+      "nicho": "de insetos"
+     }
+    ],
+    "objeto.producao": [
+     {
+      "id": "sub.bovinos",
+      "rotulo": "Bovinos",
+      "sinais": {
+       "topics": [
+        "T11226",
+        "T10333"
+       ],
+       "termos": [
+        "cattle",
+        "bovin",
+        "cow",
+        "vaca",
+        "dairy",
+        "leite",
+        "milk",
+        "beef",
+        "nelore"
+       ],
+       "frase": "bovinos de leite e de corte"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "bovinos"
+      },
+      "nicho": "de bovinos"
+     },
+     {
+      "id": "sub.caprinos",
+      "rotulo": "Caprinos e ovinos",
+      "sinais": {
+       "topics": [
+        "T10098",
+        "T12365"
+       ],
+       "termos": [
+        "goat",
+        "cabra",
+        "caprin",
+        "sheep",
+        "ovelha",
+        "ovin",
+        "lamb",
+        "cordeiro",
+        "kid",
+        "cabrito",
+        "small ruminant",
+        "pequenos ruminantes"
+       ],
+       "frase": "caprinos e ovinos no semiárido"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "caprinos"
+      },
+      "nicho": "de caprinos e ovinos"
+     },
+     {
+      "id": "sub.aves",
+      "rotulo": "Aves e suínos",
+      "sinais": {
+       "topics": [
+        "T10152",
+        "T12991"
+       ],
+       "termos": [
+        "broiler",
+        "frango",
+        "chicken",
+        "galinha",
+        "laying hen",
+        "poedeira",
+        "quail",
+        "codorna",
+        "pig",
+        "swine",
+        "suín",
+        "egg",
+        "ovo"
+       ],
+       "frase": "aves de produção e suínos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "aves"
+      },
+      "nicho": "de aves e suínos"
+     },
+     {
+      "id": "sub.aquicultura",
+      "rotulo": "Peixes e camarões de cultivo",
+      "sinais": {
+       "topics": [
+        "T10450",
+        "T11088",
+        "T13391",
+        "T10506",
+        "T14405"
+       ],
+       "termos": [
+        "aquaculture",
+        "aquicultura",
+        "tilapia",
+        "tilápia",
+        "shrimp",
+        "camarão",
+        "fish farming",
+        "piscicultura",
+        "litopenaeus",
+        "tambaqui"
+       ],
+       "frase": "aquicultura de peixes e camarões"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "peixes de cultivo"
+      },
+      "nicho": "de aquicultura"
+     },
+     {
+      "id": "sub.equinos",
+      "rotulo": "Cavalos",
+      "sinais": {
+       "topics": [
+        "T10872"
+       ],
+       "termos": [
+        "horse",
+        "cavalo",
+        "equine",
+        "equin",
+        "mare",
+        "égua",
+        "foal",
+        "potro"
+       ],
+       "frase": "cavalos e medicina equina"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "cavalos"
+      },
+      "nicho": "de equinos"
+     }
+    ],
+    "objeto.fauna": [
+     {
+      "id": "sub.herpeto",
+      "rotulo": "Anfíbios e répteis",
+      "sinais": {
+       "topics": [
+        "T10332"
+       ],
+       "termos": [
+        "frog",
+        "anura",
+        "anuro",
+        "lizard",
+        "lagarto",
+        "snake",
+        "serpente",
+        "reptil",
+        "réptil",
+        "amphibian",
+        "anfíbio",
+        "turtle",
+        "tartaruga"
+       ],
+       "frase": "anfíbios e répteis"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "anfíbios e répteis"
+      },
+      "nicho": "de anfíbios e répteis"
+     },
+     {
+      "id": "sub.mamiferos",
+      "rotulo": "Aves e mamíferos silvestres",
+      "sinais": {
+       "topics": [
+        "T11228",
+        "T10699",
+        "T11665",
+        "T10174"
+       ],
+       "termos": [
+        "bat",
+        "morcego",
+        "primate",
+        "primata",
+        "mammal",
+        "mamífero",
+        "bird",
+        "aves",
+        "rodent",
+        "roedor",
+        "marmoset",
+        "sagui"
+       ],
+       "frase": "mamíferos silvestres, morcegos, primatas e aves"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "bichos silvestres"
+      },
+      "nicho": "de aves e mamíferos silvestres"
+     },
+     {
+      "id": "sub.marinha",
+      "rotulo": "Peixes e vida marinha",
+      "sinais": {
+       "topics": [
+        "T10230",
+        "T12319",
+        "T11505",
+        "T11390"
+       ],
+       "termos": [
+        "fish",
+        "peixe",
+        "reef",
+        "recife",
+        "marine",
+        "marinho",
+        "estuar",
+        "mangrove",
+        "manguezal",
+        "coral",
+        "seaweed",
+        "macroalga"
+       ],
+       "frase": "peixes, recifes e vida marinha"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "mar"
+      },
+      "nicho": "da vida marinha"
+     },
+     {
+      "id": "sub.flora",
+      "rotulo": "Flora e fungos",
+      "sinais": {
+       "topics": [
+        "T10385",
+        "T14049",
+        "T12618",
+        "T12359",
+        "T11836"
+       ],
+       "termos": [
+        "flora",
+        "botan",
+        "botân",
+        "new species",
+        "nova espécie",
+        "fungi",
+        "fungos",
+        "fern",
+        "samambaia",
+        "bryophyte",
+        "briófita",
+        "orchid",
+        "orquídea"
+       ],
+       "frase": "taxonomia e diversidade de plantas e fungos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "flora"
+      },
+      "nicho": "da flora e dos fungos"
+     },
+     {
+      "id": "sub.ecossistemas",
+      "rotulo": "Comunidades e ecossistemas",
+      "sinais": {
+       "topics": [
+        "T10487",
+        "T11880",
+        "T12417",
+        "T12870"
+       ],
+       "termos": [
+        "conservation",
+        "conservação",
+        "community",
+        "comunidade",
+        "restoration",
+        "restauração",
+        "landscape",
+        "paisagem",
+        "ecosystem",
+        "ecossistema"
+       ],
+       "frase": "ecologia de comunidades e ecossistemas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "ecossistemas"
+      },
+      "nicho": "de ecossistemas"
+     }
+    ],
+    "objeto.micro": [
+     {
+      "id": "sub.virus",
+      "rotulo": "Vírus",
+      "sinais": {
+       "topics": [
+        "T10118",
+        "T11754",
+        "T11780",
+        "T11767",
+        "T12159",
+        "T10494",
+        "T10151"
+       ],
+       "termos": [
+        "virus",
+        "vírus",
+        "viral",
+        "sars-cov-2",
+        "arbovirus",
+        "arbovírus",
+        "zika",
+        "dengue",
+        "chikungunya",
+        "virome",
+        "viroma"
+       ],
+       "frase": "vírus e infecções virais"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "vírus"
+      },
+      "nicho": "de vírus"
+     },
+     {
+      "id": "sub.bacterias",
+      "rotulo": "Bactérias",
+      "sinais": {
+       "topics": [
+        "T10147",
+        "T10195",
+        "T10897",
+        "T10593"
+       ],
+       "termos": [
+        "bacteria",
+        "bactéria",
+        "bacterial",
+        "bacterian",
+        "antibiotic",
+        "antibiótico",
+        "staphylococcus",
+        "klebsiella",
+        "escherichia",
+        "biofilm",
+        "biofilme"
+       ],
+       "frase": "bactérias, resistência a antibióticos e biofilmes"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "bactérias"
+      },
+      "nicho": "de bactérias"
+     },
+     {
+      "id": "sub.fungos",
+      "rotulo": "Fungos",
+      "sinais": {
+       "topics": [
+        "T10150",
+        "T11037",
+        "T11900",
+        "T10825"
+       ],
+       "termos": [
+        "fungal",
+        "fúngic",
+        "fungi",
+        "fungo",
+        "candida",
+        "antifungal",
+        "antifúngic",
+        "cryptococc",
+        "yeast",
+        "levedura",
+        "aspergillus"
+       ],
+       "frase": "fungos patogênicos e leveduras"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "fungos"
+      },
+      "nicho": "de fungos"
+     },
+     {
+      "id": "sub.parasitos",
+      "rotulo": "Parasitos",
+      "sinais": {
+       "topics": [
+        "T10823",
+        "T10890",
+        "T10695",
+        "T11074",
+        "T11155",
+        "T10815",
+        "T11086"
+       ],
+       "termos": [
+        "leishmania",
+        "trypanosoma",
+        "chagas",
+        "schistosom",
+        "esquistossom",
+        "toxoplasma",
+        "helminth",
+        "helminto",
+        "parasite",
+        "parasito"
+       ],
+       "frase": "parasitos: leishmania, Trypanosoma cruzi, esquistossomo e toxoplasma"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "parasitos"
+      },
+      "nicho": "de parasitos"
+     },
+     {
+      "id": "sub.microbiota",
+      "rotulo": "Microbiota e probióticos",
+      "sinais": {
+       "topics": [
+        "T10066",
+        "T10141",
+        "T10257"
+       ],
+       "termos": [
+        "microbiota",
+        "microbiome",
+        "microbioma",
+        "probiotic",
+        "probiótico",
+        "lactobacillus",
+        "gut",
+        "intestinal"
+       ],
+       "frase": "microbiota e probióticos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "microbiota"
+      },
+      "nicho": "da microbiota"
+     }
+    ],
+    "objeto.humanos": [
+     {
+      "id": "sub.cardio",
+      "rotulo": "Coração e metabolismo",
+      "sinais": {
+       "topics": [
+        "T10144",
+        "T10745",
+        "T10198",
+        "T10027",
+        "T10793",
+        "T10560",
+        "T10172",
+        "T10065"
+       ],
+       "termos": [
+        "hypertension",
+        "hipertensão",
+        "heart",
+        "cardíac",
+        "diabetes",
+        "cardiovascular",
+        "metabolic",
+        "metabólic"
+       ],
+       "frase": "doenças do coração, hipertensão e diabetes"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "coração"
+      },
+      "nicho": "do coração e do metabolismo"
+     },
+     {
+      "id": "sub.mente",
+      "rotulo": "Cérebro e mente",
+      "sinais": {
+       "topics": [
+        "T10498",
+        "T10085",
+        "T10227",
+        "T10094",
+        "T10106",
+        "T10009",
+        "T10023",
+        "T11071",
+        "T10086"
+       ],
+       "termos": [
+        "brain",
+        "cérebro",
+        "neurolog",
+        "stroke",
+        "epilepsy",
+        "epilepsia",
+        "depression",
+        "depressão",
+        "anxiety",
+        "ansiedade",
+        "dementia",
+        "autism",
+        "autismo"
+       ],
+       "frase": "neurologia, saúde mental e cérebro"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "cérebro"
+      },
+      "nicho": "do cérebro e da mente"
+     },
+     {
+      "id": "sub.infeccoes",
+      "rotulo": "Infecções",
+      "sinais": {
+       "topics": [
+        "T10082",
+        "T10038",
+        "T12107",
+        "T11934",
+        "T10041",
+        "T12223",
+        "T10166",
+        "T10823"
+       ],
+       "termos": [
+        "hiv",
+        "aids",
+        "tuberculosis",
+        "tuberculose",
+        "leprosy",
+        "hanseníase",
+        "syphilis",
+        "sífilis",
+        "covid",
+        "infection",
+        "infecção"
+       ],
+       "frase": "doenças infecciosas em humanos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "infecções"
+      },
+      "nicho": "das doenças infecciosas"
+     },
+     {
+      "id": "sub.cancer",
+      "rotulo": "Câncer e sangue",
+      "sinais": {
+       "topics": [
+        "T10309",
+        "T10950",
+        "T10345",
+        "T10649",
+        "T10556",
+        "T10307",
+        "T10185",
+        "T10554",
+        "T10146"
+       ],
+       "termos": [
+        "cancer",
+        "câncer",
+        "tumor",
+        "leukemia",
+        "leucemia",
+        "lymphoma",
+        "linfoma",
+        "sickle cell",
+        "falciforme"
+       ],
+       "frase": "câncer e doenças do sangue"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "câncer"
+      },
+      "nicho": "do câncer e do sangue"
+     },
+     {
+      "id": "sub.materno",
+      "rotulo": "Mulher e criança",
+      "sinais": {
+       "topics": [
+        "T10453",
+        "T12741",
+        "T11060",
+        "T10290",
+        "T10979",
+        "T10935",
+        "T11629",
+        "T10327"
+       ],
+       "termos": [
+        "pregnan",
+        "gestação",
+        "gestante",
+        "neonat",
+        "newborn",
+        "recém-nascido",
+        "breastfeeding",
+        "aleitamento",
+        "child",
+        "criança",
+        "women",
+        "mulheres"
+       ],
+       "frase": "saúde da mulher, gestação e saúde da criança"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "mães e crianças"
+      },
+      "nicho": "da saúde materno-infantil"
+     },
+     {
+      "id": "sub.boca",
+      "rotulo": "Boca e dentes",
+      "sinais": {
+       "topics": [
+        "T10536",
+        "T10368",
+        "T10113",
+        "T10257",
+        "T10356",
+        "T10852"
+       ],
+       "fields": [
+        "35"
+       ],
+       "termos": [
+        "dental",
+        "dentist",
+        "oral health",
+        "saúde bucal",
+        "caries",
+        "cárie",
+        "tooth",
+        "dente",
+        "periodont"
+       ],
+       "frase": "odontologia e saúde bucal"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "sorrisos"
+      },
+      "nicho": "da saúde bucal"
+     },
+     {
+      "id": "sub.movimento",
+      "rotulo": "Movimento e reabilitação",
+      "sinais": {
+       "topics": [
+        "T10114",
+        "T10084",
+        "T10510",
+        "T11097",
+        "T10157",
+        "T10863",
+        "T10283"
+       ],
+       "termos": [
+        "rehabilitation",
+        "reabilitação",
+        "physiotherap",
+        "fisioterap",
+        "balance",
+        "equilíbrio",
+        "gait",
+        "marcha",
+        "exercise",
+        "exercício",
+        "pain",
+        "dor"
+       ],
+       "frase": "reabilitação, fisioterapia e exercício"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "movimento"
+      },
+      "nicho": "do movimento e da reabilitação"
+     },
+     {
+      "id": "sub.nutricao",
+      "rotulo": "Nutrição e corpo",
+      "sinais": {
+       "topics": [
+        "T10010",
+        "T10397",
+        "T10858",
+        "T12279",
+        "T10569",
+        "T12873"
+       ],
+       "termos": [
+        "obesity",
+        "obesidade",
+        "nutrition",
+        "nutrição",
+        "nutritional",
+        "nutricional",
+        "body composition",
+        "composição corporal",
+        "diet",
+        "dieta"
+       ],
+       "frase": "nutrição humana, obesidade e composição corporal"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição"
+      },
+      "nicho": "da nutrição humana"
+     }
+    ],
+    "objeto.alimentos": [
+     {
+      "id": "sub.laticinios",
+      "rotulo": "Laticínios e fermentados",
+      "sinais": {
+       "topics": [
+        "T10141",
+        "T10750"
+       ],
+       "termos": [
+        "cheese",
+        "queijo",
+        "milk",
+        "leite",
+        "yogurt",
+        "iogurte",
+        "kefir",
+        "fermented",
+        "fermentad",
+        "dairy",
+        "lácte"
+       ],
+       "frase": "laticínios e alimentos fermentados"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "queijos"
+      },
+      "nicho": "de laticínios e fermentados"
+     },
+     {
+      "id": "sub.frutas_alim",
+      "rotulo": "Frutas e derivados",
+      "sinais": {
+       "topics": [
+        "T10473",
+        "T12048",
+        "T10650"
+       ],
+       "termos": [
+        "fruit",
+        "fruta",
+        "pulp",
+        "polpa",
+        "juice",
+        "suco",
+        "jam",
+        "geleia",
+        "dried",
+        "desidratad",
+        "acerola",
+        "cashew",
+        "caju"
+       ],
+       "frase": "frutas tropicais, polpas e derivados"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "frutas"
+      },
+      "nicho": "de frutas e derivados"
+     },
+     {
+      "id": "sub.carnes",
+      "rotulo": "Carnes e pescados",
+      "sinais": {
+       "topics": [
+        "T10333",
+        "T11957",
+        "T10486"
+       ],
+       "termos": [
+        "meat",
+        "carne",
+        "fish",
+        "pescado",
+        "sausage",
+        "embutido",
+        "shrimp",
+        "camarão",
+        "chicken",
+        "frango",
+        "carcass",
+        "carcaça"
+       ],
+       "frase": "qualidade de carnes e pescados"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "carnes"
+      },
+      "nicho": "de carnes e pescados"
+     },
+     {
+      "id": "sub.farinhas",
+      "rotulo": "Grãos, farinhas e panificação",
+      "sinais": {
+       "topics": [
+        "T14127",
+        "T10411"
+       ],
+       "termos": [
+        "flour",
+        "farinha",
+        "bread",
+        "pão",
+        "cookie",
+        "biscoito",
+        "gluten",
+        "glúten",
+        "starch",
+        "amido",
+        "bakery",
+        "panific",
+        "pasta",
+        "massa alimentícia"
+       ],
+       "frase": "farinhas, panificação e alimentos à base de grãos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "pães e farinhas"
+      },
+      "nicho": "de farinhas e panificação"
+     },
+     {
+      "id": "sub.ingredientes",
+      "rotulo": "Ingredientes e compostos funcionais",
+      "sinais": {
+       "topics": [
+        "T12192",
+        "T11561",
+        "T12349",
+        "T10035"
+       ],
+       "termos": [
+        "polysaccharide",
+        "polissacarídeo",
+        "peptide",
+        "peptídeo",
+        "antioxidant",
+        "antioxidante",
+        "dietary fiber",
+        "fibra alimentar",
+        "prebiotic",
+        "prebiótico",
+        "emulsion",
+        "emulsão",
+        "encapsulat",
+        "encapsula"
+       ],
+       "frase": "ingredientes funcionais, peptídeos, óleos e fibras"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "ingredientes"
+      },
+      "nicho": "de ingredientes funcionais"
+     }
+    ],
+    "objeto.ambiente": [
+     {
+      "id": "sub.solos",
+      "rotulo": "Solos e fertilidade",
+      "sinais": {
+       "topics": [
+        "T10004",
+        "T12294",
+        "T12792",
+        "T12310",
+        "T11275",
+        "T10451",
+        "T11470"
+       ],
+       "termos": [
+        "soil",
+        "solo",
+        "carbon",
+        "carbono",
+        "nitrogen",
+        "nitrogênio",
+        "fertiliz",
+        "adubação",
+        "organic matter",
+        "matéria orgânica",
+        "biochar"
+       ],
+       "frase": "solos, carbono e fertilidade"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "solo"
+      },
+      "nicho": "dos solos"
+     },
+     {
+      "id": "sub.agua",
+      "rotulo": "Água e irrigação",
+      "sinais": {
+       "topics": [
+        "T11404",
+        "T13391"
+       ],
+       "termos": [
+        "irrigation",
+        "irrigação",
+        "evapotranspiration",
+        "evapotranspiração",
+        "water use",
+        "uso da água",
+        "saline water",
+        "água salina",
+        "reservoir",
+        "reservatório"
+       ],
+       "frase": "água, irrigação e reservatórios no semiárido"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "água"
+      },
+      "nicho": "da água e da irrigação"
+     },
+     {
+      "id": "sub.clima",
+      "rotulo": "Clima e secas",
+      "sinais": {
+       "topics": [
+        "T10439",
+        "T10889",
+        "T10770",
+        "T11164"
+       ],
+       "termos": [
+        "climate",
+        "clima",
+        "drought",
+        "seca",
+        "rainfall",
+        "chuva",
+        "precipitation",
+        "precipitação",
+        "desertification",
+        "desertificação",
+        "erosion",
+        "erosão"
+       ],
+       "frase": "clima, secas, erosão e desertificação"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "clima"
+      },
+      "nicho": "do clima e das secas"
+     },
+     {
+      "id": "sub.poluicao",
+      "rotulo": "Poluição e contaminantes",
+      "sinais": {
+       "topics": [
+        "T10875",
+        "T13102"
+       ],
+       "termos": [
+        "pollution",
+        "poluição",
+        "contamina",
+        "heavy metal",
+        "metais pesados",
+        "pesticide",
+        "agrotóxico",
+        "microplastic",
+        "microplástico",
+        "ecotox"
+       ],
+       "frase": "poluição, contaminantes e ecotoxicologia"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "contaminantes"
+      },
+      "nicho": "da poluição e dos contaminantes"
+     }
+    ]
+   }
+  },
+  "estilo": {
+   "bloco": "perfil",
+   "faceta": "estilo",
+   "texto": "Quando aparece um problema novo, você…",
    "opcoes": [
     {
-     "id": "pop.transmissiveis",
-     "rotulo": "Doenças transmissíveis e negligenciadas",
-     "icone": "mosquito",
-     "proxima": "pop_doencas",
-     "sinais": {
-      "topics": [
-       "T10166",
-       "T10823",
-       "T10890",
-       "T12107",
-       "T10091",
-       "T11074",
-       "T11934",
-       "T10038",
-       "T10082"
-      ],
-      "termos": [
-       "neglected",
-       "negligenciad",
-       "infectious",
-       "infeccios",
-       "transmission",
-       "transmissão"
-      ],
-      "frase": "doenças transmissíveis e negligenciadas"
-     },
-     "perfil": "doenças negligenciadas",
-     "arte": {
-      "camada": "elemento",
-      "id": "mosquito"
-     }
+     "id": "estilo.testa",
+     "rotulo": "Testa uma hipótese na hora"
     },
     {
-     "id": "pop.materno",
-     "rotulo": "Saúde da mulher e da criança",
-     "icone": "familia",
-     "proxima": "pop_metodo",
-     "sinais": {
-      "topics": [
-       "T10453",
-       "T12741",
-       "T10979",
-       "T10327",
-       "T10600",
-       "T10786",
-       "T10209",
-       "T13883"
-      ],
-      "termos": [
-       "maternal",
-       "materna",
-       "pregnan",
-       "gestante",
-       "child",
-       "criança",
-       "adolescent",
-       "adolescente",
-       "breastfeeding",
-       "aleitamento"
-      ],
-      "frase": "saúde materno-infantil e saúde reprodutiva"
-     },
-     "perfil": "saúde materno-infantil",
-     "arte": {
-      "camada": "elemento",
-      "id": "familia"
-     }
+     "id": "estilo.junta",
+     "rotulo": "Junta todos os dados primeiro"
     },
     {
-     "id": "pop.cronicas",
-     "rotulo": "Doenças crônicas, alimentação e atividade física",
-     "icone": "prato",
-     "proxima": "pop_metodo",
-     "sinais": {
-      "topics": [
-       "T10352",
-       "T10010",
-       "T10866",
-       "T11610",
-       "T10144",
-       "T12873",
-       "T12057"
-      ],
-      "termos": [
-       "obesity",
-       "obesidade",
-       "physical activity",
-       "atividade física",
-       "food insecurity",
-       "insegurança alimentar",
-       "hypertension",
-       "hipertensão",
-       "diabetes"
-      ],
-      "frase": "doenças crônicas, alimentação, insegurança alimentar e atividade física"
-     },
-     "perfil": "epidemiologia das doenças crônicas",
-     "arte": {
-      "camada": "elemento",
-      "id": "prato"
-     }
+     "id": "estilo.modelo",
+     "rotulo": "Monta um modelo"
     },
     {
-     "id": "pop.trabalho",
-     "rotulo": "Trabalho, envelhecimento e violência",
-     "icone": "capacete",
-     "proxima": "pop_metodo",
-     "sinais": {
-      "topics": [
-       "T12869",
-       "T13315",
-       "T11084",
-       "T12811",
-       "T11011",
-       "T12462",
-       "T10043"
-      ],
-      "termos": [
-       "worker",
-       "trabalhador",
-       "burnout",
-       "occupational",
-       "ocupacional",
-       "older adult",
-       "idoso",
-       "violence",
-       "violência"
-      ],
-      "frase": "saúde do trabalhador, envelhecimento e violência"
-     },
-     "perfil": "saúde do trabalhador e do idoso",
-     "arte": {
-      "camada": "elemento",
-      "id": "capacete"
-     }
+     "id": "estilo.gente",
+     "rotulo": "Chama gente para pensar junto"
     },
     {
-     "id": "pop.servicos",
-     "rotulo": "Serviços, políticas e educação em saúde",
-     "icone": "predio",
-     "proxima": "pop_metodo",
-     "sinais": {
-      "topics": [
-       "T12871",
-       "T10912",
-       "T11497",
-       "T12413",
-       "T13822",
-       "T13147",
-       "T10737"
-      ],
-      "termos": [
-       "primary health care",
-       "atenção primária",
-       "health services",
-       "serviços de saúde",
-       "sus",
-       "health policy",
-       "política de saúde",
-       "medical education",
-       "educação médica"
-      ],
-      "frase": "atenção primária, serviços e políticas de saúde no SUS"
-     },
-     "perfil": "políticas e serviços de saúde",
-     "arte": {
-      "camada": "elemento",
-      "id": "predio"
-     }
+     "id": "estilo.inedito",
+     "rotulo": "Vai atrás do que ninguém viu"
     }
-   ],
-   "pular": null
+   ]
   },
-  "pop_doencas": {
-   "texto": "Que doenças?",
+  "foco": {
+   "bloco": "nicho",
+   "faceta": "foco",
+   "texto": "Qual é o seu foco?",
    "opcoes": [
     {
-     "id": "pop_d.arboviroses",
-     "rotulo": "Dengue, zika, chikungunya e malária",
-     "proxima": null,
+     "id": "foco.melhoramento",
+     "rotulo": "Melhoramento e genética",
      "sinais": {
       "topics": [
-       "T10166",
-       "T10091",
-       "T10296"
+       "T11229",
+       "T10594",
+       "T10012",
+       "T10240"
       ],
       "termos": [
-       "dengue",
-       "zika",
-       "chikungunya",
-       "aedes",
-       "arbovir",
-       "malaria",
-       "malária"
+       "breeding",
+       "melhoramento",
+       "genotype",
+       "genótipo",
+       "cultivar",
+       "heritability",
+       "herdabilidade",
+       "selection",
+       "seleção"
       ],
-      "frase": "arboviroses: dengue, zika e chikungunya"
+      "frase": "melhoramento genético"
      },
-     "perfil": "arboviroses",
-     "arte": {
-      "camada": "detalhe",
-      "id": "vetor"
-     }
+     "objetos": [
+      "objeto.plantas",
+      "objeto.producao",
+      "objeto.insetos"
+     ]
     },
     {
-     "id": "pop_d.leish",
-     "rotulo": "Leishmaniose, Chagas e esquistossomose",
-     "proxima": null,
+     "id": "foco.doencas",
+     "rotulo": "Doenças e pragas",
      "sinais": {
       "topics": [
-       "T10823",
-       "T10890",
-       "T11074",
-       "T10815"
+       "T10825",
+       "T12660",
+       "T11179",
+       "T11560",
+       "T12322"
       ],
       "termos": [
-       "leishmaniasis",
-       "leishmaniose",
-       "chagas",
-       "schistosom",
-       "esquistossom",
-       "visceral"
+       "disease",
+       "doença",
+       "pest",
+       "praga",
+       "pathogen",
+       "patógeno",
+       "infection",
+       "infecção",
+       "control",
+       "controle"
       ],
-      "frase": "leishmaniose, doença de Chagas e esquistossomose"
+      "frase": "doenças, pragas e seu controle"
      },
-     "perfil": "doenças parasitárias",
-     "arte": {
-      "camada": "detalhe",
-      "id": "parasita"
-     }
+     "objetos": [
+      "objeto.plantas",
+      "objeto.producao",
+      "objeto.insetos",
+      "objeto.micro",
+      "objeto.fauna"
+     ]
     },
     {
-     "id": "pop_d.hanseniase",
-     "rotulo": "Hanseníase e tuberculose",
-     "proxima": null,
+     "id": "foco.manejo",
+     "rotulo": "Manejo, nutrição e produção",
      "sinais": {
       "topics": [
-       "T12107",
-       "T10038"
+       "T12113",
+       "T12407",
+       "T10014",
+       "T12344",
+       "T10098",
+       "T10152",
+       "T12436"
       ],
       "termos": [
-       "leprosy",
-       "hanseníase",
-       "tuberculosis",
-       "tuberculose",
-       "mycobacter",
-       "micobact"
+       "management",
+       "manejo",
+       "yield",
+       "produtividade",
+       "fertiliz",
+       "adubação",
+       "diet",
+       "dieta",
+       "feed",
+       "ração",
+       "performance",
+       "desempenho"
       ],
-      "frase": "hanseníase e tuberculose"
+      "frase": "manejo, nutrição e produtividade"
      },
-     "perfil": "hanseníase e tuberculose",
-     "arte": {
-      "camada": "detalhe",
-      "id": "pulmao"
-     }
+     "objetos": [
+      "objeto.plantas",
+      "objeto.producao",
+      "objeto.ambiente"
+     ]
     },
     {
-     "id": "pop_d.ist",
-     "rotulo": "HIV, sífilis e outras ISTs",
-     "proxima": null,
+     "id": "foco.monitoramento",
+     "rotulo": "Monitoramento e mapeamento",
      "sinais": {
       "topics": [
-       "T10082",
-       "T11934",
-       "T10146",
-       "T10327"
+       "T10770",
+       "T11164",
+       "T10889"
       ],
       "termos": [
-       "hiv",
-       "aids",
-       "syphilis",
-       "sífilis",
-       "sexually transmitted",
-       "infecções sexualmente",
-       "hpv"
-      ],
-      "frase": "HIV, sífilis e infecções sexualmente transmissíveis"
-     },
-     "perfil": "ISTs e HIV",
-     "arte": {
-      "camada": "detalhe",
-      "id": "laco"
-     }
-    }
-   ],
-   "pular": null
-  },
-  "pop_metodo": {
-   "texto": "Como você estuda?",
-   "opcoes": [
-    {
-     "id": "pop_m.inqueritos",
-     "rotulo": "Inquéritos e estudos de prevalência",
-     "proxima": null,
-     "sinais": {
-      "termos": [
-       "cross-sectional",
-       "transversal",
-       "prevalence",
-       "prevalência",
-       "survey",
-       "inquérito",
-       "associated factors",
-       "fatores associados"
-      ],
-      "frase": "estudos transversais de prevalência e fatores associados"
-     },
-     "perfil": "inquéritos",
-     "arte": {
-      "camada": "detalhe",
-      "id": "prancheta"
-     }
-    },
-    {
-     "id": "pop_m.espacial",
-     "rotulo": "Mapas e séries históricas",
-     "proxima": null,
-     "sinais": {
-      "topics": [
-       "T11819"
-      ],
-      "termos": [
+       "monitoring",
+       "monitoramento",
+       "mapping",
+       "mapeamento",
+       "remote sensing",
+       "sensoriamento remoto",
        "spatial",
        "espacial",
-       "time series",
-       "série temporal",
-       "temporal trend",
-       "tendência temporal",
-       "ecological study",
-       "estudo ecológico",
-       "spatiotemporal"
+       "assessment",
+       "avaliação",
+       "index",
+       "índice"
       ],
-      "frase": "análise espacial e tendências temporais"
+      "frase": "monitoramento ambiental e mapeamento"
      },
-     "perfil": "epidemiologia espacial",
-     "arte": {
-      "camada": "detalhe",
-      "id": "mapa"
+     "objetos": [
+      "objeto.ambiente",
+      "objeto.fauna",
+      "objeto.plantas"
+     ]
+    },
+    {
+     "id": "foco.produtos",
+     "rotulo": "Produtos e compostos",
+     "sinais": {
+      "topics": [
+       "T12657",
+       "T10225",
+       "T10035",
+       "T14127",
+       "T10473"
+      ],
+      "termos": [
+       "extract",
+       "extrato",
+       "product",
+       "produto",
+       "bioactive",
+       "bioativ",
+       "quality",
+       "qualidade",
+       "formulation",
+       "formulação",
+       "shelf life",
+       "vida de prateleira"
+      ],
+      "frase": "produtos, compostos bioativos e qualidade"
+     },
+     "objetos": [
+      "objeto.plantas",
+      "objeto.alimentos",
+      "objeto.micro",
+      "objeto.producao",
+      "objeto.fauna"
+     ]
+    },
+    {
+     "id": "foco.diversidade",
+     "rotulo": "Diversidade e conservação",
+     "sinais": {
+      "topics": [
+       "T10385",
+       "T14049",
+       "T10487",
+       "T10702"
+      ],
+      "termos": [
+       "diversity",
+       "diversidade",
+       "new species",
+       "nova espécie",
+       "taxonomy",
+       "taxonomia",
+       "conservation",
+       "conservação",
+       "distribution",
+       "distribuição"
+      ],
+      "frase": "diversidade, taxonomia e conservação"
+     },
+     "objetos": [
+      "objeto.plantas",
+      "objeto.insetos",
+      "objeto.fauna",
+      "objeto.micro"
+     ]
+    },
+    {
+     "id": "foco.diagnostico",
+     "rotulo": "Diagnóstico e tratamento",
+     "sinais": {
+      "termos": [
+       "diagnos",
+       "treatment",
+       "tratamento",
+       "therapy",
+       "terapia",
+       "drug",
+       "fármaco",
+       "resistance",
+       "resistência",
+       "clinical",
+       "clínic"
+      ],
+      "frase": "diagnóstico e tratamento"
+     },
+     "objetos": [
+      "objeto.humanos",
+      "objeto.micro",
+      "objeto.producao"
+     ]
+    },
+    {
+     "id": "foco.prevencao",
+     "rotulo": "Prevenção e vigilância",
+     "sinais": {
+      "termos": [
+       "prevention",
+       "prevenção",
+       "surveillance",
+       "vigilância",
+       "vaccin",
+       "vacin",
+       "risk",
+       "risco",
+       "education",
+       "educação",
+       "screening",
+       "rastreamento"
+      ],
+      "frase": "prevenção, vigilância e promoção da saúde"
+     },
+     "objetos": [
+      "objeto.humanos",
+      "objeto.micro",
+      "objeto.insetos",
+      "objeto.alimentos"
+     ]
+    },
+    {
+     "id": "foco.mecanismos",
+     "rotulo": "Mecanismos e fisiologia",
+     "sinais": {
+      "termos": [
+       "mechanism",
+       "mecanismo",
+       "physiolog",
+       "fisiolog",
+       "pathway",
+       "via de sinalização",
+       "expression",
+       "expressão",
+       "oxidative stress",
+       "estresse oxidativo",
+       "response",
+       "resposta"
+      ],
+      "frase": "mecanismos biológicos e fisiologia"
+     },
+     "objetos": [
+      "objeto.humanos",
+      "objeto.plantas",
+      "objeto.producao",
+      "objeto.micro",
+      "objeto.fauna"
+     ]
+    }
+   ]
+  },
+  "escala": {
+   "bloco": "nicho",
+   "faceta": "escala",
+   "texto": "Em que escala?",
+   "opcoes": [
+    {
+     "id": "escala.moleculas",
+     "rotulo": "Moléculas e genes",
+     "sinais": {
+      "termos": [
+       "gene",
+       "protein",
+       "proteína",
+       "molecular",
+       "dna",
+       "rna",
+       "enzyme",
+       "enzima",
+       "peptide",
+       "peptídeo"
+      ],
+      "frase": "escala molecular"
      }
     },
     {
-     "id": "pop_m.qualitativa",
-     "rotulo": "Pesquisa qualitativa e avaliação de serviços",
-     "proxima": null,
+     "id": "escala.celulas",
+     "rotulo": "Células e tecidos",
      "sinais": {
       "termos": [
-       "qualitative",
-       "qualitativ",
-       "perceptions",
-       "percepções",
-       "experiences",
-       "experiências",
-       "interview",
-       "entrevista",
-       "focus group",
-       "grupo focal",
-       "intervention",
-       "intervenção",
-       "program",
-       "programa",
-       "evaluation",
-       "avaliação",
-       "implementation",
-       "implementação",
-       "effectiveness",
-       "efetividade"
+       "cell",
+       "célula",
+       "tissue",
+       "tecido",
+       "histolog",
+       "cytotox",
+       "citotox",
+       "culture",
+       "cultivo celular"
       ],
-      "frase": "pesquisa qualitativa e avaliação de serviços, programas e intervenções"
-     },
-     "perfil": "pesquisa qualitativa e avaliação",
-     "arte": {
-      "camada": "detalhe",
-      "id": "balao"
+      "frase": "células e tecidos"
+     }
+    },
+    {
+     "id": "escala.organismos",
+     "rotulo": "Organismos inteiros",
+     "sinais": {
+      "termos": [
+       "growth",
+       "crescimento",
+       "performance",
+       "desempenho",
+       "physiolog",
+       "fisiolog",
+       "behavior",
+       "comportamento"
+      ],
+      "frase": "organismos inteiros"
+     }
+    },
+    {
+     "id": "escala.populacoes",
+     "rotulo": "Populações e comunidades",
+     "sinais": {
+      "termos": [
+       "population",
+       "população",
+       "community",
+       "comunidade",
+       "prevalence",
+       "prevalência",
+       "abundance",
+       "abundância"
+      ],
+      "frase": "populações e comunidades"
+     }
+    },
+    {
+     "id": "escala.paisagens",
+     "rotulo": "Paisagens e ecossistemas",
+     "sinais": {
+      "termos": [
+       "landscape",
+       "paisagem",
+       "ecosystem",
+       "ecossistema",
+       "biome",
+       "bioma",
+       "watershed",
+       "bacia hidrográfica",
+       "remote sensing"
+      ],
+      "frase": "paisagens e ecossistemas"
      }
     }
-   ],
-   "pular": null
+   ]
+  },
+  "ambiente": {
+   "bloco": "nicho",
+   "faceta": "ambiente",
+   "texto": "Onde o seu objeto vive ou acontece?",
+   "opcoes": [
+    {
+     "id": "ambiente.caatinga",
+     "rotulo": "Caatinga e semiárido",
+     "sinais": {
+      "termos": [
+       "caatinga",
+       "semiarid",
+       "semiárido",
+       "semi-arid",
+       "drought",
+       "seca",
+       "dry forest"
+      ],
+      "frase": "caatinga e semiárido"
+     },
+     "sintagma": {
+      "artigo": "a",
+      "nome": "caatinga"
+     },
+     "nicho": "da caatinga",
+     "visual": {
+      "cor": "caatinga"
+     }
+    },
+    {
+     "id": "ambiente.mata",
+     "rotulo": "Mata atlântica e brejos",
+     "sinais": {
+      "termos": [
+       "atlantic forest",
+       "mata atlântica",
+       "brejo",
+       "rainforest",
+       "floresta úmida",
+       "restinga"
+      ],
+      "frase": "mata atlântica e brejos de altitude"
+     },
+     "sintagma": {
+      "artigo": "a",
+      "nome": "mata atlântica"
+     },
+     "nicho": "da mata atlântica",
+     "visual": {
+      "cor": "mata"
+     }
+    },
+    {
+     "id": "ambiente.mar",
+     "rotulo": "Mar, mangues e estuários",
+     "sinais": {
+      "termos": [
+       "marine",
+       "marinho",
+       "mangrove",
+       "manguezal",
+       "estuar",
+       "coastal",
+       "costeir",
+       "reef",
+       "recife",
+       "sea",
+       "oceano"
+      ],
+      "frase": "mar, manguezais e estuários"
+     },
+     "sintagma": {
+      "artigo": "os",
+      "nome": "mangues"
+     },
+     "nicho": "do litoral",
+     "visual": {
+      "cor": "mar"
+     }
+    },
+    {
+     "id": "ambiente.lavouras",
+     "rotulo": "Lavouras e fazendas",
+     "sinais": {
+      "termos": [
+       "farm",
+       "fazenda",
+       "crop",
+       "lavoura",
+       "orchard",
+       "pomar",
+       "smallholder",
+       "agricultura familiar",
+       "livestock",
+       "rebanho"
+      ],
+      "frase": "lavouras, pomares e fazendas"
+     },
+     "sintagma": {
+      "artigo": "as",
+      "nome": "lavouras"
+     },
+     "nicho": "no campo",
+     "visual": {
+      "cor": "lavoura"
+     }
+    },
+    {
+     "id": "ambiente.cidades",
+     "rotulo": "Cidades, hospitais e serviços",
+     "sinais": {
+      "termos": [
+       "urban",
+       "urbano",
+       "hospital",
+       "primary care",
+       "atenção primária",
+       "city",
+       "cidade",
+       "health services",
+       "serviços de saúde",
+       "intensive care",
+       "uti"
+      ],
+      "frase": "cidades, hospitais e serviços de saúde"
+     },
+     "sintagma": {
+      "artigo": "a",
+      "nome": "cidade"
+     },
+     "nicho": "nas cidades e nos serviços de saúde",
+     "visual": {
+      "cor": "cidade"
+     }
+    },
+    {
+     "id": "ambiente.qualquer",
+     "rotulo": "Tanto faz / no laboratório",
+     "sinais": {},
+     "visual": {
+      "cor": "neutro"
+     }
+    }
+   ]
+  },
+  "vinculo": {
+   "bloco": "perfil",
+   "faceta": "vinculo",
+   "texto": "O seu objeto de estudo é…",
+   "opcoes": [
+    {
+     "id": "vinculo.paixao",
+     "rotulo": "Minha paixão: falo dele até em festas"
+    },
+    {
+     "id": "vinculo.misterio",
+     "rotulo": "Um mistério que quero desvendar"
+    },
+    {
+     "id": "vinculo.proteger",
+     "rotulo": "Algo que preciso proteger"
+    },
+    {
+     "id": "vinculo.ferramenta",
+     "rotulo": "Uma ferramenta para resolver problemas reais"
+    }
+   ]
+  },
+  "impacto": {
+   "bloco": "nicho",
+   "faceta": "impacto",
+   "texto": "O seu trabalho serve principalmente para…",
+   "opcoes": [
+    {
+     "id": "impacto.alimento",
+     "rotulo": "Produzir alimento melhor",
+     "sinais": {
+      "termos": [
+       "yield",
+       "produtividade",
+       "production",
+       "produção",
+       "food security",
+       "segurança alimentar",
+       "productivity"
+      ],
+      "frase": "produção de alimentos"
+     }
+    },
+    {
+     "id": "impacto.saude",
+     "rotulo": "Cuidar da saúde das pessoas",
+     "sinais": {
+      "termos": [
+       "patients",
+       "pacientes",
+       "health",
+       "saúde",
+       "treatment",
+       "tratamento",
+       "public health",
+       "saúde pública"
+      ],
+      "frase": "saúde das pessoas"
+     }
+    },
+    {
+     "id": "impacto.natureza",
+     "rotulo": "Conservar a natureza",
+     "sinais": {
+      "termos": [
+       "conservation",
+       "conservação",
+       "biodiversity",
+       "biodiversidade",
+       "threatened",
+       "ameaçad",
+       "restoration",
+       "restauração"
+      ],
+      "frase": "conservação da natureza"
+     }
+    },
+    {
+     "id": "impacto.tecnologia",
+     "rotulo": "Criar produtos e tecnologias",
+     "sinais": {
+      "termos": [
+       "product",
+       "produto",
+       "technology",
+       "tecnologia",
+       "formulation",
+       "formulação",
+       "development",
+       "desenvolvimento",
+       "nanoparticle",
+       "nanopartícula",
+       "biotechnolog",
+       "biotecnolog"
+      ],
+      "frase": "produtos e tecnologias"
+     }
+    },
+    {
+     "id": "impacto.conhecimento",
+     "rotulo": "Entender como a vida funciona",
+     "sinais": {
+      "termos": [
+       "mechanism",
+       "mecanismo",
+       "evolution",
+       "evolução",
+       "phylogen",
+       "filogen",
+       "physiolog",
+       "fisiolog"
+      ],
+      "frase": "conhecimento básico sobre a vida"
+     }
+    }
+   ]
   }
+ },
+ "titulos": {
+  "regra": "sempre neutros: substantivos comuns de dois gêneros, compostos invariáveis ou epítetos; sem nomes licenciados",
+  "arquetipos": {
+   "habitat.campo": {
+    "estilo.testa": "Faz-tudo de campo",
+    "estilo.junta": "Mochila cheia de amostras",
+    "estilo.modelo": "Estrategista de campo",
+    "estilo.gente": "Mutirão em pessoa",
+    "estilo.inedito": "Desbrava-trilhas"
+   },
+   "habitat.bancada": {
+    "estilo.testa": "Fominha de bancada",
+    "estilo.junta": "Caderno de protocolos ambulante",
+    "estilo.modelo": "Engenharia de bancada",
+    "estilo.gente": "Alma do laboratório",
+    "estilo.inedito": "Caça-moléculas"
+   },
+   "habitat.computador": {
+    "estilo.testa": "Hacker de hipóteses",
+    "estilo.junta": "Garimpo de dados",
+    "estilo.modelo": "Magia dos dados",
+    "estilo.gente": "Ponte entre dados e gente",
+    "estilo.inedito": "Radar de padrões"
+   },
+   "habitat.pessoas": {
+    "estilo.testa": "Plantonista de ideias",
+    "estilo.junta": "Escuta da comunidade",
+    "estilo.modelo": "Estrategista do cuidado",
+    "estilo.gente": "Elo da comunidade",
+    "estilo.inedito": "Sentinela da saúde"
+   },
+   "habitat.colecoes": {
+    "estilo.testa": "Curadoria inquieta",
+    "estilo.junta": "Arquivo vivo",
+    "estilo.modelo": "Mapa-múndi das espécies",
+    "estilo.gente": "Biblioteca ambulante",
+    "estilo.inedito": "Caça-raridades"
+   }
+  },
+  "padrao": "Ciência em movimento",
+  "vinculos": {
+   "vinculo.paixao": {
+    "modelo": "Fã nº 1 {de}",
+    "usa": "sub_objeto"
+   },
+   "vinculo.misterio": {
+    "modelo": "Detetive {de}",
+    "usa": "sub_objeto"
+   },
+   "vinculo.proteger": {
+    "modelo": "Sentinela {de}",
+    "usa": "ambiente"
+   },
+   "vinculo.ferramenta": {
+    "modelo": null,
+    "usa": null
+   }
+  },
+  "proibidos": [
+   "(a)",
+   "(o)",
+   " mãe ",
+   " pai ",
+   "mago ",
+   "maga ",
+   "dora",
+   "pikachu",
+   "superman",
+   "batman",
+   "mickey",
+   "barbie",
+   "harry potter",
+   "sherlock"
+  ]
  }
 }

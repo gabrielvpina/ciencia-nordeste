@@ -89,6 +89,7 @@ Os números podem diferir um pouco dos do site publicado: as fontes são atualiz
 | 10 | [Aplicação web](docs/etapas/10-aplicacao-web.md) | núcleo concluído |
 | 11 | [Mapa próprio do Nordeste](docs/etapas/11-mapa-proprio.md) | concluída |
 | 12 | [Busca vetorial por tema de pesquisa](docs/etapas/12-busca-vetorial.md) | concluída |
+| 13 | [Quiz "Que cientista é você?" e alinhamento a pesquisadores](docs/etapas/13-quiz-alinhamento.md) | em desenho (branch `quiz`) |
 
 ### Outros documentos
 

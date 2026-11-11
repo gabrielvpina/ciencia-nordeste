@@ -74,6 +74,8 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
   const [erros, setErros] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
   const [falha, setFalha] = useState<string | null>(null);
+  const [codigo, setCodigo] = useState<string | null>(null);   // código de remoção (D-041), mostrado uma vez
+  const [copiado, setCopiado] = useState(false);
   const pos = POS.has(d.filiacao);
   const muda = (p: Partial<DadosCadastro>) => {
     setD((x) => ({ ...x, ...p }));
@@ -106,7 +108,7 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
         body: JSON.stringify({ ...d, consentimento, site: isca }),
       });
       const j = await r.json().catch(() => ({}));
-      if (r.ok) return onPronto(d);
+      if (r.ok) { if (j.codigo) return setCodigo(j.codigo); return onPronto(d); }
       if (j.campos) setErros(j.campos);
       setFalha(j.erro ?? "Não foi possível salvar agora. Tente de novo em instantes.");
     } catch {
@@ -115,6 +117,26 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
       setEnviando(false);
     }
   };
+
+  if (codigo) {
+    return (
+      <section className="quiz-cadastro qc-salvo" aria-labelledby="qc-salvo-titulo">
+        <div className="quiz-enunciado">
+          <span className="quiz-tag">cadastro salvo</span>
+          <h2 id="qc-salvo-titulo">Guarde o seu código</h2>
+        </div>
+        <p>Se quiser apagar o seu cadastro depois, é só informar este código. Ele não identifica você e aparece só agora.</p>
+        <div className="qc-codigo">
+          <code aria-label="Código de remoção">{codigo}</code>
+          <button type="button" className="qr-icone" title={copiado ? "Copiado" : "Copiar código"} aria-label={copiado ? "Código copiado" : "Copiar código"}
+            onClick={async () => { try { await navigator.clipboard.writeText(codigo); setCopiado(true); } catch { /* sem permissão */ } }}>
+            {copiado ? "✓" : "⧉"}
+          </button>
+        </div>
+        <button type="button" className="quiz-comecar" autoFocus onClick={() => onPronto(d)}>Continuar para o quiz</button>
+      </section>
+    );
+  }
 
   return (
     <form className="quiz-cadastro" onSubmit={enviar} noValidate>
@@ -162,9 +184,10 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
       <label className={`qc-consentimento${erros.consentimento ? " invalido" : ""}`}>
         <input type="checkbox" checked={consentimento} onChange={(e) => { setConsentimento(e.target.checked); setErros((x) => { const n = { ...x }; delete n.consentimento; return n; }); }} />
         <span>
-          Concordo que o Ciência Nordeste guarde estes dados só para estatísticas sobre quem usa o quiz.
-          Minhas respostas e meu resultado não são gravados. Os dados ficam até 24 meses e posso pedir a remoção a qualquer momento
-          {contato ? <> ({contato})</> : null}. <a href="/sobre#privacidade-quiz" target="_blank" rel="noopener">Saiba mais</a>
+          Tenho 18 anos ou mais e concordo que o responsável pelo Ciência Nordeste guarde estes dados, num servidor nos EUA (AWS),
+          só para estatísticas sobre quem usa o quiz. Minhas respostas e meu resultado não são gravados. Os dados ficam até
+          24 meses e posso pedir a remoção a qualquer momento{contato ? <> ({contato})</> : null}.{" "}
+          <a href="/sobre#privacidade-quiz" target="_blank" rel="noopener">Saiba mais</a>
         </span>
       </label>
       {erros.consentimento && <small className="qc-erro">{erros.consentimento}</small>}

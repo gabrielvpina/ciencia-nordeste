@@ -471,3 +471,17 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - **objetivo sozinho:** piorou 4 casos. A linguagem de objetivos é genérica ("melhorar a qualidade", "prevenir") e pode tirar a lista do nicho.
 
   Por isso o quiz tem **uma** tela de texto, e não várias intercaladas, que também aumentariam a desistência no celular.
+
+## D-041 — Revisão de proteção de dados, código de remoção e escolha única no quiz
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **Revisão LGPD simples:** em `docs/revisao-lgpd.md`, com inventário, achados e pendências. Não é parecer jurídico. Mudanças que saíram dela:
+  - **Transferência internacional:** o servidor fica na AWS `us-east-1` (EUA). O consentimento passa a dizer isso (art. 33, VIII).
+  - **Controlador identificado** em `/sobre` (o autor, pessoa física), com a base legal de cada tratamento, a seção "Dados dos pesquisadores" e o link para a ANPD.
+  - **Maiores de 18:** a caixa de concordância começa por "Tenho 18 anos ou mais".
+  - **Versão do consentimento:** `2026-11-11c`.
+- **Canal dos titulares:** continuam as issues do GitHub (`CONTATO_PRIVACIDADE` vazio, a pedido do responsável). Como são públicas:
+  - o cadastro gera um **código de remoção** aleatório de 8 caracteres (migração `0016`), mostrado uma vez numa tela após o cadastro;
+  - o modelo de issue `.github/ISSUE_TEMPLATE/privacidade.md` pede só o código e avisa para não escrever dados pessoais;
+  - `scripts/quiz_remover.sh CÓDIGO` apaga o registro.
+- **Escolha única:** as perguntas do quiz continuam aceitando uma resposta cada (decisão do responsável). A múltipla escolha alargaria o núcleo do match e tenderia a reduzir a precisão.

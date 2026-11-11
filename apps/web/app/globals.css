@@ -839,3 +839,10 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
 .qt-campo textarea:focus { outline: none; box-shadow: var(--hard-s), 0 0 0 4px var(--accent-soft); }
 .qt-conta { justify-self: end; color: var(--muted); font-size: .76rem; font-variant-numeric: tabular-nums; }
 .qt-privacidade { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.35; }
+
+/* Quiz: código de remoção depois do cadastro (D-041) */
+.qc-salvo p { margin: 0; color: var(--muted); line-height: 1.4; }
+.qc-codigo { display: flex; align-items: center; gap: 12px; }
+.qc-codigo code { flex: 1; text-align: center; font: 700 1.6rem/1 var(--font-display); letter-spacing: 3px; padding: 16px; border: var(--b) dashed var(--stroke);
+  border-radius: 14px; background: var(--panel); color: var(--fg); user-select: all; }
+.qc-codigo .qr-icone { font-size: 1.3rem; }

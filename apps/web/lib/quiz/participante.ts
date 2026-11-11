@@ -1,10 +1,10 @@
 // Cadastro dos participantes do quiz (D-037). Grava com o papel quiz_escrita (só INSERT) — uma pool separada da do site,
 // que só lê. O app nunca lê a tabela quiz_participantes.
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import { ARVORE } from "./estrutura";
 
-export const CONSENTIMENTO_VERSAO = "2026-11-11b";   // b: sem e-mail
+export const CONSENTIMENTO_VERSAO = "2026-11-11c";   // b: sem e-mail; c: controlador, servidor nos EUA e código de remoção (D-041)
 export const FILIACOES = {
   graduacao: "Graduação", mestrado: "Mestrado", doutorado: "Doutorado",
   docente: "Docente", pesquisador: "Pesquisador(a)", mercado: "Profissional do mercado",
@@ -46,12 +46,28 @@ export function validar(c: Record<string, unknown>): { cadastro?: Cadastro; erro
   };
 }
 
-export async function gravar(c: Cadastro): Promise<"ok" | "indisponivel"> {
+/** Código de remoção (D-041): 8 caracteres sem ambíguos (sem 0/O, 1/I/L), ex.: K7QM-4TZP. ~1,1 × 10¹² combinações. */
+const ALFABETO_CODIGO = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+export function novoCodigo(): string {
+  const c = Array.from({ length: 8 }, () => ALFABETO_CODIGO[randomInt(ALFABETO_CODIGO.length)]).join("");
+  return `${c.slice(0, 4)}-${c.slice(4)}`;
+}
+
+/** Grava o cadastro e devolve o código de remoção (mostrado uma vez à pessoa; o app não o lê depois). */
+export async function gravar(c: Cadastro): Promise<{ codigo: string } | "indisponivel"> {
   const p = pool();
   if (!p) return "indisponivel";
-  await p.query(
-    `INSERT INTO quiz_participantes (id, nome, instituicao_id, instituicao_texto, filiacao, programa_id, curso_texto, consentimento_versao, versao_quiz)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [randomUUID(), c.nome, c.instituicao_id, c.instituicao_texto, c.filiacao, c.programa_id, c.curso_texto, CONSENTIMENTO_VERSAO, ARVORE.versao]);
-  return "ok";
+  for (let tentativa = 0; ; tentativa++) {
+    const codigo = novoCodigo();
+    try {
+      await p.query(
+        `INSERT INTO quiz_participantes (id, nome, instituicao_id, instituicao_texto, filiacao, programa_id, curso_texto, consentimento_versao, versao_quiz, codigo_remocao)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        [randomUUID(), c.nome, c.instituicao_id, c.instituicao_texto, c.filiacao, c.programa_id, c.curso_texto, CONSENTIMENTO_VERSAO, ARVORE.versao, codigo]);
+      return { codigo };
+    } catch (e) {
+      if ((e as { code?: string }).code === "23505" && tentativa < 3) continue;   // código repetido (raríssimo): sorteia outro
+      throw e;
+    }
+  }
 }

@@ -13,8 +13,14 @@ const REDES: { nome: string; titulo: string; url: string; icone: React.ReactNode
   { nome: "Lattes", titulo: "Currículo Lattes", url: "https://lattes.cnpq.br/6691808758719803", icone: <><path d="M6 3h9l3 3v15H6z" /><path d="M9 10h6M9 14h6M9 18h4" /></> },
 ];
 
+// Canal dos pedidos de privacidade (D-041): issue no GitHub com modelo próprio, que pede só o código de remoção.
+const ISSUE_PRIVACIDADE = "https://github.com/gabrielvpina/ciencia-nordeste/issues/new?template=privacidade.md";
+
 export default async function Sobre() {
   const [r] = await q<{ atualizado_em: string }>(`SELECT atualizado_em FROM mv_resumo`);
+  const canal = process.env.CONTATO_PRIVACIDADE
+    ? <b>{process.env.CONTATO_PRIVACIDADE}</b>
+    : <>uma <a href={ISSUE_PRIVACIDADE} target="_blank" rel="noopener">issue no repositório do projeto</a> (pública)</>;
   return (
     <>
       <h1>Sobre</h1>
@@ -48,15 +54,27 @@ export default async function Sobre() {
       <h2>Como os perfis são montados</h2>
       <p>Cada pesquisador tem um identificador interno permanente. Perfis do OpenAlex com o mesmo ORCID são unidos automaticamente. Docentes da CAPES só são unidos a um autor do OpenAlex quando há um único candidato com o mesmo nome e a mesma instituição; os demais casos passam por revisão humana. Por isso, alguns pesquisadores ainda podem aparecer em mais de um perfil.</p>
       <h2>Privacidade (LGPD)</h2>
-      <p>Usamos apenas informações públicas sobre atividade científica (publicações, vínculos, pós-graduação). Não exibimos CPF, data de nascimento nem contatos. Se você encontrou um perfil seu com erro, ou quer ocultá-lo ou removê-lo, escreva para o responsável pelo projeto. A reivindicação de perfil com login pelo ORCID será habilitada quando o site entrar em produção.</p>
+      <p><b>Responsável pelo tratamento (controlador):</b> <a href="#autor">Gabriel Pina</a>, autor do projeto, que é pessoal e sem fins lucrativos. Pedidos sobre dados pessoais: {canal}.</p>
+
+      <h3 id="privacidade-pesquisadores">Dados dos pesquisadores</h3>
+      <ul>
+        <li><b>O que mostramos:</b> só informações públicas sobre atividade científica: nome como aparece nas publicações, vínculos institucionais, publicações, orientações e participação em programas de pós (OpenAlex, ROR, CAPES Dados Abertos) e, em poucos perfis, uma foto com licença livre (Wikimedia Commons). Não exibimos CPF, data de nascimento, endereço nem contatos.</li>
+        <li><b>Por quê:</b> divulgação e mapeamento da ciência produzida no Nordeste, com dados que os próprios pesquisadores tornaram públicos ao publicar (LGPD, art. 7º, §§ 3º, 4º e 7º; interesse legítimo, art. 7º, IX).</li>
+        <li><b>No quiz:</b> os cartões e a lista mostram pesquisadores com publicações próximas às respostas, com um índice de compatibilidade calculado <i>só</i> a partir dessas publicações. Não é avaliação de mérito nem de pessoas.</li>
+        <li><b>Correção, ocultação ou remoção:</b> se um perfil seu tem erro, ou se você não quer aparecer no site nem no quiz, peça por {canal}. Perfis ocultados saem das páginas, das buscas e do quiz.</li>
+      </ul>
+
       <h3 id="privacidade-quiz">Quiz &ldquo;Que cientista é você?&rdquo;</h3>
       <ul>
-        <li><b>O que guardamos:</b> o nome, a instituição, o tipo de filiação e o curso ou programa, informados no início do quiz, com o seu consentimento. <b>Não guardamos</b> as suas respostas, o seu resultado, o seu IP nem dados do navegador.</li>
-        <li><b>Descrição da pesquisa (opcional):</b> o texto que você escreve no fim do quiz é enviado uma vez ao site para virar um vetor numérico e <b>não é gravado</b> nem registrado. O link do resultado leva só um resumo numérico do tema (128 números de baixa precisão), do qual não dá para recuperar as suas palavras.</li>
-        <li><b>Para quê:</b> apenas estatísticas sobre quem usa o quiz (filiações, instituições, programas). Não pedimos e-mail nem outro contato. Esses dados não entram no cálculo das afinidades.</li>
-        <li><b>Quem acessa:</b> o site só consegue gravar esses dados, não lê-los. A leitura é restrita ao responsável pelo projeto.</li>
+        <li><b>O que guardamos:</b> o nome, a instituição, o tipo de filiação e o curso ou programa, informados no início do quiz, além da data, da versão do texto aceito e de um código aleatório de remoção. <b>Não guardamos</b> as suas respostas, o seu resultado, o seu IP nem dados do navegador.</li>
+        <li><b>Base legal:</b> o seu consentimento (LGPD, art. 7º, I), que você pode revogar a qualquer momento pedindo a remoção. O quiz é para maiores de 18 anos.</li>
+        <li><b>Para quê:</b> apenas estatísticas agregadas sobre quem usa o quiz (filiações, instituições, programas). Não pedimos e-mail nem outro contato, não vendemos nem compartilhamos os dados, e eles não entram no cálculo das afinidades.</li>
+        <li><b>Onde ficam:</b> num servidor da Amazon Web Services nos EUA (Virgínia do Norte). Isso é uma transferência internacional de dados, feita com o seu consentimento específico (LGPD, art. 33, VIII), informado na caixa de concordância.</li>
+        <li><b>Descrição da pesquisa (opcional):</b> o texto que você escreve depois de &ldquo;especificamente?&rdquo; é enviado uma vez ao site, no fim do quiz, para virar um vetor numérico. Ele <b>não é gravado</b> nem registrado. O link do resultado leva só um resumo numérico do tema (128 números de baixa precisão), do qual não dá para recuperar as suas palavras.</li>
+        <li><b>Quem acessa:</b> o site só consegue gravar esses dados, não lê-los. A leitura é restrita ao responsável pelo projeto. Os backups do banco ficam em arquivos acessíveis só a ele.</li>
         <li><b>Por quanto tempo:</b> até 24 meses; depois, são apagados automaticamente.</li>
-        <li><b>Seus direitos (LGPD):</b> você pode pedir acesso, correção ou remoção a qualquer momento{process.env.CONTATO_PRIVACIDADE ? <>, escrevendo para <b>{process.env.CONTATO_PRIVACIDADE}</b></> : <>, pelo <a href="https://github.com/gabrielvpina/ciencia-nordeste/issues" target="_blank" rel="noopener">repositório do projeto</a></>}.</li>
+        <li><b>Seus direitos (LGPD, art. 18):</b> confirmação, acesso, correção, remoção e revogação do consentimento. Para remover o seu cadastro, informe só o <b>código de remoção</b> mostrado depois do cadastro, por {canal}. <b>Não escreva o seu nome nem outros dados lá:</b> as issues do GitHub são públicas. Se perdeu o código, escreva apenas que quer remover um cadastro sem o código, e combinamos um jeito de identificá-lo sem expor você.</li>
+        <li><b>Autoridade:</b> você também pode reclamar à Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" target="_blank" rel="noopener">ANPD</a>).</li>
       </ul>
     </>
   );

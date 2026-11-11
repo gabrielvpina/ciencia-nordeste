@@ -1,6 +1,7 @@
 // Estrutura do quiz (etapa 13): leitura do arvore.json e interpretação das respostas.
 // Usado no servidor. O navegador recebe só a versão enxuta (estruturaCliente), sem os sinais do match.
 import arvore from "./arvore.json";
+import { filtrarOpcoes } from "./filtros";
 
 export type Sinais = { topics?: string[]; subfields?: string[]; fields?: string[]; termos?: string[]; frase?: string };
 export type Opcao = {
@@ -36,16 +37,7 @@ export type Respostas = {
 
 /** Opções que a pergunta oferece, dadas as respostas anteriores (filtros por objeto e por método). */
 export function opcoesOferecidas(pid: string, anteriores: Map<string, Opcao>): Opcao[] {
-  const q = ARVORE.perguntas[pid];
-  const metodo = anteriores.get("metodo")?.id;
-  const objeto = anteriores.get("objeto")?.id;
-  let ops: Opcao[];
-  if (q.opcoes_por) ops = objeto ? q.opcoes_por[objeto] ?? [] : [];
-  else ops = q.opcoes ?? [];
-  return ops.filter((o) =>
-    (!metodo || !o.metodos || o.metodos.includes(metodo))
-    && (!metodo || !o.sem_metodos?.includes(metodo))
-    && (!o.objetos || !objeto || o.objetos.includes(objeto)));
+  return filtrarOpcoes(ARVORE.perguntas[pid], anteriores.get("metodo")?.id, anteriores.get("objeto")?.id);
 }
 
 /**

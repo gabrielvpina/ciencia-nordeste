@@ -11,5 +11,6 @@ if [ "$(docker compose exec -T db sh -c 'psql -tA -U "$POSTGRES_USER" -d "$POSTG
   docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f ingest/sql/perfis_tematicos.sql'
 fi
 python3 -m ingest.carga.quiz_preparar
+docker compose exec -T db sh -c 'psql -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DELETE FROM quiz_participantes WHERE criado_em < now() - interval '"'"'24 months'"'"'"' >/dev/null 2>&1 || true   # retenção do cadastro do quiz (D-037)
 docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
 SELECT relname AS tabela, n_live_tup AS linhas FROM pg_stat_user_tables ORDER BY relname;"'

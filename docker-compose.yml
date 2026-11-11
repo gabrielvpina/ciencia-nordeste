@@ -49,6 +49,9 @@ services:
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       EMBED_URL: http://embed:8000           # serviço de embedding da busca por tema (D-028)
       DATABASE_URL: postgres://${POSTGRES_USER:-ciencia}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-ciencia}
+      # cadastro do quiz (D-037): papel só de INSERT; sem senha no .env, o cadastro responde 503
+      DATABASE_URL_QUIZ: postgres://quiz_escrita:${QUIZ_DB_PASSWORD:-}@db:5432/${POSTGRES_DB:-ciencia}
+      CONTATO_PRIVACIDADE: ${CONTATO_PRIVACIDADE:-}
     ports:
       - "127.0.0.1:3000:3000"
 

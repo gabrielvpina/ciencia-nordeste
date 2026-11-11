@@ -83,6 +83,7 @@ fi
 
 # ---- 5. migrações e reinício ----
 passo "Aplicando migrações"; ./scripts/migrar.sh
+docker compose exec -T db sh -c 'psql -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DELETE FROM quiz_participantes WHERE criado_em < now() - interval '"'"'24 months'"'"'"' >/dev/null 2>&1 || true   # retenção do cadastro do quiz (D-037)
 # a estrutura do quiz mudou (ou uma migração nova): recopia os sinais das opções para o banco (só Python do sistema + psql)
 # migração nova (pode alterar dados, ex.: 0013): atualiza as visões e os perfis temáticos (só sem PACOTE: o backup já os traz)
 if [ -z "$PACOTE" ] && muda ingest/sql/migracoes/; then

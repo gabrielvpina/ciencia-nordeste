@@ -1,4 +1,4 @@
-// GET /api/quiz/banner/perfil|afinidades?r=<ids das opções, separados por vírgula>&i=<instituição>&ql=0|1&f=story|feed
+// GET /api/quiz/banner/perfil|afinidades?r=<ids das opções, separados por vírgula>&i=<instituição>&ql=0|1&f=story|feed&t=<código do texto, D-040>
 // Gera o banner em PNG no próprio servidor (next/og). A URL leva só ids: o servidor recalcula tudo e não grava nada.
 // Visual provisório (etapa 13): só cores e formas simples, sem ilustração.
 import { ImageResponse } from "next/og";
@@ -89,7 +89,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
 
   // afinidades: o match (só facetas de nicho), desenhado
   const ql = u.searchParams.get("ql");
-  const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: ql !== "0" });
+  const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: ql !== "0", texto: u.searchParams.get("t") });
   const lista = r.banner;
   const mapa = miniMapa(lista.map((x) => ({ lat: x.lat, lon: x.lon })));
   const mapaW = story ? 330 : 250, mapaH = mapaW * PROPORCAO_MAPA;

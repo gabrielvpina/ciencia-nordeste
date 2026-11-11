@@ -283,9 +283,20 @@ Os cartões dos pesquisadores no banner de afinidades ganham um layout mais cria
 - **barra de compatibilidade em blocos** (10 segmentos), à maneira de um medidor;
 - iniciais num círculo com contorno e sombra dura.
 
+## Descrição livre da pesquisa (D-040)
+
+Depois da última pergunta, uma tela opcional: "Descreva a sua pesquisa em poucas palavras" (até 160 caracteres; dá para pular).
+- **Fluxo:** o navegador envia o texto a `POST /api/quiz/texto`. O servidor calcula o vetor (e5), projeta nas 128 primeiras componentes principais dos perfis temáticos e devolve um **código de 129 caracteres** (versão da base + um caractere base64url de 6 bits por componente). O link do resultado leva `&t=<código>`, nunca o texto.
+- **Base:** `apps/web/lib/quiz/base-texto-v1.json` (258 KB, só no servidor), gerada uma vez por `python -m ingest.carga.quiz_base_texto`. É estável de propósito: links compartilhados dependem dela. Uma base nova exige outra versão.
+- **Fidelidade:** com 30 consultas de exemplo, correlação de Spearman de 0,991 entre a similaridade exata e a reconstruída.
+- **No match:** a similaridade do perfil com o vetor reconstruído, ancorada nos percentis 90 e 99,9 como a afinidade, entra com peso 0,40, somado aos 1,00 das respostas. Com texto, ele vale ~29% do índice. Os exemplos de publicações passam a ser os do nicho mais próximos do texto. O título e o banner de perfil não mudam.
+- **Avaliação** (`python -m ingest.carga.avaliar_quiz_texto`, 8 nichos amplos com descrições específicas): a aderência da lista de 15 subiu em média **25 pontos** (de 27–67% para 40–100%), sem nenhum caso pior. O maior ganho foi em caprinos com palma forrageira (40% → 100%). Com peso 0,25, o ganho era de 18 pontos.
+- **Estabilidade:** o vetor da frase do nicho fica guardado em memória (as frases vêm só da árvore). Assim, o mesmo link dá o mesmo resultado mesmo se o serviço de embedding ficar lento, e página e banners não pedem o mesmo vetor três vezes. O código do texto é decodificado sem o serviço de embedding.
+
 ## Privacidade
 
 - As respostas do quiz e o resultado não são gravados. As URLs de resultado e dos banners levam só ids de opções e da instituição, e o servidor recalcula tudo.
+- A descrição livre (D-040) passa uma vez pelo servidor para virar vetor e não é gravada nem registrada. A URL leva só o resumo numérico do tema, do qual não se recuperam as palavras.
 - O cadastro segue a D-037: consentimento, mínimo necessário, papel só de escrita, retenção de 24 meses e pedidos de remoção pelo contato de `/sobre`.
 
 ## Pendências desta etapa
@@ -297,8 +308,9 @@ Os cartões dos pesquisadores no banner de afinidades ganham um layout mais cria
 - [x] Cadastro dos participantes (D-037): migração `0014`, papel `quiz_escrita` (só `INSERT`; leitura recusada, testado), `/api/quiz/participante`, `/api/quiz/instituicoes`, `/api/quiz/programas`, aviso em `/sobre#privacidade-quiz`
 - [x] Cartões neo-brutalistas nos banners (figurinhas inclinadas, selo da posição, ticket do índice, medidor em blocos), story e post
 - [x] Interface do quiz (`/quiz`: abertura, cadastro, 10 perguntas com barra de progresso, voltar pelo histórico do navegador, teclado) e página de resultado (`/quiz/resultado`: banners, compartilhar/baixar, copiar link, lista de 15 com porquê e exemplos, filtro de distância, instituições e programas alinhados, metadados Open Graph). JavaScript: `/quiz` 4,8 kB da página + 87,3 kB compartilhados (92,1 kB no primeiro carregamento); `/quiz/resultado` 88,1 kB
-- [ ] Fontes do site nos banners (Lexend e DM Sans em `.ttf`; aguardando autorização para baixar)
-- [ ] Nova tela inicial e painel (seção 6 do pedido original)
+- [x] Fontes do site nos banners (Lexend e DM Sans em WOFF estático, licença OFL)
+- [x] Nova tela inicial e painel (D-039)
 - [ ] Atualizar o `SCHEME.md` e o `README.md` com os números finais (após a FUNED: 110.783 publicações, 35.724 perfis temáticos)
-- [ ] Capturas de tela do quiz em 360, 390 e 430 px (o Chrome usado nos testes não reduz a janela abaixo da largura de desktop)
+- [x] Capturas em 360, 390 e 430 px (Chrome headless com a página num iframe da largura certa: a janela headless não fica abaixo de 500 px)
+- [x] Descrição livre da pesquisa (D-040)
 - [ ] Latência dos nichos muito amplos (até ~2 s; primeira chamada após reiniciar até ~5 s)

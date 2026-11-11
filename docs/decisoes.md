@@ -449,3 +449,19 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - os links "← mapa geral" dos perfis levam ao painel;
   - o sitemap troca `/mapa` por `/painel` e inclui `/quiz`.
 - **Por quê:** o mapa é rico, mas pesado como primeira impressão no celular. A maioria chega querendo buscar alguém ou, agora, fazer o quiz. A busca continua no topo das duas telas.
+
+## D-040 — Descrição livre da pesquisa no quiz, só como código no link
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **O quê:** uma última tela opcional no quiz: "Descreva a sua pesquisa em poucas palavras" (até 160 caracteres). Serve para refinar o match dentro do nicho escolhido nas respostas.
+- **Restrições:** o resultado precisa continuar reproduzível pelo link (D-036), e nada do quiz pode ser gravado (D-037). Pôr o texto na URL o deixaria no histórico, nos logs do Caddy e em todo link compartilhado. Guardá-lo no servidor quebraria a regra de não gravar.
+- **Como:**
+  - O servidor (`POST /api/quiz/texto`) transforma o texto em vetor (e5, 768 dimensões) e o projeta na **base PCA dos perfis temáticos**: 128 componentes, 79% da variância.
+  - Cada coeficiente é quantizado em 6 bits (±3σ), o que dá um caractere base64url. O código tem 129 caracteres: 1 de versão mais 128.
+  - O texto não é gravado, não vai para log e não volta ao navegador. O link leva `&t=<código>`.
+  - Página e banners reconstroem o vetor aproximado sem o serviço de embedding.
+- **Fidelidade:** com 30 consultas, Spearman de 0,991 entre as similaridades exatas e as reconstruídas, e 82% dos 100 perfis mais próximos em comum. Também foram testados 64 componentes × 8 bits (0,983), 96 × 8 (0,989) e 192 × 4 (0,991, mas com o mesmo tamanho e mais código).
+- **Peso:** a similaridade com o texto, ancorada como a afinidade, entra com 0,40, somado aos 1,00 das respostas; com texto, o texto vale ~29% do índice. Numa avaliação com 8 nichos amplos e descrições específicas, a aderência da lista de 15 subiu 25 pontos em média, sem nenhum caso pior. Com peso 0,25, o ganho era de 18 pontos.
+- **Estabilidade:** `apps/web/lib/quiz/base-texto-v1.json` não pode mudar, porque links compartilhados dependem dela. O script `ingest/carga/quiz_base_texto.py` se recusa a sobrescrevê-la. Uma base nova (por exemplo, com outro modelo de embedding) ganha outra versão, e o app passa a aceitar as duas.
+- **Junto:** o vetor da frase do nicho passou a ficar em memória. Antes, uma lentidão do serviço de embedding (limite de 4 s) fazia o mesmo link dar resultados diferentes; foi o que aconteceu na avaliação logo após reiniciar o app.
+- **Privacidade:** do código não se recuperam as palavras, só o tema aproximado. O aviso está na própria tela e em `/sobre#privacidade-quiz`.

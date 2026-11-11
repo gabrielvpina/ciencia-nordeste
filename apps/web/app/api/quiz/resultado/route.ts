@@ -1,4 +1,4 @@
-// POST /api/quiz/resultado — { instituicao_id: uuid | null, respostas: [ids das opções], filtro?: {tipo: "ne"|"uf"|"raio", km?} }
+// POST /api/quiz/resultado — { instituicao_id: uuid | null, respostas: [ids das opções], filtro?: {tipo: "ne"|"uf"|"raio", km?}, texto?: código (D-040) }
 // O servidor reconstrói tudo a partir dos ids (não aceita sinais do cliente) e não grava nada (D-022, LGPD).
 import { alinhar, type Filtro } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
@@ -15,12 +15,12 @@ function lerFiltro(f: unknown, temInstituicao: boolean): Filtro {
 }
 
 export async function POST(req: Request) {
-  let corpo: { instituicao_id?: unknown; respostas?: unknown; filtro?: unknown };
+  let corpo: { instituicao_id?: unknown; respostas?: unknown; filtro?: unknown; texto?: unknown };
   try { corpo = await req.json(); } catch { return Response.json({ erro: "json inválido" }, { status: 400 }); }
   const inst = typeof corpo.instituicao_id === "string" && UUID.test(corpo.instituicao_id) ? corpo.instituicao_id : null;
   const { respostas, erros } = interpretar(corpo.respostas);
   if (erros.length) return Response.json({ erro: "respostas inválidas", detalhes: erros.slice(0, 5) }, { status: 400 });
   const t0 = Date.now();
-  const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: soQualis(req), filtro: lerFiltro(corpo.filtro, !!inst) });
+  const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: soQualis(req), filtro: lerFiltro(corpo.filtro, !!inst), texto: typeof corpo.texto === "string" ? corpo.texto : null });
   return Response.json({ ...r, ms: Date.now() - t0 }, { headers: { "cache-control": "no-store" } });
 }

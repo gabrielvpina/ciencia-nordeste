@@ -7,6 +7,12 @@ const K_RRF = 60;          // constante usual da Reciprocal Rank Fusion
 const CANDIDATOS = 200;    // vizinhos considerados em cada lista
 
 export async function embedConsulta(texto: string): Promise<string | null> {
+  const v = await embedVetor(texto);
+  return v ? `[${v.join(",")}]` : null;
+}
+
+/** Vetor do e5 (768, normalizado) para uma consulta; null se o serviço estiver fora do ar. */
+export async function embedVetor(texto: string): Promise<number[] | null> {
   const url = process.env.EMBED_URL;
   if (!url) return null;
   try {
@@ -16,7 +22,7 @@ export async function embedConsulta(texto: string): Promise<string | null> {
     });
     if (!r.ok) return null;
     const { vetor } = (await r.json()) as { vetor: number[] };
-    return Array.isArray(vetor) && vetor.length === 768 ? `[${vetor.join(",")}]` : null;
+    return Array.isArray(vetor) && vetor.length === 768 ? vetor : null;
   } catch {
     return null;   // serviço fora do ar: a busca continua só pelo texto
   }

@@ -4,6 +4,7 @@
 import { q } from "@/lib/db";
 import { embedConsulta } from "@/lib/vetorial";
 import { ARVORE, type Opcao } from "./estrutura";
+import { decodificar } from "./texto";
 
 // ---------------------------------------------------------------- constantes (documentadas na D-036)
 /** Peso de cada componente no índice de compatibilidade (0–100). Somam 1. */
@@ -14,6 +15,11 @@ export const PESO_INDICE = {
   volume: 0.2,          // quantas publicações no nicho (satura em VOLUME_CHEIO)
   afinidade: 0.3,       // similaridade do perfil temático com a frase do nicho, entre o percentil 90 (0) e o 99,9 (1) da população
 } as const;
+/** Descrição livre da pesquisa (D-040), opcional: similaridade do perfil com o texto, ancorada como a afinidade.
+ *  Entra somada aos pesos acima e o total se renormaliza (com texto: 0,30 + 0,20 + 0,20 + 0,30 + 0,40 = 1,40, ou seja,
+ *  o texto vale ~29% do índice e as respostas ~71%). 0,40 deu +25 pontos de aderência na lista contra +18 com 0,25
+ *  (ingest/relatorios/quiz_texto.md, python -m ingest.carga.avaliar_quiz_texto). */
+export const PESO_TEXTO = 0.4;
 export const CONCENTRACAO_CHEIA = 0.5;   // metade da produção no nicho = concentração máxima
 export const VOLUME_CHEIO = 15;          // publicações no nicho que dão o volume máximo
 export const MIN_NICHO = 2;              // publicações que casam o núcleo (método e sub-objeto) para entrar
@@ -38,7 +44,7 @@ export type Alinhado = {
 };
 
 export type Resultado = {
-  versao: number; nucleo: string[]; vetorial: boolean; candidatos: number; tempos?: Record<string, number>;
+  versao: number; nucleo: string[]; vetorial: boolean; texto: boolean; candidatos: number; tempos?: Record<string, number>;
   banner: Alinhado[]; lista: Alinhado[];
   instituicoes: { id: string; nome: string; sigla: string | null; uf: string; n: number }[];
   programas: { id: string; nome: string; sigla: string | null; uf: string; n: number }[];
@@ -57,32 +63,49 @@ async function instituicoesExcluidas(inst: string | null): Promise<string[]> {
   return r.map((x) => x.id);
 }
 
+/** Vetor da frase do nicho, guardado em memória: as frases vêm só da árvore (número finito), então o mesmo link dá sempre
+ *  o mesmo resultado mesmo se o serviço de embedding ficar lento depois, e página + dois banners não pedem o mesmo vetor 3 vezes.
+ *  Falha (null) não é guardada: a próxima chamada tenta de novo. */
+const FRASES = new Map<string, string>();
+async function vetorDaFrase(frase: string): Promise<string | null> {
+  const guardado = FRASES.get(frase);
+  if (guardado) return guardado;
+  const v = await embedConsulta(frase);
+  if (v) { if (FRASES.size >= 2000) FRASES.clear(); FRASES.set(frase, v); }
+  return v;
+}
+
 /** O núcleo: método e sub-objeto (ou objeto, se o sub-objeto foi pulado). Se faltar um, o outro sozinho. */
 function nucleo(nicho: Map<string, Opcao>): Opcao[] {
   const alvo = nicho.get("sub_objeto") ?? nicho.get("objeto");
   return [nicho.get("metodo"), alvo].filter((o): o is Opcao => !!o?.sinais && Object.keys(o.sinais).length > 0);
 }
 
-export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: string | null; soQualis: boolean; filtro?: Filtro }): Promise<Resultado> {
+export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: string | null; soQualis: boolean; filtro?: Filtro; texto?: string | null }): Promise<Resultado> {
   const facetas = [...nicho.entries()].filter(([, o]) => o.sinais && (o.sinais.topics || o.sinais.subfields || o.sinais.fields || o.sinais.termos));
   const nuc = nucleo(nicho);
-  const vazio: Resultado = { versao: ARVORE.versao, tempos: {}, nucleo: nuc.map((o) => o.id), vetorial: false, candidatos: 0, banner: [], lista: [], instituicoes: [], programas: [], origem: null };
+  const vazio: Resultado = { versao: ARVORE.versao, tempos: {}, nucleo: nuc.map((o) => o.id), vetorial: false, texto: false, candidatos: 0, banner: [], lista: [], instituicoes: [], programas: [], origem: null };
   if (!nuc.length) return vazio;
 
   const ids = facetas.map(([, o]) => o.id);
   const pesos = facetas.map(([f]) => ARVORE.pesos_faceta[f] ?? 1);
   const frase = facetas.map(([, o]) => o.sinais?.frase).filter(Boolean).join(" · ");
   const t0 = Date.now();
-  const vetor = frase ? await embedConsulta(frase) : null;
+  const vetor = frase ? await vetorDaFrase(frase) : null;
   const t1 = Date.now();
+  const vTexto = decodificar(opts.texto);   // código do link → vetor aproximado (não depende do serviço de embedding)
   const pA = vetor ? PESO_INDICE.afinidade : 0;
-  const soma = PESO_INDICE.cobertura + PESO_INDICE.concentracao + PESO_INDICE.volume + pA;   // sem vetor, os outros se renormalizam
+  const pT = vTexto ? PESO_TEXTO : 0;
+  const soma = PESO_INDICE.cobertura + PESO_INDICE.concentracao + PESO_INDICE.volume + pA + pT;   // o que faltar, os outros se renormalizam
   const filtro = opts.filtro ?? { tipo: "ne" };
   const excluidas = await instituicoesExcluidas(opts.instituicao);
   // âncoras da afinidade: percentis 90 e 99,9 da similaridade entre a frase e TODOS os perfis (uma vez por consulta)
-  const [anc] = vetor ? await q<{ p90: number; p999: number }>(
-    `SELECT percentile_cont(0.9) WITHIN GROUP (ORDER BY s) AS p90, percentile_cont(0.999) WITHIN GROUP (ORDER BY s) AS p999
-       FROM (SELECT 1 - (embedding <=> $1::halfvec) AS s FROM researcher_embeddings) x`, [vetor]) : [{ p90: 0, p999: 1 }];
+  // (o mesmo para o texto, numa só passada)
+  const [anc] = vetor || vTexto ? await q<{ p90: number; p999: number; t90: number; t999: number }>(
+    `SELECT percentile_cont(0.9) WITHIN GROUP (ORDER BY s) AS p90, percentile_cont(0.999) WITHIN GROUP (ORDER BY s) AS p999,
+            percentile_cont(0.9) WITHIN GROUP (ORDER BY t) AS t90, percentile_cont(0.999) WITHIN GROUP (ORDER BY t) AS t999
+       FROM (SELECT 1 - (embedding <=> $1::halfvec) AS s, 1 - (embedding <=> $2::halfvec) AS t FROM researcher_embeddings) x`, [vetor, vTexto])
+    : [{ p90: 0, p999: 1, t90: 0, t999: 1 }];
   // filtro Qualis (D-035): JOIN direto, para o plano não testar publicação a publicação
   const juntaQualis = opts.soQualis ? "JOIN mv_work_qualis mq ON mq.work_id = qw.work_id" : "";
 
@@ -101,10 +124,11 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
                JOIN cand c ON c.rid = x.rid GROUP BY x.rid),   -- quanto das publicações do nicho casa cada faceta fora do núcleo
      tot AS (SELECT researcher_id AS rid, n_works AS n FROM researcher_embeddings),   -- produção no recorte (perfil temático, 0012)
      sims AS MATERIALIZED (SELECT e.researcher_id AS rid,
-                      least(1, greatest(0, (1 - (e.embedding <=> $6::halfvec) - $10::float8) / nullif($11::float8 - $10::float8, 0))) AS pct
-                 FROM researcher_embeddings e JOIN cand c ON c.rid = e.researcher_id WHERE $6::halfvec IS NOT NULL),
+                      least(1, greatest(0, (1 - (e.embedding <=> $6::halfvec) - $10::float8) / nullif($11::float8 - $10::float8, 0))) AS pct,
+                      least(1, greatest(0, (1 - (e.embedding <=> $12::halfvec) - $13::float8) / nullif($14::float8 - $13::float8, 0))) AS pct_t
+                 FROM researcher_embeddings e JOIN cand c ON c.rid = e.researcher_id WHERE $6::halfvec IS NOT NULL OR $12::halfvec IS NOT NULL),
      base AS (
-       SELECT r.id, r.display_name AS nome, c.n_nicho, c.soma, t.n AS n_total, cb.cobertos, cb.ops, coalesce(sm.pct, 0) AS afin,
+       SELECT r.id, r.display_name AS nome, c.n_nicho, c.soma, t.n AS n_total, cb.cobertos, cb.ops, coalesce(sm.pct, 0) AS afin, coalesce(sm.pct_t, 0) AS afin_texto,
               i.id AS instituicao_id, i.acronym AS sigla, i.name AS instituicao, m.name AS municipio, i.uf, i.latitude AS lat, i.longitude AS lon,
               (SELECT 6371 * 2 * asin(sqrt(power(sin(radians(i.latitude - o.lat) / 2), 2)
                       + cos(radians(o.lat)) * cos(radians(i.latitude)) * power(sin(radians(i.longitude - o.lon) / 2), 2))) FROM origem o) AS distancia_km,
@@ -121,13 +145,13 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
      SELECT *, round(100 * (${PESO_INDICE.cobertura} * CASE WHEN $7::real = 0 THEN 1 ELSE least(1, coalesce(cobertos, 0) / $7::real) END
                             + ${PESO_INDICE.concentracao} * least(1, (n_nicho::real / greatest(n_total, 1)) / ${CONCENTRACAO_CHEIA})
                             + ${PESO_INDICE.volume} * least(1, ln(1 + n_nicho) / ln(${1 + VOLUME_CHEIO}))
-                            + ${pA} * afin) / ${soma})::int AS indice
+                            + ${pA} * afin + ${pT} * afin_texto) / ${soma})::int AS indice
        FROM base
       WHERE ($8 = 'ne') OR ($8 = 'uf' AND uf = (SELECT uf FROM origem)) OR ($8 = 'raio' AND distancia_km <= $9::real)
       ORDER BY indice DESC, proeminencia DESC LIMIT 300`,
     [ids, pesos, opts.instituicao, nuc.map((o) => o.id), excluidas, vetor,
       facetas.reduce((t, [f, o]) => t + (nuc.some((n) => n.id === o.id) ? 0 : ARVORE.pesos_faceta[f] ?? 1), 0), filtro.tipo,
-      filtro.tipo === "raio" ? filtro.km : null, anc.p90, anc.p999]);
+      filtro.tipo === "raio" ? filtro.km : null, anc.p90, anc.p999, vTexto, anc.t90, anc.t999]);
 
   const t2 = Date.now();
   const elegiveis = linhas
@@ -162,15 +186,18 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
      nicho AS (SELECT qw.work_id, sum(qw.v * s.peso) AS v FROM quiz_opcao_work qw JOIN sel s USING (opcao_id) GROUP BY 1
                 HAVING count(*) FILTER (WHERE qw.opcao_id = ANY($4::text[])) = cardinality($4::text[]))
      SELECT r.rid,
-            (SELECT json_agg(json_build_object('titulo', w.title, 'ano', w.year, 'doi', w.doi) ORDER BY n.v DESC, w.year DESC)
-               FROM (SELECT DISTINCT a.work_id FROM work_authorships a WHERE a.researcher_id = r.rid) aw JOIN nicho n ON n.work_id = aw.work_id
-               JOIN works w ON w.id = aw.work_id WHERE NOT $5 OR EXISTS (SELECT 1 FROM mv_work_qualis mq WHERE mq.work_id = w.id)
-              LIMIT 2) AS exemplos,
+            -- exemplos: as publicações do nicho mais próximas da descrição livre (D-040), se houver; senão, as que mais casam o nicho
+            (SELECT json_agg(json_build_object('titulo', x.title, 'ano', x.year, 'doi', x.doi) ORDER BY x.ord) FROM (
+               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, n.v DESC, w.year DESC) AS ord
+                 FROM (SELECT DISTINCT a.work_id FROM work_authorships a WHERE a.researcher_id = r.rid) aw JOIN nicho n ON n.work_id = aw.work_id
+                 JOIN works w ON w.id = aw.work_id LEFT JOIN work_embeddings we ON we.work_id = w.id AND $6::halfvec IS NOT NULL
+                WHERE NOT $5 OR EXISTS (SELECT 1 FROM mv_work_qualis mq WHERE mq.work_id = w.id)
+                ORDER BY ord LIMIT 2) x) AS exemplos,
             (SELECT min(w.year) FROM work_authorships a JOIN nicho n ON n.work_id = a.work_id JOIN works w ON w.id = a.work_id WHERE a.researcher_id = r.rid) AS desde,
             (SELECT g.name FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC LIMIT 1) AS programa,
             (SELECT g.id::text FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC LIMIT 1) AS programa_id
        FROM unnest($1::uuid[]) AS r(rid)`,
-    [ids_mostrar, ids, pesos, nuc.map((o) => o.id), opts.soQualis]) : [];
+    [ids_mostrar, ids, pesos, nuc.map((o) => o.id), opts.soQualis, vTexto]) : [];
   const t3 = Date.now();
   const det = new Map(detalhes.map((d) => [d.rid, d]));
   const rotulo = new Map(facetas.map(([, o]) => [o.id, o.rotulo]));
@@ -202,7 +229,7 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
   const origem = opts.instituicao ? (await q<{ id: string; uf: string }>(`SELECT id, uf FROM institutions WHERE id = $1`, [opts.instituicao]))[0] ?? null : null;
 
   return {
-    versao: ARVORE.versao, nucleo: nuc.map((o) => o.id), vetorial: !!vetor, candidatos: elegiveis.length,
+    versao: ARVORE.versao, nucleo: nuc.map((o) => o.id), vetorial: !!vetor, texto: !!vTexto, candidatos: elegiveis.length,
     tempos: { embed: t1 - t0, ranking: t2 - t1, detalhes: t3 - t2, resto: Date.now() - t3 },
     banner: banner.map(completar), lista: lista.map(completar),
     instituicoes: [...instMap.values()].sort((a, b) => b.n - a.n).slice(0, 6), programas, origem,

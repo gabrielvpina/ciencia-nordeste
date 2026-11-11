@@ -52,6 +52,7 @@ export default async function Sobre() {
       <h3 id="privacidade-quiz">Quiz &ldquo;Que cientista é você?&rdquo;</h3>
       <ul>
         <li><b>O que guardamos:</b> o nome, a instituição, o tipo de filiação e o curso ou programa, informados no início do quiz, com o seu consentimento. <b>Não guardamos</b> as suas respostas, o seu resultado, o seu IP nem dados do navegador.</li>
+        <li><b>Descrição da pesquisa (opcional):</b> o texto que você escreve no fim do quiz é enviado uma vez ao site para virar um vetor numérico e <b>não é gravado</b> nem registrado. O link do resultado leva só um resumo numérico do tema (128 números de baixa precisão), do qual não dá para recuperar as suas palavras.</li>
         <li><b>Para quê:</b> apenas estatísticas sobre quem usa o quiz (filiações, instituições, programas). Não pedimos e-mail nem outro contato. Esses dados não entram no cálculo das afinidades.</li>
         <li><b>Quem acessa:</b> o site só consegue gravar esses dados, não lê-los. A leitura é restrita ao responsável pelo projeto.</li>
         <li><b>Por quanto tempo:</b> até 24 meses; depois, são apagados automaticamente.</li>

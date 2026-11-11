@@ -830,3 +830,12 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
 .qr-img::before { content: attr(data-espera); position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem;
   border: var(--b) solid var(--stroke); border-radius: 18px; background: repeating-linear-gradient(-45deg, var(--panel) 0 14px, var(--accent-soft) 14px 28px); }
 .qr-img img { position: relative; background: transparent; }
+
+/* Quiz: descrição livre da pesquisa (D-040) */
+.qt-ajuda { margin: 8px 0 0; color: var(--muted); font-size: .92rem; }
+.qt-campo { display: grid; gap: 4px; }
+.qt-campo textarea { width: 100%; min-height: 96px; padding: 12px 14px; border: var(--b) solid var(--stroke); border-radius: 14px; background: var(--panel); color: var(--fg);
+  font: inherit; font-size: 16px; line-height: 1.4; resize: vertical; box-shadow: var(--hard-s); }
+.qt-campo textarea:focus { outline: none; box-shadow: var(--hard-s), 0 0 0 4px var(--accent-soft); }
+.qt-conta { justify-self: end; color: var(--muted); font-size: .76rem; font-variant-numeric: tabular-nums; }
+.qt-privacidade { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.35; }

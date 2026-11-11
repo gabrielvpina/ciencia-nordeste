@@ -7,20 +7,22 @@ import { nomePrograma } from "@/lib/programas";
 import { alinhar, type Filtro } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
 import { montarTitulo } from "@/lib/quiz/titulo";
+import { codigoValido } from "@/lib/quiz/texto";
 import { soQualis } from "@/lib/qualis-filtro";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
-type SP = { r?: string; i?: string; f?: string; km?: string };
+type SP = { r?: string; i?: string; f?: string; km?: string; t?: string };
 
 function ler(sp: SP) {
   const ids = (sp.r ?? "").split(",").filter(Boolean).slice(0, 12);
   const inst = UUID.test(sp.i ?? "") ? sp.i! : null;
   const filtro: Filtro = inst && sp.f === "uf" ? { tipo: "uf" } : inst && sp.f === "raio" && Number(sp.km) > 0 ? { tipo: "raio", km: Math.min(Number(sp.km), 3000) } : { tipo: "ne" };
-  return { ids, inst, filtro, ...interpretar(ids) };
+  const texto = codigoValido(sp.t) ? sp.t : null;   // descrição livre, já em código (D-040)
+  return { ids, inst, filtro, texto, ...interpretar(ids) };
 }
-const qsBanner = (ids: string[], inst: string | null, extra: Record<string, string> = {}) =>
-  new URLSearchParams({ r: ids.join(","), ...(inst ? { i: inst } : {}), ...extra }).toString();
+const qsBanner = (ids: string[], inst: string | null, extra: Record<string, string> = {}, texto: string | null = null) =>
+  new URLSearchParams({ r: ids.join(","), ...(inst ? { i: inst } : {}), ...(texto ? { t: texto } : {}), ...extra }).toString();
 
 export async function generateMetadata({ searchParams }: { searchParams: SP }): Promise<Metadata> {
   const { ids, inst, respostas, erros } = ler(searchParams);
@@ -36,16 +38,16 @@ export async function generateMetadata({ searchParams }: { searchParams: SP }): 
 }
 
 export default async function Resultado({ searchParams }: { searchParams: SP }) {
-  const { ids, inst, filtro, respostas, erros } = ler(searchParams);
+  const { ids, inst, filtro, texto, respostas, erros } = ler(searchParams);
   if (erros.length || !ids.length) {
     return <div className="quiz"><section className="quiz-abertura"><h1>Resultado inválido</h1><p>Este link não corresponde a um quiz respondido.</p>
       <a className="quiz-comecar" href="/quiz">Fazer o quiz</a></section></div>;
   }
   const sq = soQualis();
-  const [t, r] = [montarTitulo(respostas), await alinhar(respostas.nicho, { instituicao: inst, soQualis: sq, filtro })];
+  const [t, r] = [montarTitulo(respostas), await alinhar(respostas.nicho, { instituicao: inst, soQualis: sq, filtro, texto })];
   const extra = { ql: sq ? "1" : "0" };
   const bPerfil = `/api/quiz/banner/perfil?${qsBanner(ids, inst, extra)}`;
-  const bAfin = `/api/quiz/banner/afinidades?${qsBanner(ids, inst, extra)}`;
+  const bAfin = `/api/quiz/banner/afinidades?${qsBanner(ids, inst, extra, texto)}`;
   const base = qsBanner(ids, inst);
 
   return (
@@ -76,6 +78,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
         {inst && (
           <form className="qr-filtro" method="get" action="/quiz/resultado">
             <input type="hidden" name="r" value={ids.join(",")} /><input type="hidden" name="i" value={inst} />
+            {texto && <input type="hidden" name="t" value={texto} />}
             <label><input type="radio" name="f" value="ne" defaultChecked={filtro.tipo === "ne"} /> Todo o Nordeste</label>
             <label><input type="radio" name="f" value="uf" defaultChecked={filtro.tipo === "uf"} /> Só o meu estado</label>
             <label><input type="radio" name="f" value="raio" defaultChecked={filtro.tipo === "raio"} /> Até

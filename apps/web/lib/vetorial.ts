@@ -11,14 +11,14 @@ export async function embedConsulta(texto: string): Promise<string | null> {
   return v ? `[${v.join(",")}]` : null;
 }
 
-/** Vetor do e5 (768, normalizado) para uma consulta; null se o serviço estiver fora do ar. */
-export async function embedVetor(texto: string): Promise<number[] | null> {
+/** Vetor do e5 (768, normalizado) para uma consulta; null se o serviço estiver fora do ar ou passar de `limiteMs`. */
+export async function embedVetor(texto: string, limiteMs = 4000): Promise<number[] | null> {
   const url = process.env.EMBED_URL;
   if (!url) return null;
   try {
     const r = await fetch(`${url}/embed`, {
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ texto }),
-      signal: AbortSignal.timeout(4000), cache: "no-store",
+      signal: AbortSignal.timeout(limiteMs), cache: "no-store",
     });
     if (!r.ok) return null;
     const { vetor } = (await r.json()) as { vetor: number[] };

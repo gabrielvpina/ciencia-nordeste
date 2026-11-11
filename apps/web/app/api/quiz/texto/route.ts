@@ -21,7 +21,8 @@ export async function POST(req: Request) {
   try { corpo = await req.json(); } catch { return Response.json({ erro: "json inválido" }, { status: 400 }); }
   const texto = typeof corpo.texto === "string" ? corpo.texto.replace(/\s+/g, " ").trim().slice(0, TEXTO_MAX) : "";
   if (texto.length < 3) return Response.json({ erro: "texto curto demais" }, { status: 400 });
-  const vetor = await embedVetor(texto);
+  // mais folga que a busca (4 s): é uma chamada só por quiz, e perder a descrição custa mais que esperar
+  const vetor = await embedVetor(texto, 10_000);
   if (!vetor) return Response.json({ erro: "indisponível no momento" }, { status: 503 });
   return Response.json({ codigo: codificar(vetor) }, { headers: { "cache-control": "no-store" } });
 }

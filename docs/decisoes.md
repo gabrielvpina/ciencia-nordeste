@@ -465,3 +465,9 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Estabilidade:** `apps/web/lib/quiz/base-texto-v1.json` não pode mudar, porque links compartilhados dependem dela. O script `ingest/carga/quiz_base_texto.py` se recusa a sobrescrevê-la. Uma base nova (por exemplo, com outro modelo de embedding) ganha outra versão, e o app passa a aceitar as duas.
 - **Junto:** o vetor da frase do nicho passou a ficar em memória. Antes, uma lentidão do serviço de embedding (limite de 4 s) fazia o mesmo link dar resultados diferentes; foi o que aconteceu na avaliação logo após reiniciar o app.
 - **Privacidade:** do código não se recuperam as palavras, só o tema aproximado. O aviso está na própria tela e em `/sobre#privacidade-quiz`.
+- **Posição e pergunta (revisão do mesmo dia):** a tela passou do fim do quiz para **logo depois de "especificamente?"**, com a pergunta "Qual organismo, doença ou sistema, exatamente?". A decisão veio de um experimento com 20 casos (`ingest/carga/experimento_quiz_textos.py`), que comparou textos sobre o objeto, a técnica e o objetivo da metodologia, sozinhos e combinados:
+  - **objeto:** maior ganho (aderência ao objeto na lista de 49% para 65%; no banner, de 54% para 72%) e nenhum caso pior;
+  - **técnica ou objetivo, somados ao objeto:** de 1 a 4 pontos a mais, dentro do ruído de 20 casos;
+  - **objetivo sozinho:** piorou 4 casos. A linguagem de objetivos é genérica ("melhorar a qualidade", "prevenir") e pode tirar a lista do nicho.
+
+  Por isso o quiz tem **uma** tela de texto, e não várias intercaladas, que também aumentariam a desistência no celular.

@@ -285,7 +285,8 @@ Os cartões dos pesquisadores no banner de afinidades ganham um layout mais cria
 
 ## Descrição livre da pesquisa (D-040)
 
-Depois da última pergunta, uma tela opcional: "Descreva a sua pesquisa em poucas palavras" (até 160 caracteres; dá para pular).
+Logo depois de "especificamente?" (sub-objeto), uma tela opcional: "Qual organismo, doença ou sistema, exatamente?" (até 160 caracteres; dá para pular). A tela aparece mesmo quando o sub-objeto não tem opções porque o objeto foi pulado. O texto fica na memória do navegador e só é enviado no fim do quiz.
+- **Por que ali e só uma:** experimento com 20 casos (`python -m ingest.carga.experimento_quiz_textos`, relatório em `ingest/relatorios/quiz_textos_experimento.md`). O texto sobre o objeto rendeu mais (lista: aderência ao objeto de 49% para 65%) e não piorou nenhum caso. Textos sobre técnica ou sobre o objetivo da metodologia, somados ao do objeto, acrescentaram de 1 a 4 pontos. O objetivo sozinho piorou 4 casos.
 - **Fluxo:** o navegador envia o texto a `POST /api/quiz/texto`. O servidor calcula o vetor (e5), projeta nas 128 primeiras componentes principais dos perfis temáticos e devolve um **código de 129 caracteres** (versão da base + um caractere base64url de 6 bits por componente). O link do resultado leva `&t=<código>`, nunca o texto.
 - **Base:** `apps/web/lib/quiz/base-texto-v1.json` (258 KB, só no servidor), gerada uma vez por `python -m ingest.carga.quiz_base_texto`. É estável de propósito: links compartilhados dependem dela. Uma base nova exige outra versão.
 - **Fidelidade:** com 30 consultas de exemplo, correlação de Spearman de 0,991 entre a similaridade exata e a reconstruída.

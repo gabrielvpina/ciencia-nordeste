@@ -1,6 +1,6 @@
 "use client";
-// Quiz "Que cientista é você?" (etapa 13): abertura → cadastro (D-037) → 10 perguntas, uma por tela →
-// descrição livre opcional (D-040) → resultado.
+// Quiz "Que cientista é você?" (etapa 13): abertura → cadastro (D-037) → 10 perguntas, uma por tela, com uma descrição
+// livre opcional do objeto logo depois de "especificamente?" (D-040) → resultado.
 // Pensado para o celular: opções grandes na metade de baixo, toque avança, voltar desfaz (inclusive o botão do navegador).
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -21,9 +21,12 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
   const [cadastro, setCadastro] = useState<DadosCadastro | null>(null);
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);   // quiz concluído: espera o resultado
-  const [texto, setTexto] = useState("");   // descrição livre: só na memória; vai ao servidor uma vez e volta como código
+  const [texto, setTexto] = useState("");   // descrição livre: só na memória; vai ao servidor uma vez, no fim, e volta como código
   const telas = estrutura.telas;
   const total = telas.length + 2;   // cadastro + perguntas + descrição
+  // a descrição vem logo depois do sub-objeto ("especificamente?"): no experimento de 20 casos, um texto sobre o objeto
+  // rendeu mais que textos sobre técnica ou objetivo (ingest/carga/experimento_quiz_textos.py)
+  const iSub = telas.findIndex((t) => t.id === "sub_objeto");
 
   // cada tela é um passo na URL (?passo=cadastro | 0…9 | texto), pelo roteador do Next: o "voltar" do navegador/celular funciona.
   // As respostas ficam só na memória; recarregar no meio do quiz volta para o começo (o cadastro não fica guardado).
@@ -42,26 +45,34 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
   const opcoesDe = useCallback((t: Tela, r: Record<string, string | null>) =>
     filtrarOpcoes(t, r.metodo ?? undefined, r.objeto ?? undefined), []);
 
-  /** próxima pergunta com opções a oferecer (ex.: sem objeto, não há sub-objeto); ao fim, a descrição livre */
-  const avancar = useCallback((de: number, r: Record<string, string | null>) => {
-    for (let j = de + 1; j < telas.length; j++) if (opcoesDe(telas[j], r).length) return ir({ tipo: "pergunta", i: j });
-    ir({ tipo: "texto" });
-  }, [telas, opcoesDe, ir]);
-
   /** resultado: a descrição (se houver) vira um código no servidor; o link leva só o código, nunca o texto */
-  const concluir = async (descricao: string) => {
+  const concluir = async (r: Record<string, string | null>, descricao: string) => {
     setProcessando(true);
-    const ids = telas.map((t) => respostas[t.id]).filter((x): x is string => !!x);
+    const ids = telas.map((t) => r[t.id]).filter((x): x is string => !!x);
     const qs = new URLSearchParams({ r: ids.join(",") });
     if (cadastro?.instituicao_id) qs.set("i", cadastro.instituicao_id);
     if (descricao.trim().length >= 3) {
-      try {
-        const r = await fetch("/api/quiz/texto", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ texto: descricao }) });
-        const j = r.ok ? await r.json() : null;
-        if (j?.codigo) qs.set("t", j.codigo);   // falhou: segue só com as respostas
-      } catch { /* sem conexão com o serviço: segue só com as respostas */ }
+      // até 2 tentativas (o serviço de embedding pode estar lento); se falhar, segue só com as respostas
+      for (let tentativa = 0; tentativa < 2 && !qs.has("t"); tentativa++) {
+        try {
+          const r = await fetch("/api/quiz/texto", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ texto: descricao }) });
+          const j = r.ok ? await r.json() : null;
+          if (j?.codigo) qs.set("t", j.codigo);
+          else if (r.status === 400 || r.status === 429) break;   // texto inválido ou limite: não adianta repetir
+        } catch { /* sem conexão: tenta de novo */ }
+      }
     }
     router.push(`/quiz/resultado?${qs}`);
+  };
+
+  /** próxima tela: a descrição logo depois do sub-objeto (respondido, pulado ou sem opções); depois, a próxima pergunta
+   *  com opções a oferecer (ex.: sem objeto, não há sub-objeto); ao fim, o resultado */
+  const avancar = (de: number, r: Record<string, string | null>, depoisDoTexto = false) => {
+    for (let j = de + 1; j <= telas.length; j++) {
+      if (!depoisDoTexto && j - 1 === iSub) return ir({ tipo: "texto" });
+      if (j < telas.length && opcoesDe(telas[j], r).length) return ir({ tipo: "pergunta", i: j });
+    }
+    concluir(r, texto);
   };
 
   const responder = (tela: Tela, opcao: string | null) => {
@@ -78,7 +89,7 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
 
   if (processando) return <div className="quiz"><Processando /></div>;
 
-  const passo = fase.tipo === "abertura" ? 0 : fase.tipo === "cadastro" ? 1 : fase.tipo === "texto" ? total : fase.i + 2;
+  const passo = fase.tipo === "abertura" ? 0 : fase.tipo === "cadastro" ? 1 : fase.tipo === "texto" ? iSub + 3 : fase.i + 2 + (fase.i > iSub ? 1 : 0);
   return (
     <div className="quiz">
       {fase.tipo !== "abertura" && (
@@ -113,22 +124,22 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
       )}
 
       {fase.tipo === "texto" && (
-        <form className="quiz-pergunta quiz-texto" onSubmit={(e) => { e.preventDefault(); concluir(texto); }}>
+        <form className="quiz-pergunta quiz-texto" onSubmit={(e) => { e.preventDefault(); avancar(iSub, respostas, true); }}>
           <div className="quiz-enunciado">
             <span className="quiz-tag">sua pesquisa · opcional</span>
-            <h2 id="q-texto">Descreva a sua pesquisa em poucas palavras</h2>
-            <p className="qt-ajuda">Deixa o match mais preciso. Ex.: “resistência a antibióticos em bactérias de hospital”.</p>
+            <h2 id="q-texto">Qual organismo, doença ou sistema, exatamente?</h2>
+            <p className="qt-ajuda">Em poucas palavras, deixa o match mais preciso. Ex.: “Klebsiella resistente a antibióticos em hospitais”, “abelhas sem ferrão”, “tuberculose”.</p>
           </div>
           <div className="qt-campo">
             <textarea aria-labelledby="q-texto" value={texto} maxLength={TEXTO_MAX} rows={3} autoFocus
-              placeholder="O que você pesquisa (ou quer pesquisar)?" onChange={(e) => setTexto(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); concluir(texto); } }} />
+              placeholder="O que você estuda (ou quer estudar)?" onChange={(e) => setTexto(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); avancar(iSub, respostas, true); } }} />
             <small className="qt-conta">{texto.length}/{TEXTO_MAX}</small>
           </div>
           <p className="qt-privacidade">O texto não é gravado: serve só para calcular o resultado. O link leva um resumo numérico do tema, não as suas palavras.</p>
           <div className="quiz-opcoes">
-            <button type="submit" className="quiz-comecar" disabled={texto.trim().length > 0 && texto.trim().length < 3}>Ver meu resultado</button>
-            <button type="button" className="quiz-opcao quiz-nenhuma" onClick={() => concluir("")}><b>Pular</b><small>ver o resultado só com as respostas</small></button>
+            <button type="submit" className="quiz-comecar" disabled={texto.trim().length > 0 && texto.trim().length < 3}>Continuar</button>
+            <button type="button" className="quiz-opcao quiz-nenhuma" onClick={() => { setTexto(""); avancar(iSub, respostas, true); }}><b>Pular</b><small>seguir só com as respostas</small></button>
           </div>
         </form>
       )}

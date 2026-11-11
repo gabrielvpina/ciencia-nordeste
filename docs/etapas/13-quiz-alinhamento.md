@@ -311,7 +311,7 @@ Logo depois de "especificamente?" (sub-objeto), uma tela opcional: "Qual organis
 - [x] Interface do quiz (`/quiz`: abertura, cadastro, 10 perguntas com barra de progresso, voltar pelo histórico do navegador, teclado) e página de resultado (`/quiz/resultado`: banners, compartilhar/baixar, copiar link, lista de 15 com porquê e exemplos, filtro de distância, instituições e programas alinhados, metadados Open Graph). JavaScript: `/quiz` 4,8 kB da página + 87,3 kB compartilhados (92,1 kB no primeiro carregamento); `/quiz/resultado` 88,1 kB
 - [x] Fontes do site nos banners (Lexend e DM Sans em WOFF estático, licença OFL)
 - [x] Nova tela inicial e painel (D-039)
-- [ ] Atualizar o `SCHEME.md` e o `README.md` com os números finais (após a FUNED: 110.783 publicações, 35.724 perfis temáticos)
+- [x] `SCHEME.md` e `README.md` com os números finais (753 instituições, 110.783 publicações, 91.769 com Qualis, 35.724 perfis temáticos)
 - [x] Capturas em 360, 390 e 430 px (Chrome headless com a página num iframe da largura certa: a janela headless não fica abaixo de 500 px)
 - [x] Descrição livre da pesquisa (D-040)
 - [ ] Latência dos nichos muito amplos (até ~2 s; primeira chamada após reiniciar até ~5 s)

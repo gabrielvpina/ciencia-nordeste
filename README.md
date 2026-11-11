@@ -14,8 +14,18 @@ Repositório aberto da pesquisa em **ciências da vida** do Nordeste: saúde, bi
 Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**
 
 <p align="center">
-  <img src="assets/telas/inicio.webp" alt="Tela inicial: busca, áreas, mapa de publicações por instituição no Nordeste e seletores do mapa" width="900">
-  <br><sub>Tela inicial: busca por pesquisador, instituição, programa ou tema, e mapa da produção por instituição.</sub>
+  <img src="assets/telas/inicio.webp" alt="Tela inicial: busca e dois caminhos, o painel e o quiz, com os números da base" width="900">
+  <br><sub>Tela inicial: busca por pesquisador, instituição, programa ou tema, e os caminhos para o painel e o quiz (D-039).</sub>
+</p>
+
+<p align="center">
+  <img src="assets/telas/painel.webp" alt="Painel: áreas, mapa de publicações por instituição no Nordeste e seletores do mapa" width="900">
+  <br><sub>Painel (<code>/painel</code>): mapa da produção por instituição, áreas, produção por ano e filtros por estado e período.</sub>
+</p>
+
+<p align="center">
+  <img src="assets/telas/quiz.webp" alt="Quiz Que cientista é você: abertura, resultado com o título e cartão de afinidades com cinco pesquisadores" width="900">
+  <br><sub>Quiz "Que cientista é você?" no celular: abertura, resultado e cartão de afinidades para compartilhar (etapa 13).</sub>
 </p>
 
 <p align="center">
@@ -37,11 +47,12 @@ Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**
 
 | | |
 |---|---|
-| Instituições | 754 |
+| Instituições | 753 |
 | Programas de pós-graduação | 313 |
 | Pesquisadores | 144.891 (5.583 docentes de pós) |
-| Publicações 2022–2026 | 111.164 |
+| Publicações 2022–2026 | 110.783 (91.769 em revistas com Qualis) |
 | Teses e dissertações | 15.047 |
+| Perfis temáticos (quiz) | 35.724 |
 
 ## Como rodar localmente
 
@@ -89,7 +100,7 @@ Os números podem diferir um pouco dos do site publicado: as fontes são atualiz
 | 10 | [Aplicação web](docs/etapas/10-aplicacao-web.md) | núcleo concluído |
 | 11 | [Mapa próprio do Nordeste](docs/etapas/11-mapa-proprio.md) | concluída |
 | 12 | [Busca vetorial por tema de pesquisa](docs/etapas/12-busca-vetorial.md) | concluída |
-| 13 | [Quiz "Que cientista é você?" e alinhamento a pesquisadores](docs/etapas/13-quiz-alinhamento.md) | em desenho (branch `quiz`) |
+| 13 | [Quiz "Que cientista é você?" e alinhamento a pesquisadores](docs/etapas/13-quiz-alinhamento.md) | implementado no branch `quiz`; falta publicar |
 
 ### Outros documentos
 

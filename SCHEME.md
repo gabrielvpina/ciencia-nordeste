@@ -13,7 +13,7 @@
 
 | Frente | Situação |
 |---|---|
-| Dados | 754 instituições, 313 programas, 5.583 docentes, 144.891 pesquisadores, 111.164 publicações (2022–2026), 15.047 teses e dissertações, 43 fotos com licença livre |
+| Dados | 753 instituições, 313 programas, 5.583 docentes, 144.891 pesquisadores, 110.783 publicações (2022–2026; 91.769 em revistas com Qualis), 15.047 teses e dissertações, 35.724 perfis temáticos, 43 fotos com licença livre |
 | Identidade | 2.653 docentes ligados a perfis OpenAlex por regra aprovada (D-018); 5.336 pares de pesquisadores e 53 de instituições aguardam revisão manual |
 | Banco | PostgreSQL 16 + pgvector no Docker; 7 migrações (`ingest/sql/migracoes/`); carga idempotente (`scripts/carregar_banco.sh`); 111 mil vetores com índice HNSW |
 | App | Next.js 14.2.35 no Docker (http://localhost:3000): tela inicial com busca unificada (nome e **tema**, semântica PT/EN) e acesso ao painel e ao quiz; painel (`/painel`) com mapa próprio do NE (modos produção, colaboração, áreas); perfis de pesquisador, instituição e programa com rede de colaboração em arco |
@@ -58,11 +58,11 @@ Tamanho do recorte (cargas de 2026-11-09, recorte ampliado D-017):
 
 | Item | Quantidade |
 |---|---|
-| Instituições do NE (ROR + INEP) | 754 (225 com produção no OpenAlex, entre elas as unidades da Embrapa no NE e a EMPARN) |
+| Instituições do NE (ROR + INEP) | 753, após a retirada da FUNED (D-038) (225 com produção no OpenAlex, entre elas as unidades da Embrapa no NE e a EMPARN) |
 | Programas de pós CAPES (2022–2024) | 313 distintos (284 em 2024: 155 de saúde e ciências biológicas, 114 de agrárias, alimentos, veterinária e biodiversidade, 15 de biotecnologia) |
 | Docentes de pós (ID_PESSOA) | 5.583 |
-| Works 2022–2026 | **111.164** (Medicina 56,3 mil; Agrárias e Biológicas 26,2 mil; demais saúde e biomédicas 27,6 mil; Veterinária 1,1 mil) |
-| Pesquisadores (autores com vínculo no NE) | 141.961 (58% com ORCID; 35,8 mil com 3+ works no período) |
+| Works 2022–2026 | **110.783**, 91.769 em revistas com Qualis (Medicina 56,1 mil; Agrárias e Biológicas 26,1 mil; demais saúde e biomédicas 27,5 mil; Veterinária 1,1 mil) |
+| Pesquisadores (autores com vínculo no NE) | 144.891 (57% com ORCID; 35.724 com 3+ works no período, que têm perfil temático para o quiz) |
 | Coautorias entre pesquisadores do NE | 722,7 mil pares |
 | Teses e dissertações (CAPES, 2022–2024) | 15.047, com orientador ligado ao perfil em 99,9% |
 | Publicações com financiamento declarado de FAP do NE | 6.837 (FACEPE, FAPESB e FUNCAP à frente) |
@@ -222,7 +222,7 @@ Regras de identidade:
 | 7 | Fotos: upload próprio + Wikidata/Commons com licença livre; WebP, lado máx. 400 px, sem EXIF | concluída para o Commons (43 fotos); upload próprio na Fase D |
 | — | Revisão de identidade: decisões, regra em lote, planilhas de pendentes e consolidação (`ingest/carga/revisao.py`) | em uso (2.653 aceites) |
 | — | Geometria do mapa (`ingest/carga/gerar_mapa_ne.py`, malha do IBGE) | gerada e versionada |
-| 8 | Busca por tema: palavras-chave + embeddings multilíngues (`ingest/carga/parte8_embeddings.py`) | concluída (111.143 vetores) |
+| 8 | Busca por tema: palavras-chave + embeddings multilíngues (`ingest/carga/parte8_embeddings.py`) | concluída (110.762 vetores) |
 
 Cuidados:
 - O filtro do OpenAlex por estado (`geo.region`) perde instituições sem estado preenchido (ex.: UFPB). A partir da Parte 1, o recorte regional do OpenAlex usa a **lista de IDs de instituições do NE** gerada na Parte 1.

@@ -93,7 +93,50 @@ CASOS: list[tuple[str, list[str], str, list[str], str, list[str]]] = [
      "hipertensão arterial na atenção primária", ["hypertens", "hipertens", "blood pressure", "pressao arterial"],
      "estudo de coorte com regressão e dados do sistema de saúde", ["cohort", "coorte", "regression", "longitudinal"]),
 ]
-VARIANTES = ["sem", "objeto", "metodo", "junto", "media", "obj70"]
+# Resposta a "Qual o objetivo da sua metodologia?" (teste pedido pelo responsável): (texto, termos do objetivo)
+OBJETIVOS: dict[str, tuple[str, list[str]]] = {
+    "Bactérias": ("orientar o tratamento e conter a disseminação de bactérias resistentes nos hospitais",
+                  ["outbreak", "surto", "dissemin", "transmission", "transmiss", "infection control", "stewardship"]),
+    "Vírus": ("detectar cedo a circulação de novas linhagens e apoiar a vigilância epidemiológica",
+              ["surveillance", "vigilancia", "emergence", "introduction", "lineage", "linhage", "epidemic"]),
+    "Medicinais (bancada)": ("desenvolver um fitoterápico seguro para tratar dor e inflamação",
+                             ["toxic", "safety", "seguranca", "phytotherap", "fitoterap", "formulation", "formulac"]),
+    "Medicinais (química)": ("encontrar compostos com ação antimicrobiana ou inseticida para uso como produto natural",
+                             ["antimicrob", "antibacter", "antifung", "insecticid", "larvicid", "repellent"]),
+    "Infecções": ("reduzir o abandono do tratamento e melhorar o controle da doença nos municípios",
+                  ["adherence", "adesao", "abandon", "treatment outcome", "desfecho", "cure rate"]),
+    "Mente": ("prever quem está em risco para permitir uma intervenção precoce",
+              ["predict", "predic", "screening", "rastreamento", "early detection", "risk factor", "fatores de risco"]),
+    "Boca": ("melhorar a cicatrização e reduzir a inflamação gengival depois do tratamento",
+             ["healing", "cicatriz", "inflamm", "inflamat", "wound"]),
+    "Caprinos (genética)": ("selecionar animais mais produtivos e resistentes para programas de melhoramento",
+                            ["breeding", "melhoramento", "selection", "heritab", "herdab", "genetic parameter"]),
+    "Caprinos (nutrição)": ("reduzir o custo da alimentação e manter o desempenho dos animais na seca",
+                            ["performance", "desempenho", "weight gain", "ganho de peso", "carcass", "carcaca", "intake"]),
+    "Abelhas": ("conservar os polinizadores e entender o papel deles na produção agrícola",
+                ["conservation", "conservac", "crop", "agricult", "yield", "ecosystem service", "servicos ecossistem"]),
+    "Fungos": ("criar alternativas de tratamento para infecções fúngicas resistentes",
+               ["therap", "terap", "synerg", "sinerg", "pharmac", "farmac", "combination"]),
+    "Anfíbios": ("entender como as espécies respondem às mudanças climáticas e à perda de habitat",
+                 ["climate", "climatic", "habitat loss", "perda de habitat", "fragment", "land use", "uso do solo"]),
+    "Clima": ("apoiar o planejamento agrícola e a convivência com a seca",
+              ["crop", "agricul", "yield", "produtividade", "irrigat", "irriga", "water management"]),
+    "Água": ("avaliar o risco para a saúde humana e orientar o monitoramento ambiental",
+             ["health risk", "human health", "saude humana", "risk assessment", "monitoring", "monitoramento"]),
+    "Movimento": ("melhorar o equilíbrio e a independência nas atividades do dia a dia",
+                  ["balance", "equilibrio", "functional", "funcional", "daily living", "independ", "quality of life", "qualidade de vida"]),
+    "Câncer": ("descobrir novos compostos antitumorais com menos efeitos colaterais",
+               ["antitumor", "anticancer", "antineoplas", "antiprolifer"]),
+    "Materno": ("avaliar a qualidade da assistência pré-natal e orientar políticas públicas",
+                ["quality of care", "assistencia", "health services", "servicos de saude", "policy", "politicas", "primary care", "atencao primaria"]),
+    "Laticínios": ("melhorar a segurança e a qualidade do queijo para agregar valor ao produto",
+                   ["safety", "seguranca", "shelf life", "vida de prateleira", "pathogen", "contamin", "quality"]),
+    "Grãos": ("desenvolver cultivares mais produtivas para a agricultura familiar no semiárido",
+              ["cultivar", "yield", "produtiv", "adaptab", "stability", "estabilidade"]),
+    "Cardio": ("identificar fatores de risco e prevenir complicações cardiovasculares",
+               ["risk factor", "fator de risco", "fatores de risco", "prevent", "prevenc", "complication", "mortality", "mortalidade"]),
+}
+VARIANTES = ["sem", "objeto", "objetivo", "obj+objetivo 70/30", "obj+objetivo 50/50", "obj+tecnica 70/30", "tres"]
 
 
 # ------------------------------------------------------------------ código do texto (igual a apps/web/lib/quiz/texto.ts)
@@ -139,10 +182,11 @@ def aderentes(ids: list[str], termos: list[str]) -> set[str]:
 
 def main() -> int:
     base = Base()
-    textos = [c for _, _, o, _, m, _ in CASOS for c in (o, m, f"{o}; {m}")]
+    textos = [c for nome, _, o, _, m, _ in CASOS for c in (o, m, OBJETIVOS[nome][0])]
     V = embed(textos).reshape(len(CASOS), 3, -1)
     unit = lambda v: v / np.linalg.norm(v)
-    res: dict[str, dict[str, list[float]]] = {v: {m: [] for m in ("lo", "lm", "la", "bo", "bm", "ba")} for v in VARIANTES}
+    CH = ("lo", "lm", "lg", "la", "bo", "bm", "bg", "ba")   # lista/banner × objeto, técnica, objetivo, objeto e objetivo
+    res: dict[str, dict[str, list[float]]] = {v: {m: [] for m in CH} for v in VARIANTES}
     linhas = []
     with httpx.Client(timeout=90) as cli:
         # conferência: o código do Python é o mesmo do app
@@ -150,41 +194,45 @@ def main() -> int:
         iguais = sum(a == b for a, b in zip(app_cod, base.codificar(V[0, 0])))
         print(f"código Python × app: {iguais}/129 caracteres iguais")
         for n, (nome, resp, _, t_obj, _, t_met) in enumerate(CASOS):
-            o, m, j = V[n]
-            codigos = {"sem": None, "objeto": base.codificar(o), "metodo": base.codificar(m), "junto": base.codificar(j),
-                       "media": base.codificar(unit(o + m)), "obj70": base.codificar(unit(0.7 * o + 0.3 * m))}
+            o, m, g = V[n]
+            t_obg = OBJETIVOS[nome][1]
+            codigos = {"sem": None, "objeto": base.codificar(o), "objetivo": base.codificar(g),
+                       "obj+objetivo 70/30": base.codificar(unit(0.7 * o + 0.3 * g)), "obj+objetivo 50/50": base.codificar(unit(o + g)),
+                       "obj+tecnica 70/30": base.codificar(unit(0.7 * o + 0.3 * m)), "tres": base.codificar(unit(0.5 * o + 0.25 * m + 0.25 * g))}
             out = {}
             for v, cod in codigos.items():
                 r = cli.post("http://localhost:3000/api/quiz/resultado", json={"instituicao_id": None, "respostas": resp, "texto": cod})
                 r.raise_for_status()
                 out[v] = r.json()
             ids = list({x["id"] for r in out.values() for x in r["lista"]})
-            ao, am = aderentes(ids, [norm(t) for t in t_obj]), aderentes(ids, [norm(t) for t in t_met])
+            ao, am, ag = (aderentes(ids, [norm(t) for t in ts]) for ts in (t_obj, t_met, t_obg))
             frac = lambda xs, s: (sum(x["id"] in s for x in xs) / len(xs)) if xs else 0.0
             cel = []
             for v in VARIANTES:
                 L, B = out[v]["lista"], out[v]["banner"]
-                vals = dict(lo=frac(L, ao), lm=frac(L, am), la=frac(L, ao & am), bo=frac(B, ao), bm=frac(B, am), ba=frac(B, ao & am))
+                vals = dict(lo=frac(L, ao), lm=frac(L, am), lg=frac(L, ag), la=frac(L, ao & ag),
+                            bo=frac(B, ao), bm=frac(B, am), bg=frac(B, ag), ba=frac(B, ao & ag))
                 for k, x in vals.items():
                     res[v][k].append(x)
-                cel.append(f"{vals['lo']:.0%} / {vals['lm']:.0%}")
+                cel.append(f"{vals['lo']:.0%} / {vals['lg']:.0%}")
             linhas.append(f"| {nome} ({len(out['sem']['lista'])}) | " + " | ".join(cel) + " |")
             print(linhas[-1])
     media = lambda v, k: statistics.mean(res[v][k])
-    resumo = ["| variante | lista: objeto | lista: técnica | lista: ambos | banner: objeto | banner: técnica | banner: ambos |", "|---|---|---|---|---|---|---|"]
+    resumo = ["| variante | lista: objeto | lista: técnica | lista: objetivo | lista: objeto e objetivo | banner: objeto | banner: técnica | banner: objetivo | banner: objeto e objetivo |",
+              "|---|" + "---|" * len(CH)]
     for v in VARIANTES:
-        resumo.append(f"| {v} | " + " | ".join(f"{media(v, k):.0%}" for k in ("lo", "lm", "la", "bo", "bm", "ba")) + " |")
+        resumo.append(f"| {v} | " + " | ".join(f"{media(v, k):.0%}" for k in CH) + " |")
     pior = {v: sum(a < b - 1e-9 for a, b in zip(res[v]["la"], res["sem"]["la"])) for v in VARIANTES[1:]}
     rel = DIR_RELATORIOS / "quiz_textos_experimento.md"
     rel.write_text("\n".join([
-        "# Quiz: experimento com um ou dois campos de texto", "",
+        "# Quiz: experimento com campos de texto (objeto, técnica, objetivo da metodologia)", "",
         "Aderência = fração de pessoas com ≥ 2 publicações cujo título, palavras-chave ou tópico trazem algum termo do objeto "
-        "(ou da técnica) descrito. Médias de 20 casos.", "", *resumo, "",
-        "Casos em que \"ambos\" na lista piorou em relação a sem texto: " + ", ".join(f"{v} {n}" for v, n in pior.items()) + ".", "",
-        "## Por caso (lista de 15: objeto / técnica)", "",
+        "(ou da técnica, ou do objetivo) descrito. Médias de 20 casos.", "", *resumo, "",
+        "Casos em que \"objeto e objetivo\" na lista piorou em relação a sem texto: " + ", ".join(f"{v} {n}" for v, n in pior.items()) + ".", "",
+        "## Por caso (lista de 15: objeto / objetivo)", "",
         "| caso (tamanho da lista) | " + " | ".join(VARIANTES) + " |", "|---|" + "---|" * len(VARIANTES), *linhas, ""]))
     print("\n".join(resumo))
-    print(f"pioras em 'ambos': {pior}\nrelatório em {rel}")
+    print(f"pioras em 'objeto e objetivo': {pior}\nrelatório em {rel}")
     return 0
 
 

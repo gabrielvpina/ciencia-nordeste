@@ -59,25 +59,26 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
   );
 
   if (tipo === "perfil") {
-    const tam = t.principal.length > 26 ? 96 : t.principal.length > 18 ? 112 : 128;
+    const tam = Math.round((t.principal.length > 26 ? 96 : t.principal.length > 18 ? 112 : 128) * (story ? 1 : 0.78));
+    const nTrilha = story ? 6 : 3;
     return new ImageResponse(
       (
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "sans-serif" }}>
           {formas}
           <Cabecalho texto="Que cientista você é" />
-          <div style={cartao({ padding: "64px 56px", gap: 28 })}>
+          <div style={cartao({ padding: story ? "64px 56px" : "40px 48px", gap: story ? 28 : 16 })}>
             <div style={{ display: "flex", fontSize: 30, letterSpacing: 4, color: MUDO }}>SEU TÍTULO</div>
             <div style={{ display: "flex", fontSize: tam, fontWeight: 700, lineHeight: 1.02, color: TINTA }}>{t.principal}</div>
-            {t.secundario && <div style={{ display: "flex", fontSize: 48, color: TINTA }}>{t.secundario}</div>}
+            {t.secundario && <div style={{ display: "flex", fontSize: story ? 48 : 40, color: TINTA }}>{t.secundario}</div>}
             <div style={{ display: "flex", height: 6, width: "100%", background: TINTA, borderRadius: 3, margin: "12px 0" }} />
             <div style={{ display: "flex", fontSize: 30, letterSpacing: 4, color: MUDO }}>SEU NICHO</div>
-            <div style={{ display: "flex", fontSize: 54, fontWeight: 700, lineHeight: 1.1, color: TINTA }}>{corta(t.nicho, 70)}</div>
+            <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, lineHeight: 1.1, color: TINTA }}>{corta(t.nicho, 70)}</div>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 18 }}>
-            {t.trilha.slice(0, 6).map((x, i) => (
+            {t.trilha.slice(0, nTrilha).map((x, i) => (
               <div key={x} style={{ display: "flex", alignItems: "center", gap: 18 }}>
-                <div style={{ display: "flex", fontSize: 34, color: TINTA, background: i === 0 ? LIMA : PAINEL, border: `5px solid ${TINTA}`, borderRadius: 999, padding: "12px 28px" }}>{corta(x, 34)}</div>
-                {i < Math.min(t.trilha.length, 6) - 1 && <div style={{ display: "flex", fontSize: 40, color: TINTA }}>→</div>}
+                <div style={{ display: "flex", fontSize: story ? 34 : 28, color: TINTA, background: i === 0 ? LIMA : PAINEL, border: `5px solid ${TINTA}`, borderRadius: 999, padding: story ? "12px 28px" : "8px 22px" }}>{corta(x, 34)}</div>
+                {i < Math.min(t.trilha.length, nTrilha) - 1 && <div style={{ display: "flex", fontSize: 40, color: TINTA }}>→</div>}
               </div>
             ))}
           </div>
@@ -116,24 +117,40 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
           )}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: story ? 26 : 16 }}>
-          {lista.map((x, i) => (
-            <div key={x.id} style={cartao({ flexDirection: "row", alignItems: "center", gap: 26, padding: story ? "24px 30px" : "16px 26px", borderRadius: 28, boxShadow: `8px 8px 0 ${TINTA}`, border: `5px solid ${TINTA}` })}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 96, height: 96, borderRadius: 999, background: INICIAIS[i % INICIAIS.length], border: `5px solid ${TINTA}`, fontSize: 38, fontWeight: 700, color: TINTA }}>{iniciais(x.nome)}</div>
-              <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
-                <div style={{ display: "flex", fontSize: 38, fontWeight: 700, color: TINTA }}>{`${i + 1}. ${corta(x.nome, 34)}`}</div>
-                <div style={{ display: "flex", fontSize: 28, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 46)}</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, width: 210 }}>
-                <div style={{ display: "flex", fontSize: 52, fontWeight: 700, color: TINTA, lineHeight: 1 }}>{x.indice}</div>
-                <div style={{ display: "flex", width: 200, height: 22, background: "#e7eaf2", border: `4px solid ${TINTA}`, borderRadius: 999 }}>
-                  <div style={{ display: "flex", width: `${x.indice}%`, background: acento, borderRadius: 999 }} />
+          {lista.map((x, i) => {
+            // cartão como figurinha colada: inclinação alternada, selo da posição saltando do canto, índice num "ticket"
+            // e um medidor em 10 blocos — tudo forma e cor, na linguagem neo-brutalista do site
+            const giro = i % 2 ? 1.2 : -1.2, blocos = Math.round(x.indice / 10);
+            return (
+              <div key={x.id} style={{ display: "flex", position: "relative", transform: `rotate(${giro}deg)`, marginLeft: i % 2 ? 26 : 0, marginRight: i % 2 ? 0 : 26 }}>
+                <div style={cartao({ flexDirection: "row", alignItems: "center", gap: 24, flex: 1, padding: story ? "26px 30px 26px 66px" : "10px 22px 10px 58px", borderRadius: 24,
+                  boxShadow: `10px 10px 0 ${TINTA}`, border: `5px solid ${TINTA}` })}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: story ? 88 : 66, height: story ? 88 : 66, borderRadius: 999, background: INICIAIS[i % INICIAIS.length],
+                    border: `5px solid ${TINTA}`, boxShadow: `5px 5px 0 ${TINTA}`, fontSize: story ? 34 : 26, fontWeight: 700, color: TINTA }}>{iniciais(x.nome)}</div>
+                  <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
+                    <div style={{ display: "flex", fontSize: story ? 36 : 30, fontWeight: 700, color: TINTA, lineHeight: 1.1 }}>{corta(x.nome, story ? 30 : 34)}</div>
+                    <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 40)}</div>
+                    <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
+                      {Array.from({ length: 10 }, (_, k) => (
+                        <div key={k} style={{ display: "flex", width: story ? 26 : 22, height: story ? 16 : 12, borderRadius: 4, border: `3px solid ${TINTA}`, background: k < blocos ? acento : PAINEL }} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: story ? 128 : 108, padding: story ? "10px 0" : "6px 0", background: LIMA,
+                    border: `5px solid ${TINTA}`, borderRadius: 16, boxShadow: `6px 6px 0 ${TINTA}`, transform: `rotate(${-giro * 2}deg)` }}>
+                    <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, color: TINTA, lineHeight: 1 }}>{x.indice}</div>
+                    <div style={{ display: "flex", fontSize: 18, color: TINTA, letterSpacing: 2 }}>COMPAT.</div>
+                  </div>
                 </div>
+                <div style={{ position: "absolute", top: story ? -22 : -14, left: -18, width: story ? 70 : 56, height: story ? 70 : 56, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: acento, border: `5px solid ${TINTA}`, borderRadius: 14, boxShadow: `5px 5px 0 ${TINTA}`, transform: "rotate(-10deg)",
+                  fontSize: story ? 38 : 30, fontWeight: 700, color: TINTA }}>{i + 1}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {!lista.length && <div style={cartao({ padding: 40, fontSize: 36, color: TINTA })}>Tente pular uma das perguntas mais específicas e refazer.</div>}
         </div>
-        <div style={{ display: "flex", fontSize: 26, color: MUDO }}>Índice de compatibilidade (0–100) calculado a partir de publicações abertas (OpenAlex, CAPES).</div>
+        {story && <div style={{ display: "flex", fontSize: 26, color: MUDO }}>Índice de compatibilidade (0–100) calculado a partir de publicações abertas (OpenAlex, CAPES).</div>}
         <Rodape />
       </div>
     ),

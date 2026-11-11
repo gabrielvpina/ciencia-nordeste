@@ -50,28 +50,44 @@ A árvore deixa de ser uma árvore pura e passa a ser uma **sequência fixa de f
 | # | Bloco | Pergunta | Opções (resumo) | Para que serve |
 |---|---|---|---|---|
 | 1 | — | **Sua instituição** (autocomplete) | instituições do NE · "outra / sem vínculo" | exclusões e distância |
-| 2 | Perfil | **Num dia perfeito de trabalho, onde você está?** | no campo, de botas · na bancada, de jaleco · no computador, entre códigos e planilhas · com pessoas (pacientes, comunidades) · entre coleções, acervos e artigos | **habitat** do título (+ sinal fraco de método) |
+| 2 | Perfil | **Num dia perfeito de trabalho, onde você está?** | no campo, de botas · na bancada, de jaleco · no computador, entre códigos e planilhas · com pessoas (pacientes, comunidades) · entre coleções, acervos e artigos | **habitat** do título (não entra no match) |
 | 3 | Nicho | **Qual é a sua ferramenta principal?** | campo e observação · experimentos de bancada · genética e biologia molecular · bioinformática e genômica · estatística, modelos e IA · química e compostos · clínica e intervenções · epidemiologia e saúde coletiva | faceta **método** (núcleo) |
 | 4 | Nicho | **O que você estuda?** | plantas · insetos e outros invertebrados · animais de produção · fauna silvestre e ecossistemas · microrganismos e parasitos · seres humanos · alimentos · solo, água e clima | faceta **objeto** |
 | 5 | Nicho | **Mais especificamente?** (depende da 4) | ex.: microrganismos → vírus · bactérias · fungos · parasitos · microbiota; plantas → frutíferas e hortaliças · grãos e grandes culturas · forrageiras · nativas · medicinais; humanos → coração e metabolismo · cérebro e mente · infecções · câncer e sangue · mulher e criança · boca e dentes · movimento e reabilitação | faceta **sub-objeto** (núcleo) |
-| 6 | Perfil | **Quando aparece um problema novo, você…** | testa uma hipótese na hora · junta todos os dados primeiro · monta um modelo · chama gente para pensar junto · vai atrás do que ninguém viu | **estilo** do título |
+| 6 | Perfil | **Quando aparece um problema novo, você…** | testa uma hipótese na hora · junta todos os dados primeiro · monta um modelo · chama gente para pensar junto · vai atrás do que ninguém viu | **estilo** do título (não entra no match) |
 | 7 | Nicho | **Qual é o seu foco?** (opções filtradas pelo objeto) | melhoramento e genética · doenças e pragas · manejo e produção · produtos e compostos · diversidade e conservação · diagnóstico e tratamento · prevenção e vigilância | faceta **foco** |
 | 8 | Nicho | **Em que escala?** | moléculas e genes · células e tecidos · organismos inteiros · populações e comunidades · paisagens e ecossistemas | faceta **escala** |
 | 9 | Nicho | **Onde o seu objeto vive ou acontece?** | caatinga e semiárido · mata atlântica e brejos · mar, mangues e estuários · lavouras e fazendas · cidades, hospitais e serviços · tanto faz | faceta **ambiente** (o sabor do Nordeste) |
-| 10 | Perfil | **O seu objeto de estudo é…** | minha paixão, falo dele até em festas · um mistério que quero desvendar · algo que preciso proteger · uma ferramenta para resolver problemas reais | **vínculo** do título |
+| 10 | Perfil | **O seu objeto de estudo é…** | minha paixão, falo dele até em festas · um mistério que quero desvendar · algo que preciso proteger · uma ferramenta para resolver problemas reais | **vínculo** do título (não entra no match) |
 | 11 | Nicho | **O seu trabalho serve principalmente para…** | produzir alimento melhor · cuidar da saúde das pessoas · conservar a natureza · criar produtos e tecnologias · entender como a vida funciona | faceta **impacto** |
-| 12 | Título | **Como prefere o seu título?** | no feminino · no masculino · neutro | forma do título (opcional; padrão neutro) |
+| 12 | Título | **Como prefere o seu título?** | no feminino · no masculino · neutro | forma do título (opcional; padrão neutro; não entra no match) |
 
 - **Toda pergunta tem "Nenhuma dessas / prefiro pular".** A faceta pulada simplesmente não entra no cálculo, e o quiz segue.
 - **As perguntas de perfil (2, 6 e 10) ficam intercaladas** com as de nicho, para quebrar a sequência técnica e manter o tom de jogo. A primeira tela depois da instituição já é divertida.
 - **Até 8 opções por tela**, em grade de 2 colunas no celular, com cartões de pelo menos 48 px de altura. Assim cabe a lista de métodos sem rolagem.
 - **Cliques:** 12 no máximo, contando a instituição.
 
-### Como as facetas viram nichos
+### Dois processos separados: o match e o banner
 
-Cada opção de nicho traz `sinais` no formato da v1: `topics`, `subfields`, `fields`, `termos` e `frase`. O nicho é a combinação das facetas.
+O resultado sai de **dois processos independentes**, que só compartilham as respostas de entrada:
 
-| Método | × Sub-objeto | × Foco/escala/ambiente | Nicho no banner |
+```
+respostas ─┬─► MATCH  (só as facetas de nicho: telas 3, 4, 5, 7, 8, 9 e 11 + instituição)
+           │      └─► até 5 pesquisadores, cada um com um índice de compatibilidade
+           │
+           └─► BANNER (título, nicho escrito e arte: telas de perfil 2, 6, 10 e 12 + os rótulos das facetas)
+                  └─► texto e camadas de arte; nunca altera quem aparece nem a ordem
+```
+
+- **O match não lê** habitat, estilo, vínculo nem a forma do título. Duas pessoas com as mesmas respostas de nicho recebem **os mesmos pesquisadores, na mesma ordem e com os mesmos índices**, qualquer que seja o título.
+- **O banner não influencia o match.** Ele recebe a lista pronta e só a desenha. O título e a frase do nicho são montados a partir dos rótulos e dos sintagmas das opções, não do resultado.
+- No código, são módulos separados: `lib/quiz/alinhamento.ts` (match) e `lib/quiz/titulo.ts` (título e nicho escrito). A camada de arte vive com o banner. Um teste garante que mudar só as respostas de perfil não muda a saída do match.
+
+### O match
+
+**Nichos específicos de propósito.** O nicho é a combinação das facetas respondidas. Cada opção de nicho traz `sinais` no formato da v1: `topics`, `subfields`, `fields`, `termos` e `frase`.
+
+| Método | × Sub-objeto | × Foco/escala/ambiente | Nicho |
 |---|---|---|---|
 | Bioinformática e genômica | vírus | plantas · caatinga | Bioinformática de vírus de plantas da caatinga |
 | Genética e biologia molecular | caprinos e ovinos | melhoramento | Genética e melhoramento de caprinos |
@@ -79,21 +95,30 @@ Cada opção de nicho traz `sinais` no formato da v1: `topics`, `subfields`, `fi
 | Química e compostos | plantas medicinais | produtos | Química de produtos naturais de plantas medicinais |
 | Epidemiologia | infecções | vigilância · cidades | Vigilância de doenças infecciosas urbanas |
 
-**Encaixe de um pesquisador.** Uma publicação casa uma faceta se casa algum sinal dela. O peso de cada faceta reflete a especificidade: sub-objeto e método, mais altos; foco, escala, ambiente e impacto, mais baixos. O encaixe soma as facetas casadas em cada publicação.
+**Encaixe de um pesquisador.** Uma publicação casa uma faceta se casa algum sinal dela. O peso de cada faceta reflete a especificidade: método e sub-objeto, mais altos; foco, escala, ambiente e impacto, mais baixos. O encaixe soma as facetas casadas em cada publicação.
 
-**Núcleo obrigatório.** Para entrar entre os 5 do banner, o pesquisador precisa de pelo menos **2 publicações que casem método e sub-objeto juntos**. As demais facetas só ordenam.
+**Afinidade temática.** O texto da consulta vetorial junta as `frase`s das facetas respondidas (ex.: "bioinformática, genomas e sequenciamento · vírus · plantas da caatinga"). Ele é comparado com o perfil temático do pesquisador (`researcher_embeddings`, migração `0012`).
 
-**Relaxamento.** Quando um nicho muito estreito não tem candidatos suficientes (menos de 15 sem a instituição do usuário), as facetas saem em ordem fixa:
+**Quem entra.** O pesquisador precisa de pelo menos **2 publicações que casem método e sub-objeto juntos**, e a combinação de encaixe e afinidade precisa passar de um mínimo de compatibilidade. **Não há relaxamento:** o nicho não é alargado para completar a lista. Por isso o banner mostra **até 5** pesquisadores. Num nicho raro podem vir menos, e o banner diz isso ("3 pesquisadores no seu nicho no Nordeste"). Se não houver nenhum, a tela de resultado sugere pular uma das facetas mais estreitas e refazer.
 
-> ambiente → escala → impacto → foco → sub-objeto vira objeto → só o método
+**Índice de compatibilidade (0–100).** Ele é calculado com uma escala fixa, não em relação ao primeiro colocado, para que os números signifiquem a mesma coisa em qualquer nicho e não apareça 99% para todo mundo. Entram:
+- a **fração das facetas respondidas** que o pesquisador cobre;
+- a **concentração** das publicações dele no nicho (encaixe ÷ produção);
+- a **similaridade vetorial** do perfil temático, convertida em percentil da distribuição real de similaridades.
 
-O banner diz com franqueza até onde foi preciso abrir: "No Nordeste ainda há poucos grupos em *X*; estes são os mais próximos".
+Os pesos e a fórmula ficam no topo de `lib/quiz/alinhamento.ts`, e a calibração é feita no script de avaliação, com caminhos fictícios. A proeminência (produção, h-index, docência na pós, PQ, Qualis) **não entra no índice**. Ela só desempata a ordem entre índices iguais e decide quem são os "principais" na lista estendida.
 
-**Afinidade temática.** O texto da consulta vetorial junta as `frase`s das facetas (ex.: "bioinformática, genomas e sequenciamento · vírus · plantas da caatinga"). Ele é comparado com o perfil temático do pesquisador (`researcher_embeddings`, migração `0012`). Os pesos finais entre afinidade vetorial, encaixe e proeminência ficam documentados no topo de `apps/web/lib/quiz/alinhamento.ts`.
+**Exclusões, distância e diversidade** seguem o pedido original:
+- fora a instituição do usuário e as ligadas a ela;
+- perfis ocultos ficam de fora;
+- filtro opcional de distância só na página de resultado;
+- no máximo 2 pesquisadores por instituição entre os 5;
+- respeita o filtro "só revistas com Qualis" (D-035);
+- se o serviço `embed` cair, segue só com o encaixe.
 
-### Títulos por combinação
+### O banner: títulos por combinação
 
-O título principal sai das três perguntas de perfil. O nicho científico vira a segunda linha.
+Processo só de apresentação. O título principal sai das três perguntas de perfil; o nicho escrito (a partir dos rótulos das facetas) vira a segunda linha. Nada daqui volta para o match.
 
 **1. Arquétipo = habitat (tela 2) × estilo (tela 6), uma matriz de 5 × 5 = 25 títulos.** Exemplos:
 
@@ -139,10 +164,11 @@ São 5 fundos, cerca de 20 elementos e cerca de 12 detalhes. Com a v2 entra tamb
 As combinações completas são milhões, então não dá para percorrer todas, como na v1. O validador (`validar_arvore_quiz.py banco`) passa a checar:
 
 1. **Ids:** todo id de topic, subfield e field existe.
-2. **Núcleo:** cada par **método × sub-objeto** tem 15 ou mais pesquisadores sem a maior instituição. Os pares abaixo disso ficam marcados como "relaxa" e recebem a mensagem honesta.
-3. **Amostra:** em 1.000 combinações completas sorteadas, mede quantas fecham sem relaxar e quantos passos de relaxamento são precisos em média.
+2. **Núcleo:** quantos pesquisadores cada par **método × sub-objeto** tem sem a maior instituição. Pares vazios indicam combinações que a pergunta não deveria oferecer (ou que precisam de sinais melhores); pares com menos de 5 são listados para revisão, já que o banner mostra "até 5".
+3. **Amostra:** em 1.000 combinações completas sorteadas, mede a distribuição de quantos pesquisadores aparecem (0 a 5) e do índice de compatibilidade do primeiro e do quinto.
 4. **Distinção:** dentro de um mesmo método, os top 10 de sub-objetos irmãos têm Jaccard menor que 0,5. O mesmo vale para métodos irmãos com o mesmo sub-objeto.
-5. **Títulos:** todas as combinações de habitat × estilo × vínculo × objeto geram um título com as três formas e que cabe no banner.
+5. **Separação:** trocar só as respostas de perfil não muda nenhum resultado do match.
+6. **Títulos:** todas as combinações de habitat × estilo × vínculo × objeto geram um título com as três formas e que cabe no banner.
 
 A checagem estática (estrutura, ids, sem órfãos, opções por tela, sintagmas e formas dos títulos) continua no `scripts/verificar.sh`.
 

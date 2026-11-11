@@ -8,7 +8,7 @@
 
 Um quiz de múltipla escolha, pensado para o celular, que termina com **dois banners para compartilhar**:
 
-1. **"Que cientista você é"**: um **título descontraído** (ex.: "Mago(a) dos dados", "Fominha de bancada", "Mãe dos insetos"), o **nicho científico** da pessoa (ex.: "Bioinformática de vírus de plantas") e uma arte vetorial montada em camadas.
+1. **"Que cientista você é"**: um **título descontraído** (ex.: "Magia dos dados", "Fominha de bancada", "Fã nº 1 dos insetos"), sempre em forma neutra, e o **nicho científico** da pessoa (ex.: "Bioinformática de vírus de plantas"). Por enquanto o visual usa só cores e elementos simples, sem ilustração.
 2. **"Seus 5 pesquisadores de afinidade no Nordeste"**: os mais alinhados ao nicho, **de fora da instituição da pessoa** e das ligadas a ela, num mini mapa do NE.
 
 A única entrada de texto é a instituição. O resultado é calculado no servidor a partir dos ids das respostas; nada é gravado (D-022, LGPD).
@@ -45,7 +45,7 @@ A árvore deixa de ser uma árvore pura e passa a ser uma **sequência fixa de f
 
 ## Estrutura v2
 
-### As 12 telas
+### As 11 telas
 
 | # | Bloco | Pergunta | Opções (resumo) | Para que serve |
 |---|---|---|---|---|
@@ -60,12 +60,11 @@ A árvore deixa de ser uma árvore pura e passa a ser uma **sequência fixa de f
 | 9 | Nicho | **Onde o seu objeto vive ou acontece?** | caatinga e semiárido · mata atlântica e brejos · mar, mangues e estuários · lavouras e fazendas · cidades, hospitais e serviços · tanto faz | faceta **ambiente** (o sabor do Nordeste) |
 | 10 | Perfil | **O seu objeto de estudo é…** | minha paixão, falo dele até em festas · um mistério que quero desvendar · algo que preciso proteger · uma ferramenta para resolver problemas reais | **vínculo** do título (não entra no match) |
 | 11 | Nicho | **O seu trabalho serve principalmente para…** | produzir alimento melhor · cuidar da saúde das pessoas · conservar a natureza · criar produtos e tecnologias · entender como a vida funciona | faceta **impacto** |
-| 12 | Título | **Como prefere o seu título?** | no feminino · no masculino · neutro | forma do título (opcional; padrão neutro; não entra no match) |
 
 - **Toda pergunta tem "Nenhuma dessas / prefiro pular".** A faceta pulada simplesmente não entra no cálculo, e o quiz segue.
 - **As perguntas de perfil (2, 6 e 10) ficam intercaladas** com as de nicho, para quebrar a sequência técnica e manter o tom de jogo. A primeira tela depois da instituição já é divertida.
 - **Até 8 opções por tela**, em grade de 2 colunas no celular, com cartões de pelo menos 48 px de altura. Assim cabe a lista de métodos sem rolagem.
-- **Cliques:** 12 no máximo, contando a instituição.
+- **Cliques:** 11 no máximo, contando a instituição.
 
 ### Dois processos separados: o match e o banner
 
@@ -79,7 +78,7 @@ respostas ─┬─► MATCH  (só as facetas de nicho: telas 3, 4, 5, 7, 8, 9 e
                   └─► texto e camadas de arte; nunca altera quem aparece nem a ordem
 ```
 
-- **O match não lê** habitat, estilo, vínculo nem a forma do título. Duas pessoas com as mesmas respostas de nicho recebem **os mesmos pesquisadores, na mesma ordem e com os mesmos índices**, qualquer que seja o título.
+- **O match não lê** habitat, estilo nem vínculo. Duas pessoas com as mesmas respostas de nicho recebem **os mesmos pesquisadores, na mesma ordem e com os mesmos índices**, qualquer que seja o título.
 - **O banner não influencia o match.** Ele recebe a lista pronta e só a desenha. O título e a frase do nicho são montados a partir dos rótulos e dos sintagmas das opções, não do resultado.
 - No código, são módulos separados: `lib/quiz/alinhamento.ts` (match) e `lib/quiz/titulo.ts` (título e nicho escrito). A camada de arte vive com o banner. Um teste garante que mudar só as respostas de perfil não muda a saída do match.
 
@@ -124,40 +123,47 @@ Processo só de apresentação. O título principal sai das três perguntas de p
 
 | habitat \ estilo | testa na hora | junta os dados | monta um modelo | chama gente | vai atrás do inédito |
 |---|---|---|---|---|---|
-| campo | Faz-tudo de campo | Colecionador(a) de amostras | Cartógrafo(a) da natureza | Mutirão em pessoa | **Desbravador(a) de campo** |
-| bancada | **Fominha de bancada** | Guardião(ã) do caderno de protocolos | Engenheiro(a) de bancada | Alma do laboratório | Caçador(a) de moléculas |
-| computador | Hacker de hipóteses | Garimpeiro(a) de dados | **Mago(a) dos dados** | Ponte entre dados e gente | Minerador(a) de padrões |
-| pessoas | Clínico(a) inquieto(a) | Ouvidor(a) da comunidade | Estrategista do cuidado | **Elo da comunidade** | Sentinela da saúde |
-| coleções | Curador(a) inquieto(a) | Arquivista do mundo vivo | Taxonomista de mão cheia | Biblioteca ambulante | Caçador(a) de raridades |
+| campo | Faz-tudo de campo | Mochila cheia de amostras | Estrategista de campo | Mutirão em pessoa | **Desbrava-trilhas** |
+| bancada | **Fominha de bancada** | Caderno de protocolos ambulante | Engenharia de bancada | Alma do laboratório | Caça-moléculas |
+| computador | Hacker de hipóteses | Garimpo de dados | **Magia dos dados** | Ponte entre dados e gente | Radar de padrões |
+| pessoas | Plantonista de ideias | Escuta da comunidade | Estrategista do cuidado | **Elo da comunidade** | Sentinela da saúde |
+| coleções | Curadoria inquieta | Arquivo vivo | Mapa-múndi das espécies | Biblioteca ambulante | Caça-raridades |
 
 **2. Vínculo (tela 10) decide se o título fala do objeto.**
 
 | Vínculo | Título principal | Exemplos |
 |---|---|---|
-| paixão | **Mãe / Pai / Fã nº 1 d{objeto}** | Pai dos insetos · Mãe das bactérias · Fã nº 1 dos caprinos |
+| paixão | **Fã nº 1 d{objeto}** | Fã nº 1 dos insetos · Fã nº 1 das bactérias · Fã nº 1 dos caprinos |
 | mistério | **Detetive d{objeto}** | Detetive dos vírus · Detetive do cérebro |
-| proteger | **Guardiã / Guardião / Sentinela d{ambiente ou objeto}** | Guardiã da caatinga · Sentinela dos mangues |
-| ferramenta | **o arquétipo** | Mago(a) dos dados · Fominha de bancada |
+| proteger | **Sentinela d{ambiente ou objeto}** | Sentinela da caatinga · Sentinela dos mangues |
+| ferramenta | **o arquétipo** | Magia dos dados · Fominha de bancada |
 
 Quando o vínculo usa o objeto, o arquétipo desce para a segunda linha, junto com o nicho:
 
-> **Pai dos insetos**
+> **Fã nº 1 dos insetos**
 > Fominha de bancada · Genética de abelhas da caatinga
 
 Cada sub-objeto e cada ambiente traz o seu sintagma com artigo, para o texto sair correto: `{"artigo": "os", "nome": "insetos"}`, `{"artigo": "a", "nome": "caatinga"}`.
 
 **Quantos títulos:** 25 arquétipos + 3 vínculos × cerca de 45 objetos e ambientes ≈ **160 títulos principais**. Combinados com os nichos, dão milhares de banners diferentes.
 
-**Forma (tela 12).** Todo título tem três formas no arquivo de dados: feminina, masculina e neutra. A neutra usa substantivos comuns de dois gêneros ("Fã nº 1", "Detetive", "Sentinela", "Fominha", "Elo"). Sem resposta, vale a neutra.
+**Sempre neutros (decisão do responsável).** Não há forma feminina ou masculina, nem pergunta sobre isso. Os títulos usam só:
+- substantivos comuns de dois gêneros (Fã, Detetive, Sentinela, Fominha, Estrategista, Hacker, Plantonista, Faz-tudo);
+- compostos invariáveis (Caça-moléculas, Desbrava-trilhas);
+- epítetos que descrevem a pessoa sem marcar gênero (Magia dos dados, Alma do laboratório, Arquivo vivo).
 
-### Arte
+Nenhum adjetivo com flexão de gênero e nenhum "(a)". **Nenhum nome licenciado** (personagens, marcas, obras): o validador recusa uma lista de nomes proibidos e as marcas de gênero.
 
-A arte continua em camadas:
-- **fundo** pelo habitat (campo, bancada, computador, pessoas, coleções);
-- **elemento central** pelo sub-objeto (inseto, folha, vírus, bovino, célula…);
-- **detalhe** pelo foco ou ambiente (cacto da caatinga, onda do mar, hélice de DNA…).
+### Visual (por enquanto, sem ilustração)
 
-São 5 fundos, cerca de 20 elementos e cerca de 12 detalhes. Com a v2 entra também uma **paleta de acento por ambiente**, dentro dos tokens do site (tema claro, paleta Azul, D-031 e D-034). Antes do conjunto completo, 2 ou 3 banners de rascunho passam por aprovação.
+Decisão do responsável: **nada de arte em SVG nesta fase**, para não gastar esforço antes da hora. Os banners usam só **cores e elementos simples**:
+- **cor de fundo pelo habitat** (campo, bancada, computador, pessoas, coleções), a partir dos tokens do site (tema claro, paleta Azul, D-031 e D-034);
+- **cor de acento pelo ambiente** (caatinga, mata atlântica, mar, lavouras, cidades);
+- **formas geométricas básicas:** faixas, círculos e cartões, com bordas e sombra dura da estética do site;
+- o título e o nicho em tipografia grande (Lexend);
+- as iniciais dos pesquisadores em círculos e um mini mapa do NE com os pontos, reaproveitando a geometria do site.
+
+Cada opção de perfil e de ambiente guarda só a **chave de cor** (`visual.cor`), não desenhos. Uma ilustração em camadas pode entrar depois, como evolução, sem mudar o match.
 
 ### Validação da v2
 
@@ -168,7 +174,7 @@ As combinações completas são milhões, então não dá para percorrer todas, 
 3. **Amostra:** em 1.000 combinações completas sorteadas, mede a distribuição de quantos pesquisadores aparecem (0 a 5) e do índice de compatibilidade do primeiro e do quinto.
 4. **Distinção:** dentro de um mesmo método, os top 10 de sub-objetos irmãos têm Jaccard menor que 0,5. O mesmo vale para métodos irmãos com o mesmo sub-objeto.
 5. **Separação:** trocar só as respostas de perfil não muda nenhum resultado do match.
-6. **Títulos:** todas as combinações de habitat × estilo × vínculo × objeto geram um título com as três formas e que cabe no banner.
+6. **Títulos:** todas as combinações de habitat × estilo × vínculo × objeto geram um título neutro (sem "(a)", sem palavras marcadas como de gênero e sem nomes licenciados), que cabe no banner.
 
 A checagem estática (estrutura, ids, sem órfãos, opções por tela, sintagmas e formas dos títulos) continua no `scripts/verificar.sh`.
 
@@ -182,6 +188,6 @@ A checagem estática (estrutura, ids, sem órfãos, opções por tela, sintagmas
 
 - Aprovação da estrutura v2 (perguntas, títulos e formas).
 - Migração `0012` (`researcher_embeddings`), API de resultado, ranking e script de avaliação.
-- Direção de arte, com nova parada para aprovação.
+- Visual dos banners com cores e formas simples (2 ou 3 rascunhos para aprovação).
 - Banners (1080 × 1920 e 1080 × 1350), quiz, página de resultado e nova tela inicial com o painel.
 - Decisão D-036 e atualização do `SCHEME.md`.

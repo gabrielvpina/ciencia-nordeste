@@ -1,8 +1,8 @@
 # Etapa 13 — Quiz "Que cientista é você?" e alinhamento a pesquisadores do Nordeste
 
-**Status:** em desenho (aguardando aprovação da estrutura v2) · **Branch:** `quiz`
+**Status:** em construção (estrutura, match e rascunho dos banners prontos; cadastro e interface em andamento) · **Branch:** `quiz`
 **Código até agora:** `apps/web/lib/quiz/arvore.json` (v1), `ingest/carga/validar_arvore_quiz.py`
-**Decisão:** D-036 (a registrar quando a estrutura for aprovada)
+**Decisões:** D-036 (quiz), D-037 (cadastro dos participantes), D-038 (FUNED fora da base)
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Um quiz de múltipla escolha, pensado para o celular, que termina com **dois ban
 1. **"Que cientista você é"**: um **título descontraído** (ex.: "Magia dos dados", "Fominha de bancada", "Fã nº 1 dos insetos"), sempre em forma neutra, e o **nicho científico** da pessoa (ex.: "Bioinformática de vírus de plantas"). Por enquanto o visual usa só cores e elementos simples, sem ilustração.
 2. **"Seus 5 pesquisadores de afinidade no Nordeste"**: os mais alinhados ao nicho, **de fora da instituição da pessoa** e das ligadas a ela, num mini mapa do NE.
 
-A única entrada de texto é a instituição. O resultado é calculado no servidor a partir dos ids das respostas; nada é gravado (D-022, LGPD).
+Antes das perguntas, a pessoa faz um **cadastro curto** (D-037), que fica numa tabela própria com consentimento explícito. O resultado é calculado no servidor a partir dos ids das respostas, e as respostas não são gravadas.
 
 ## Histórico do desenho
 
@@ -49,7 +49,7 @@ A árvore deixa de ser uma árvore pura e passa a ser uma **sequência fixa de f
 
 | # | Bloco | Pergunta | Opções (resumo) | Para que serve |
 |---|---|---|---|---|
-| 1 | — | **Sua instituição** (autocomplete) | instituições do NE · "outra / sem vínculo" | exclusões e distância |
+| 1 | Cadastro | **Quem é você?** nome completo · instituição por extenso (sugestões da base) · tipo de filiação · e-mail (opcional) · curso ou programa (sugestões dos programas da base) · consentimento | ver "Cadastro" | a instituição, quando casada com a base, exclui os colegas do resultado; o resto só vai para `quiz_participantes` |
 | 2 | Perfil | **Num dia perfeito de trabalho, onde você está?** | no campo, de botas · na bancada, de jaleco · no computador, entre códigos e planilhas · com pessoas (pacientes, comunidades) · entre coleções, acervos e artigos | **habitat** do título (não entra no match) |
 | 3 | Nicho | **Qual é a sua ferramenta principal?** | campo e observação · experimentos de bancada · genética e biologia molecular · bioinformática e genômica · estatística, modelos e IA · química e compostos · clínica e intervenções · epidemiologia e saúde coletiva | faceta **método** (núcleo) |
 | 4 | Nicho | **O que você estuda?** | plantas · insetos e outros invertebrados · animais de produção · fauna silvestre e ecossistemas · microrganismos e parasitos · seres humanos · alimentos · solo, água e clima | faceta **objeto** |
@@ -247,16 +247,51 @@ Sem o serviço `embed`, os outros três componentes se renormalizam. Para entrar
 - latência dos nichos muito amplos (Epidemiologia × infecções, Química × plantas medicinais, Clínica × boca e dentes, Clínica × movimento), com cerca de 27 mil publicações no nicho;
 - a primeira chamada depois de reiniciar o app leva 1 a 2 s, porque aquece o modelo.
 
+## Cadastro dos participantes (D-037)
+
+A primeira tela do quiz é um formulário curto, pensado para o celular:
+
+| Campo | Obrigatório | Como |
+|---|---|---|
+| Nome completo | sim | texto (2 a 120 caracteres) |
+| Instituição | sim | texto por extenso, com sugestões das instituições do NE da base (`/api/quiz/instituicoes`). Escolhendo uma sugestão, grava-se também o id. Sem sugestão, vale o texto livre. |
+| Tipo de filiação | sim | graduação · mestrado · doutorado · docente · pesquisador(a) · profissional do mercado |
+| E-mail | não | validado; usado só para contato sobre o projeto |
+| Curso ou programa | sim | para mestrado, doutorado, docente e pesquisador(a): sugestões dos programas de pós da base (`/api/quiz/programas`), priorizando os da instituição escolhida; para graduação e profissional do mercado: texto livre |
+| Consentimento | sim | caixa não marcada por padrão, com a finalidade escrita e um link para `/sobre#privacidade-quiz` |
+
+**Armazenamento** (migração `0014_quiz_participantes`):
+- **Tabela `quiz_participantes`:** id, data, nome, instituição (id e texto), filiação, e-mail, programa (id e texto), versão do consentimento e versão da estrutura do quiz.
+- **Papel `quiz_escrita`:** só `INSERT` na tabela. O app usa `DATABASE_URL_QUIZ` com esse papel. A senha vem de `QUIZ_DB_PASSWORD` no `.env` e é aplicada pelo `scripts/migrar.sh`.
+- **O app nunca lê a tabela.**
+- **Retenção de 24 meses** (expurgo automático).
+- **Não se grava:** IP, navegador, respostas do quiz, resultado.
+
+Se o cadastro falhar no servidor (banco fora do ar, papel não configurado), a pessoa vê um aviso e pode tentar de novo. O quiz não segue sem o cadastro, porque esse é o pedido do responsável.
+
+## Cartões dos banners (neo-brutalismo do site)
+
+Os cartões dos pesquisadores no banner de afinidades ganham um layout mais criativo, ainda só com cores e formas:
+- **posição como selo:** um número grande num quadrado inclinado na cor de acento, com borda e sombra dura;
+- **cartões levemente rotacionados**, alternando −1,5° e +1,5°, como figurinhas coladas;
+- **índice num "ticket":** caixa lima com borda grossa, separada do cartão;
+- **barra de compatibilidade em blocos** (10 segmentos), à maneira de um medidor;
+- iniciais num círculo com contorno e sombra dura.
+
 ## Privacidade
 
-- Nada é gravado na primeira versão.
-- A URL do resultado leva só ids de opções e o id da instituição, e o servidor recalcula tudo.
-- Se valer guardar contagens anônimas por ramo, isso será proposto antes, com consentimento, sem instituição, tabela própria, papel só com `INSERT` e prazo de retenção.
+- As respostas do quiz e o resultado não são gravados. As URLs de resultado e dos banners levam só ids de opções e da instituição, e o servidor recalcula tudo.
+- O cadastro segue a D-037: consentimento, mínimo necessário, papel só de escrita, retenção de 24 meses e pedidos de remoção pelo contato de `/sobre`.
 
 ## Pendências desta etapa
 
-- Aprovação da estrutura v2 (perguntas, títulos e formas).
-- Migração `0012` (`researcher_embeddings`), API de resultado, ranking e script de avaliação.
-- Visual dos banners com cores e formas simples (2 ou 3 rascunhos para aprovação).
-- Banners (1080 × 1920 e 1080 × 1350), quiz, página de resultado e nova tela inicial com o painel.
-- Decisão D-036 e atualização do `SCHEME.md`.
+- [x] Estrutura v2 por facetas, validada (280 pares)
+- [x] Migração `0012`, perfis temáticos, match e avaliação
+- [x] Rascunho dos banners com cores e formas
+- [ ] FUNED fora da base (D-038) e lista de bloqueio na ingestão
+- [ ] Cadastro dos participantes (D-037): migração `0014`, papel só de escrita, APIs de sugestões e de cadastro
+- [ ] Cartões neo-brutalistas nos banners
+- [ ] Interface do quiz (`/quiz`: cadastro, perguntas com barra de progresso, voltar pelo histórico) e página de resultado com compartilhamento
+- [ ] Fontes do site nos banners (Lexend e DM Sans em `.ttf`; aguardando autorização para baixar)
+- [ ] Nova tela inicial e painel (seção 6 do pedido original)
+- [ ] Atualizar o `SCHEME.md` e o `README.md` com os números finais

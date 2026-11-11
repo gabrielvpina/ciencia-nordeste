@@ -17,6 +17,7 @@
 | Identidade | 2.653 docentes ligados a perfis OpenAlex por regra aprovada (D-018); 5.336 pares de pesquisadores e 53 de instituições aguardam revisão manual |
 | Banco | PostgreSQL 16 + pgvector no Docker; 7 migrações (`ingest/sql/migracoes/`); carga idempotente (`scripts/carregar_banco.sh`); 111 mil vetores com índice HNSW |
 | App | Next.js 14.2.35 no Docker (http://localhost:3000): tela inicial com busca unificada (nome e **tema**, semântica PT/EN) e mapa próprio do NE (modos produção, colaboração, áreas); perfis de pesquisador, instituição e programa com rede de colaboração em arco |
+| Quiz (branch `quiz`, etapa 13) | "Que cientista é você?": cadastro curto (D-037), 10 perguntas por facetas, match com até 5 pesquisadores de outras instituições e índice de compatibilidade (D-036), banners em PNG gerados no servidor |
 | Qualidade | `scripts/verificar.sh` (ruff, mypy, typecheck, build, migrações num banco vazio) e CI do GitHub Actions pronta |
 | Pendências do responsável | revisar as filas; enviar o pedido LAI (`docs/pedido_lai_cnpq.md`); domínio e VPS para a produção; depois, cliente ORCID de produção |
 
@@ -186,7 +187,15 @@ institution_collaborations, researcher_topics, schema_migrations
 work_keywords (1,08 mi) e work_embeddings (halfvec(768), índice HNSW) — busca por tema (D-028)
 
 visões materializadas (atualizadas a cada carga): mv_resumo, mv_pesquisador_busca, mv_instituicao_stats,
-  mv_instituicao_areas, mv_work_inst, mv_mapa_producao, mv_mapa_colaboracao, mv_inst_externo
+  mv_instituicao_areas, mv_work_inst, mv_mapa_producao, mv_mapa_colaboracao, mv_inst_externo, mv_uf_ano_area,
+  mv_work_qualis (com works_qualis nas contagens, D-033 e D-035)
+
+qualis_periodicos, venue_issns                (Qualis Periódicos 2021-2024 e ISSNs das revistas, D-033)
+
+researcher_embeddings   (perfil temático: média ponderada dos vetores das publicações, halfvec(768), HNSW; D-036)
+quiz_sinal, quiz_opcao_work, quiz_meta        (sinais das opções do quiz pré-calculados por publicação; D-036)
+quiz_participantes      (cadastro do quiz: nome, instituição, filiação, e-mail opcional, curso/programa, consentimento;
+                         gravado pelo papel quiz_escrita, só INSERT; o app não lê; retenção de 24 meses; D-037)
 
 users, profile_claims, profile_extras, removal_requests   (camada da aplicação)
 ```
@@ -273,7 +282,9 @@ Cuidados:
 - [x] Tela inicial = busca unificada (pesquisador, instituição, programa) + mapa; perfis com rede em arco (colaborações no NE e externas).
 - [x] SEO básico (metadados por página, sitemap em blocos, robots) e página "Sobre os dados".
 - [x] Busca por tema (vetorial multilíngue, híbrida, balanceada por idioma; precisão de 100% nas 20 consultas de teste) (D-028).
-- [ ] Filtro por município; página de resultados completa por tema; perfil temático e "pesquisadores parecidos".
+- [x] Perfil temático por pesquisador (`researcher_embeddings`), base do quiz e de "pesquisadores parecidos" (D-036).
+- [ ] Quiz "Que cientista é você?" (branch `quiz`, etapa 13): estrutura, match e banners prontos; cadastro, interface e nova tela inicial em andamento.
+- [ ] Filtro por município; página de resultados completa por tema; "pesquisadores parecidos" no perfil.
 - [ ] Rede de coautoria pessoa × pessoa como grafo (hoje: arcos entre instituições e lista de coautores).
 
 ### Fase D — Contas e reivindicação (adiada até a produção, D-024)
@@ -306,6 +317,13 @@ Checklist:
 - Em cada perfil: "Dados obtidos de fontes abertas (OpenAlex, CAPES, ORCID...). Este é você? Reivindique, corrija ou solicite remoção."
 - Fotos: só upload próprio ou imagem com licença livre (com crédito); padrão é avatar com iniciais.
 - Política de privacidade, responsável pelos dados e prazo para atender pedidos; base legal avaliada com orientação jurídica antes do lançamento.
+- **Cadastro do quiz (D-037), primeira coleta de dados pessoais informados pelo próprio usuário:**
+  - **base legal:** consentimento explícito (caixa não marcada por padrão, com a finalidade escrita);
+  - **mínimo necessário:** nome, instituição, filiação, curso ou programa e e-mail opcional; não se grava IP, respostas nem resultado;
+  - **acesso:** gravação por um papel só de `INSERT`, e o app nunca lê os dados;
+  - **retenção:** 24 meses, com expurgo automático;
+  - **pedidos de acesso ou remoção:** pelo contato em `/sobre#privacidade-quiz`;
+  - **backups:** contêm esses dados e são legíveis só pelo dono.
 
 ## 14. Métricas para validar
 

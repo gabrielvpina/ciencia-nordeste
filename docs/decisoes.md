@@ -376,3 +376,56 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Banco (migração 0011):** as visões de contagem (`mv_resumo`, `mv_pesquisador_busca`, `mv_instituicao_stats`, `mv_instituicao_areas`, `mv_mapa_producao`, `mv_mapa_colaboracao`, `mv_inst_externo`, `mv_uf_ano_area`) foram recriadas com uma coluna `works_qualis` ao lado de `works`; o app escolhe a coluna. Nenhum dado novo: tudo vem de `mv_work_qualis`, que agora é a primeira do REFRESH em `carga.sql`.
 - **Contado na hora com o filtro:** coautores do pesquisador e parceiras da instituição (as tabelas `coauthorships` e `institution_collaborations` da ingestão não separam Qualis).
 - **Não muda:** número de pesquisadores, programas, teses e orientações (não são publicações em revista). A avaliação da busca por tema (`avaliar_busca_tema.py`) usa `ql=0`, a base inteira.
+
+## D-036 — Quiz "Que cientista é você?": estrutura por facetas, match e banners
+
+- **Data:** 2026-11-11 · **Branch:** `quiz` · **Etapa:** [13](etapas/13-quiz-alinhamento.md)
+- **Estrutura:** dado versionado em `apps/web/lib/quiz/arvore.json`. São 10 perguntas mais a instituição.
+  - **Nicho**, que alimenta o match: método, objeto, sub-objeto (42 opções), foco, escala, ambiente e impacto.
+  - **Perfil**, que só monta o título: habitat, estilo e vínculo.
+  - **Filtros:** cada objeto lista os métodos que fazem sentido para ele, e os pares método × sub-objeto sem pesquisadores saem. Ficam 280 pares no núcleo.
+- **Match e banner são processos separados.** O match (`lib/quiz/alinhamento.ts`) só lê as facetas de nicho e a instituição. O título e o nicho escrito (`lib/quiz/titulo.ts`) não alteram quem aparece. Um teste garante que trocar só as respostas de perfil não muda nomes, ordem nem índices.
+- **Match:**
+  - **Núcleo obrigatório:** 2 ou mais publicações que casem método e sub-objeto, sem alargar o nicho para completar a lista. Por isso o banner mostra **até 5** pesquisadores.
+  - **Índice de 0 a 100, em escala fixa** = 0,30 cobertura das demais facetas + 0,20 concentração no nicho + 0,20 volume + 0,30 afinidade. A afinidade é o cosseno do perfil temático com a frase do nicho, entre os percentis 90 e 99,9 da população.
+  - **Proeminência:** só desempata, com no máximo 3 pontos de ordem e sem entrar no índice.
+  - **Exclusão:** fica de fora a instituição do usuário e as ligadas a ela (parent/child do ROR e vínculo de subunidade).
+  - **Diversidade:** no máximo 2 pesquisadores por instituição no banner.
+  - **Filtro Qualis:** respeita o D-035.
+- **Perfil temático** (`researcher_embeddings`, migração 0012): média dos vetores das publicações, ponderada por recência × autoria × tamanho da equipe, para 35.806 pesquisadores.
+- **Títulos:** sempre neutros e sem nomes licenciados, a pedido do responsável. São 25 arquétipos (habitat × estilo) mais os vínculos ("Fã nº 1 dos vírus", "Detetive do cérebro", "Sentinela da caatinga"). O validador barra marcas de gênero e nomes proibidos.
+- **Visual:** nesta fase, só cores e formas simples, sem ilustração SVG. Fundo pelo habitat, acento pelo ambiente, cartões neo-brutalistas e mini mapa do NE. PNG gerado no servidor (`next/og`), em 1080 × 1920 e 1080 × 1350.
+
+## D-037 — Cadastro dos participantes do quiz (primeira escrita do app)
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **Decisão:** antes das perguntas, o quiz pede:
+  - **nome completo**;
+  - **instituição** por extenso, com sugestões das instituições do NE da base; aceita texto livre;
+  - **tipo de filiação:** graduação, mestrado, doutorado, docente, pesquisador(a) ou profissional do mercado;
+  - **e-mail**, opcional;
+  - **curso ou programa:** para quem está na pós, sugestões dos programas da base; senão, texto livre.
+
+  Os dados ficam numa tabela própria, `quiz_participantes`. É a **primeira escrita do app**: até aqui ele só lia (D-022).
+- **Como, pela LGPD** (base legal: consentimento, art. 7º, I):
+  - **Consentimento explícito:** caixa obrigatória, não marcada por padrão, com a finalidade escrita na tela e um link para a seção de privacidade em `/sobre`. Grava-se também a data e a versão do texto aceito.
+  - **Finalidade:** estatísticas agregadas sobre quem usa o quiz (filiação, instituições, programas) e, só se a pessoa informar o e-mail, contato sobre o Ciência Nordeste. **Os dados não entram no match.** A instituição escolhida na lista só serve para excluir os colegas dela do resultado, como antes.
+  - **Mínimo necessário:** não se grava IP, navegador, respostas do quiz nem o resultado. As URLs de resultado e dos banners continuam levando só ids de opções e da instituição.
+  - **Acesso restrito:** o app grava com um papel próprio do Postgres, `quiz_escrita`, que só tem `INSERT` na tabela. O app não lê esses dados. Leitura e exportação só pelo responsável, via `psql`.
+  - **Retenção de 24 meses:** registros mais antigos são apagados pelo `scripts/publicar.sh` e pelo `scripts/carregar_banco.sh`.
+  - **Pedidos de acesso, correção ou remoção** vão pelo contato indicado em `/sobre` (variável `CONTATO_PRIVACIDADE`).
+  - **Backups:** os pacotes de `scripts/backup.sh` passam a conter dados pessoais. Já são legíveis só pelo dono, e isso fica explícito no guia.
+- **Proteção contra abuso:** campo-isca invisível para robôs, limites de tamanho, validação do e-mail e no máximo 10 cadastros por minuto por origem (em memória).
+
+## D-038 — FUNED fora da base (geocodificação errada no ROR)
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **Problema:** a Fundação Ezequiel Dias (FUNED, ROR `01qgvp179`) fica em Belo Horizonte (MG). O ROR a localiza em "Gameleira", e o nome foi casado com o município de Gameleira (PE). Com isso, ela entrou no recorte do NE com 303 pesquisadores vinculados, 415 publicações e 381 publicações que só estavam na base por causa dela.
+- **Correção:**
+  - **Ingestão:** a Parte 1 ganhou `ROR_EXCLUIDOS`, uma lista de ids do ROR fora do recorte, cada um com o motivo. A FUNED não volta numa próxima atualização.
+  - **Banco** (migração `0013_remover_funed`, idempotente):
+    - remove a FUNED das autorias;
+    - apaga as publicações que ficaram sem nenhuma instituição do NE;
+    - desvincula os pesquisadores (sem apagá-los; os que ficarem sem produção saem na próxima ingestão);
+    - apaga a instituição.
+  - **Depois:** visões materializadas, perfis temáticos e sinais do quiz são recalculados.

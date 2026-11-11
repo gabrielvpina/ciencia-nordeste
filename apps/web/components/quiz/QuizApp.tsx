@@ -21,7 +21,8 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
   const [cadastro, setCadastro] = useState<DadosCadastro | null>(null);
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);   // quiz concluído: espera o resultado
-  const [texto, setTexto] = useState("");   // descrição livre: só na memória; vai ao servidor uma vez, no fim, e volta como código
+  const [texto, setTexto] = useState("");
+  const enviado = useRef<string | null>(null);   // último alinhamento enviado (D-042)   // descrição livre: só na memória; vai ao servidor uma vez, no fim, e volta como código
   const telas = estrutura.telas;
   const total = telas.length + 2;   // cadastro + perguntas + descrição
   // a descrição vem logo depois do sub-objeto ("especificamente?"): no experimento de 20 casos, um texto sobre o objeto
@@ -61,6 +62,15 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
           else if (r.status === 400 || r.status === 429) break;   // texto inválido ou limite: não adianta repetir
         } catch { /* sem conexão: tenta de novo */ }
       }
+    }
+    // grava o alinhamento (D-042) uma única vez, aqui; a página de resultado só exibe (é aberta também por quem recebe o link)
+    const chave = JSON.stringify([ids, qs.get("t"), cadastro?.instituicao_id]);
+    if (cadastro?.participante_id && enviado.current !== chave) {
+      enviado.current = chave;   // o mesmo quiz não é enviado duas vezes (ex.: toque duplo na última resposta)
+      fetch("/api/quiz/alinhamento", {
+        method: "POST", keepalive: true, headers: { "content-type": "application/json" },
+        body: JSON.stringify({ participante_id: cadastro.participante_id, respostas: ids, instituicao_id: cadastro.instituicao_id, texto: qs.get("t") }),
+      }).catch(() => { /* não impede o resultado */ });
     }
     router.push(`/quiz/resultado?${qs}`);
   };
@@ -136,7 +146,7 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); avancar(iSub, respostas, true); } }} />
             <small className="qt-conta">{texto.length}/{TEXTO_MAX}</small>
           </div>
-          <p className="qt-privacidade">O texto não é gravado: serve só para calcular o resultado. O link leva um resumo numérico do tema, não as suas palavras.</p>
+          <p className="qt-privacidade">O texto não é gravado. Guardamos, e o link leva, só um resumo numérico do tema, não as suas palavras.</p>
           <div className="quiz-opcoes">
             <button type="submit" className="quiz-comecar" disabled={texto.trim().length > 0 && texto.trim().length < 3}>Continuar</button>
             <button type="button" className="quiz-opcao quiz-nenhuma" onClick={() => { setTexto(""); avancar(iSub, respostas, true); }}><b>Pular</b><small>seguir só com as respostas</small></button>

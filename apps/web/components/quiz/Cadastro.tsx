@@ -1,11 +1,13 @@
 "use client";
 // Cadastro do quiz (D-037): nome, instituição (com sugestões da base), filiação, curso ou programa
-// (com sugestões dos programas de pós) e consentimento. Os dados vão só para /api/quiz/participante; nada fica no navegador.
+// (com sugestões dos programas de pós) e consentimento. Os dados vão só para /api/quiz/participante; no navegador fica só,
+// em memória, o id devolvido, para ligar o alinhamento (D-042).
 import { useEffect, useRef, useState } from "react";
 
 export type DadosCadastro = {
   nome: string; instituicao_texto: string; instituicao_id: string | null; filiacao: string;
   curso_texto: string; programa_id: string | null;
+  participante_id?: string | null;   // devolvido pelo servidor; só na memória, para ligar o alinhamento (D-042)
 };
 const FILIACOES: [string, string][] = [
   ["graduacao", "Graduação"], ["mestrado", "Mestrado"], ["doutorado", "Doutorado"],
@@ -75,6 +77,7 @@ export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro
   const [enviando, setEnviando] = useState(false);
   const [falha, setFalha] = useState<string | null>(null);
   const [codigo, setCodigo] = useState<string | null>(null);   // código de remoção (D-041), mostrado uma vez
+  const [pid, setPid] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const pos = POS.has(d.filiacao);
   const muda = (p: Partial<DadosCadastro>) => {
@@ -105,10 +108,10 @@ export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro
     try {
       const r = await fetch("/api/quiz/participante", {
         method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...d, consentimento, site: isca }),
+        body: JSON.stringify({ ...d, participante_id: undefined, consentimento, site: isca }),
       });
       const j = await r.json().catch(() => ({}));
-      if (r.ok) { if (j.codigo) return setCodigo(j.codigo); return onPronto(d); }
+      if (r.ok) { setPid(j.id ?? null); if (j.codigo) return setCodigo(j.codigo); return onPronto({ ...d, participante_id: j.id ?? null }); }
       if (j.campos) setErros(j.campos);
       setFalha(j.erro ?? "Não foi possível salvar agora. Tente de novo em instantes.");
     } catch {
@@ -133,7 +136,7 @@ export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro
             {copiado ? "✓" : "⧉"}
           </button>
         </div>
-        <button type="button" className="quiz-comecar" autoFocus onClick={() => onPronto(d)}>Continuar para o quiz</button>
+        <button type="button" className="quiz-comecar" autoFocus onClick={() => onPronto({ ...d, participante_id: pid })}>Continuar para o quiz</button>
       </section>
     );
   }

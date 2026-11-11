@@ -486,3 +486,21 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - `scripts/quiz_remover.sh CÓDIGO` apaga o registro.
 - **Termos (revisão do mesmo dia, versão `2026-11-11d`):** a caixa de concordância ficou curta: "Tenho 18 anos ou mais e aceito os termos de uso e compartilhamento de dados", com link para `/sobre#termos`. Os termos, em linguagem jurídica neutra, tratam de objeto, controlador, dados, finalidade (só estatística), base legal, compartilhamento (só operadores de infraestrutura), prazo de 24 meses, segurança, direitos, idade mínima e alterações. A pedido do responsável, nenhum texto cita a AWS nem os EUA; o risco quanto ao art. 33 fica registrado em `docs/revisao-lgpd.md` (achado 1).
 - **Escolha única:** as perguntas do quiz continuam aceitando uma resposta cada (decisão do responsável). A múltipla escolha alargaria o núcleo do match e tenderia a reduzir a precisão.
+
+## D-042 — Guardar o alinhamento de quem fez o quiz (base da futura rede de afinidades)
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **O quê:** para cada quiz concluído por alguém com cadastro, grava-se o perfil de respostas e com quais pesquisadores houve match. Isso substitui a regra inicial de não gravar respostas (pedido original da etapa 13, D-037). O objetivo é uma futura rede (grafo) participante → pesquisador, que pode juntar instituições e programas de pós dos dois lados.
+- **Tabelas** (migrações `0017` e `0018`):
+  - **`quiz_alinhamentos`:** as respostas (ids na ordem das telas), o código do texto livre (D-040, nunca o texto), a instituição excluída, o filtro Qualis, o núcleo, o número de candidatos e uma `chave` (sha256 das respostas, do código e da instituição).
+  - **`quiz_matches`:** uma aresta por pesquisador da lista de 15 ou do banner de 5, com índice, posição em cada um e publicações no nicho.
+- **Como:**
+  - O cadastro devolve o id do participante, que fica só na memória do navegador.
+  - Ao concluir, o quiz chama `POST /api/quiz/alinhamento` uma vez, sem esperar a resposta. A rota recalcula o match como a página de resultado e grava.
+  - A página de resultado e os banners continuam sem gravar nada, porque são abertos também por quem recebe o link.
+  - Repetições (toque duplo, reenvio) são descartadas no navegador e no banco: chave única por participante e conjunto de respostas, com `ON CONFLICT DO NOTHING` sem alvo, que o papel só de `INSERT` pode usar. Quem volta e muda as respostas gera outro registro.
+- **Privacidade:**
+  - O papel `quiz_escrita` só insere; o app não lê nenhuma das tabelas (testado: leitura recusada).
+  - Remover o cadastro (`scripts/quiz_remover.sh`) ou o expurgo de 24 meses apagam alinhamentos e arestas (`ON DELETE CASCADE`, testado).
+  - Termos e consentimento revistos (versão `2026-11-11e`): dados coletados e finalidade passam a incluir "estudos sobre redes de afinidade científica, divulgados só de forma agregada ou sem identificação dos usuários".
+  - A página de resultado avisa que abrir o link não grava nada.

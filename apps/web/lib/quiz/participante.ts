@@ -1,10 +1,11 @@
-// Cadastro dos participantes do quiz (D-037). Grava com o papel quiz_escrita (só INSERT) — uma pool separada da do site,
-// que só lê. O app nunca lê a tabela quiz_participantes.
-import { randomInt, randomUUID } from "node:crypto";
+// Cadastro dos participantes do quiz (D-037) e alinhamentos (D-042). Grava com o papel quiz_escrita (só INSERT) — uma
+// pool separada da do site, que só lê. O app nunca lê quiz_participantes, quiz_alinhamentos nem quiz_matches.
+import { createHash, randomInt, randomUUID } from "node:crypto";
 import { Pool } from "pg";
+import type { Resultado } from "./alinhamento";
 import { ARVORE } from "./estrutura";
 
-export const CONSENTIMENTO_VERSAO = "2026-11-11d";   // b: sem e-mail; c: controlador, local do servidor e código de remoção; d: caixa curta + termos em /sobre#termos (D-041)
+export const CONSENTIMENTO_VERSAO = "2026-11-11e";   // b: sem e-mail; c: controlador, local do servidor e código de remoção; d: caixa curta + termos (D-041); e: respostas e matches gravados (D-042)
 export const FILIACOES = {
   graduacao: "Graduação", mestrado: "Mestrado", doutorado: "Doutorado",
   docente: "Docente", pesquisador: "Pesquisador(a)", mercado: "Profissional do mercado",
@@ -53,21 +54,64 @@ export function novoCodigo(): string {
   return `${c.slice(0, 4)}-${c.slice(4)}`;
 }
 
-/** Grava o cadastro e devolve o código de remoção (mostrado uma vez à pessoa; o app não o lê depois). */
-export async function gravar(c: Cadastro): Promise<{ codigo: string } | "indisponivel"> {
+/** Grava o cadastro e devolve o id (fica só na memória do navegador, para ligar o alinhamento) e o código de remoção
+ *  (mostrado uma vez à pessoa). O app não lê nenhum dos dois depois. */
+export async function gravar(c: Cadastro): Promise<{ id: string; codigo: string } | "indisponivel"> {
   const p = pool();
   if (!p) return "indisponivel";
   for (let tentativa = 0; ; tentativa++) {
-    const codigo = novoCodigo();
+    const codigo = novoCodigo(), id = randomUUID();
     try {
       await p.query(
         `INSERT INTO quiz_participantes (id, nome, instituicao_id, instituicao_texto, filiacao, programa_id, curso_texto, consentimento_versao, versao_quiz, codigo_remocao)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [randomUUID(), c.nome, c.instituicao_id, c.instituicao_texto, c.filiacao, c.programa_id, c.curso_texto, CONSENTIMENTO_VERSAO, ARVORE.versao, codigo]);
-      return { codigo };
+        [id, c.nome, c.instituicao_id, c.instituicao_texto, c.filiacao, c.programa_id, c.curso_texto, CONSENTIMENTO_VERSAO, ARVORE.versao, codigo]);
+      return { id, codigo };
     } catch (e) {
       if ((e as { code?: string }).code === "23505" && tentativa < 3) continue;   // código repetido (raríssimo): sorteia outro
       throw e;
     }
+  }
+}
+
+export type DadosAlinhamento = { respostas: string[]; texto_codigo: string | null; instituicao_id: string | null; so_qualis: boolean };
+
+/** Grava o alinhamento de um quiz concluído (D-042): as respostas e as arestas participante → pesquisador (lista e banner).
+ *  "sem_participante": o id não existe (cadastro removido, expirado ou inventado). */
+export async function gravarAlinhamento(participanteId: string, d: DadosAlinhamento, r: Resultado): Promise<"ok" | "indisponivel" | "sem_participante"> {
+  const p = pool();
+  if (!p) return "indisponivel";
+  const id = randomUUID();
+  const chave = createHash("sha256").update(JSON.stringify([d.respostas, d.texto_codigo, d.instituicao_id])).digest("hex");
+  const arestas = new Map<string, { indice: number; n_nicho: number; lista: number | null; banner: number | null }>();
+  r.lista.forEach((x, i) => arestas.set(x.id, { indice: x.indice, n_nicho: x.n_nicho, lista: i + 1, banner: null }));
+  r.banner.forEach((x, i) => {
+    const a = arestas.get(x.id) ?? { indice: x.indice, n_nicho: x.n_nicho, lista: null, banner: null };
+    a.banner = i + 1; arestas.set(x.id, a);
+  });
+  const cliente = await p.connect();
+  try {
+    await cliente.query("BEGIN");
+    // repetição (mesmo participante, mesmas respostas): não grava de novo. Sem alvo no ON CONFLICT, o papel só de
+    // INSERT não precisa de SELECT.
+    const ins = await cliente.query(
+      `INSERT INTO quiz_alinhamentos (id, participante_id, versao_quiz, respostas, texto_codigo, instituicao_id, so_qualis, nucleo, candidatos, chave)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT DO NOTHING`,
+      [id, participanteId, ARVORE.versao, d.respostas, d.texto_codigo, d.instituicao_id, d.so_qualis, r.nucleo, r.candidatos, chave]);
+    if (ins.rowCount && arestas.size) {
+      const rs = [...arestas.entries()];
+      await cliente.query(
+        `INSERT INTO quiz_matches (alinhamento_id, researcher_id, indice, posicao_lista, posicao_banner, n_nicho)
+         SELECT $1, * FROM unnest($2::uuid[], $3::smallint[], $4::smallint[], $5::smallint[], $6::int[])`,
+        [id, rs.map(([k]) => k), rs.map(([, a]) => a.indice), rs.map(([, a]) => a.lista), rs.map(([, a]) => a.banner), rs.map(([, a]) => a.n_nicho)]);
+    }
+    await cliente.query("COMMIT");
+    return "ok";
+  } catch (e) {
+    await cliente.query("ROLLBACK").catch(() => {});
+    if ((e as { code?: string }).code === "23503") return "sem_participante";   // chave estrangeira: participante inexistente
+    throw e;
+  } finally {
+    cliente.release();
   }
 }

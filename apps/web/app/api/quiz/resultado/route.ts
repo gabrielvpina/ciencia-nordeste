@@ -1,5 +1,6 @@
 // POST /api/quiz/resultado — { instituicao_id: uuid | null, respostas: [ids das opções], filtro?: {tipo: "ne"|"uf"|"raio", km?}, texto?: código (D-040) }
-// O servidor reconstrói tudo a partir dos ids (não aceita sinais do cliente) e não grava nada (D-022, LGPD).
+// O servidor reconstrói tudo a partir dos ids (não aceita sinais do cliente) e esta rota não grava nada (o alinhamento é
+// gravado só por /api/quiz/alinhamento, D-042).
 import { alinhar, type Filtro } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
 import { soQualis } from "@/lib/qualis-filtro";

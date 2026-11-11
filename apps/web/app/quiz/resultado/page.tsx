@@ -1,5 +1,6 @@
 // Resultado do quiz (etapa 13): os dois banners, a lista estendida, o filtro de distância e as instituições e programas
-// mais alinhados. Tudo recalculado no servidor a partir dos ids na URL; nada é gravado (D-037).
+// mais alinhados. Tudo recalculado no servidor a partir dos ids na URL; esta página não grava nada (quem grava o
+// alinhamento é o quiz, ao concluir: /api/quiz/alinhamento, D-042).
 import type { Metadata } from "next";
 import Avatar from "@/components/Avatar";
 import { CompartilharBanner, CopiarLink, Refazer } from "@/components/quiz/Compartilhar";
@@ -125,7 +126,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
       <p className="meta qr-aviso">
         O alinhamento vem de dados públicos de produção científica (OpenAlex, CAPES) e pode ter lacunas: quem publica pouco
         ou em veículos fora dessas bases aparece menos. {inst ? "Pesquisadores da sua instituição e das ligadas a ela ficam de fora. " : ""}
-        Suas respostas não são gravadas. <a href={`/quiz/resultado?${base}`}>Link deste resultado</a>.
+        As respostas e o resultado de quem faz o quiz ficam guardados com o cadastro, conforme os <a href="/sobre#termos">termos</a>; abrir este link não grava nada. <a href={`/quiz/resultado?${base}`}>Link deste resultado</a>.
       </p>
     </div>
   );

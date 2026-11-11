@@ -11,8 +11,8 @@
 | Nome, vínculos, publicações, orientações e participação em programas de pós | pesquisadores do NE (~145 mil) | fontes abertas: OpenAlex (CC0), ROR (CC0), CAPES Dados Abertos (CC-BY) | banco do site, público nas páginas | qualquer pessoa | enquanto o projeto existir |
 | Foto | 43 pesquisadores | Wikimedia Commons, com licença livre | arquivos do servidor | qualquer pessoa | idem |
 | Cadastro do quiz: nome, instituição, filiação, curso ou programa, data, versão do consentimento, código de remoção | quem faz o quiz | a própria pessoa, com consentimento | `quiz_participantes`, gravada pelo papel `quiz_escrita`, que só tem `INSERT` | só o responsável, via `psql` | 24 meses (expurgo automático) |
-| Respostas do quiz e resultado | quem faz o quiz | a própria pessoa | **não são gravados**: ficam só na URL (ids de opções) | quem tiver o link | — |
-| Descrição livre da pesquisa | quem faz o quiz | a própria pessoa | **não é gravada**: vira código numérico na URL (D-040) | — | — |
+| Respostas do quiz, pesquisadores indicados (posição e índice) e código numérico da descrição (D-042) | quem conclui o quiz com cadastro | a própria pessoa, com consentimento (termos, revisão "e") | `quiz_alinhamentos` e `quiz_matches`, ligados ao cadastro (`ON DELETE CASCADE`), só `INSERT` | só o responsável | junto com o cadastro (24 meses ou até a remoção) |
+| Texto da descrição livre | quem faz o quiz | a própria pessoa | **não é gravado**: vira código numérico (D-040) | — | — |
 | IP | visitantes | conexão | só em memória, no limite de pedidos por minuto; o Caddyfile do guia de deploy não liga o log de acesso | — | ~1 minuto |
 | Backups do banco (incluem o cadastro) | — | `scripts/backup.sh` | arquivos com permissão só do dono (`umask 077`) | só o responsável | rotação de 14 pacotes |
 
@@ -31,6 +31,8 @@
 | 9 | **Retenção.** 24 meses com expurgo automático. Um cadastro removido continua nos backups até a rotação (14 pacotes). | baixo | **documentado** (o script de remoção lembra disso) |
 | 10 | **Versão do consentimento.** Cadastros novos gravam a versão aceita, hoje `2026-11-11d`: a caixa curta ("Tenho 18 anos ou mais e aceito os termos…") com link para os termos em `/sobre#termos`, em linguagem jurídica neutra. | — | **ok** |
 | 11 | **Fotos.** Licença livre no Commons resolve o direito autoral, mas não o direito de imagem do retratado. | baixo | **ok**: as fotos são poucas e já públicas, e a remoção pode ser pedida pelo mesmo canal |
+
+| 12 | **Respostas e resultados guardados (D-042).** Passam a ser gravados para uma futura rede de afinidades. Isso amplia a finalidade (antes era só estatística) e liga o perfil de respostas ao nome. | médio | **mitigado**: termos e consentimento atualizados (versão `2026-11-11e`, finalidade "estatísticas e estudos de redes de afinidade, divulgados só de forma agregada ou sem identificação"); gravação só ao concluir (abrir um link não grava); o texto livre continua fora; a remoção apaga tudo junto. **Atenção para a rede de grafos:** publicar a rede com nomes de participantes exigiria novo consentimento; com nomes de pesquisadores, só dados já públicos |
 
 ## 3. Pendências (decisões do responsável)
 

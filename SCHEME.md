@@ -195,7 +195,12 @@ qualis_periodicos, venue_issns                (Qualis Periódicos 2021-2024 e IS
 researcher_embeddings   (perfil temático: média ponderada dos vetores das publicações, halfvec(768), HNSW; D-036)
 quiz_sinal, quiz_opcao_work, quiz_meta        (sinais das opções do quiz pré-calculados por publicação; D-036)
 quiz_participantes      (cadastro do quiz: nome, instituição, filiação, curso/programa, consentimento — sem e-mail;
-                         gravado pelo papel quiz_escrita, só INSERT; o app não lê; retenção de 24 meses; D-037)
+                         gravado pelo papel quiz_escrita, só INSERT; o app não lê; retenção de 24 meses; D-037;
+                         código de remoção, D-041)
+quiz_alinhamentos       (quiz concluído: respostas, código do texto, núcleo, candidatos; 1 por participante e conjunto
+                         de respostas; ON DELETE CASCADE do cadastro; D-042)
+quiz_matches            (arestas participante → pesquisador: índice, posição na lista e no banner; base da futura
+                         rede de afinidades; D-042)
 
 users, profile_claims, profile_extras, removal_requests   (camada da aplicação)
 ```

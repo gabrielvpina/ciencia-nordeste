@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   try {
     const r = await gravar(cadastro);
     if (r === "indisponivel") return Response.json({ erro: "cadastro indisponível no momento" }, { status: 503 });
-    return Response.json({ ok: true, codigo: r.codigo }, { headers: { "cache-control": "no-store" } });   // código de remoção (D-041)
+    return Response.json({ ok: true, id: r.id, codigo: r.codigo }, { headers: { "cache-control": "no-store" } });   // id: liga o alinhamento (D-042); código de remoção (D-041)
   } catch (e) {
     console.error("quiz/participante: falha ao gravar", (e as Error).message);
     return Response.json({ erro: "não foi possível salvar agora; tente de novo" }, { status: 503 });

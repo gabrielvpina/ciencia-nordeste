@@ -294,9 +294,13 @@ Logo depois de "especificamente?" (sub-objeto), uma tela opcional: "Qual organis
 - **Avaliação** (`python -m ingest.carga.avaliar_quiz_texto`, 8 nichos amplos com descrições específicas): a aderência da lista de 15 subiu em média **25 pontos** (de 27–67% para 40–100%), sem nenhum caso pior. O maior ganho foi em caprinos com palma forrageira (40% → 100%). Com peso 0,25, o ganho era de 18 pontos.
 - **Estabilidade:** o vetor da frase do nicho fica guardado em memória (as frases vêm só da árvore). Assim, o mesmo link dá o mesmo resultado mesmo se o serviço de embedding ficar lento, e página e banners não pedem o mesmo vetor três vezes. O código do texto é decodificado sem o serviço de embedding.
 
+## Alinhamentos guardados (D-042)
+
+Cada quiz concluído com cadastro grava as respostas e os pesquisadores indicados (`quiz_alinhamentos` e `quiz_matches`), para uma futura rede participante → pesquisador. Quem grava é o quiz, ao concluir (`POST /api/quiz/alinhamento`), nunca a página de resultado. A gravação não duplica, só insere, e é apagada junto com o cadastro.
+
 ## Privacidade
 
-- As respostas do quiz e o resultado não são gravados. As URLs de resultado e dos banners levam só ids de opções e da instituição, e o servidor recalcula tudo.
+- As URLs de resultado e dos banners levam só ids de opções, da instituição e o código do texto, e o servidor recalcula tudo. Desde a D-042, as respostas e os matches de quem conclui o quiz com cadastro ficam guardados (ver acima).
 - A descrição livre (D-040) passa uma vez pelo servidor para virar vetor e não é gravada nem registrada. A URL leva só o resumo numérico do tema, do qual não se recuperam as palavras.
 - O cadastro segue a D-037: consentimento, mínimo necessário, papel só de escrita, retenção de 24 meses e pedidos de remoção pelo contato de `/sobre`.
 

@@ -6,8 +6,8 @@ export type ModoBusca = "hibrido" | "vetor" | "texto";
 const K_RRF = 60;          // constante usual da Reciprocal Rank Fusion
 const CANDIDATOS = 200;    // vizinhos considerados em cada lista
 
-export async function embedConsulta(texto: string): Promise<string | null> {
-  const v = await embedVetor(texto);
+export async function embedConsulta(texto: string, limiteMs = 4000): Promise<string | null> {
+  const v = await embedVetor(texto, limiteMs);
   return v ? `[${v.join(",")}]` : null;
 }
 

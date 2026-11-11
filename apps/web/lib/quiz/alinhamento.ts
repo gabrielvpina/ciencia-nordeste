@@ -1,7 +1,7 @@
 // Match do quiz (etapa 13, D-036): das respostas de NICHO aos pesquisadores mais alinhados do Nordeste.
 // Este módulo não lê as respostas de perfil (habitat, estilo, vínculo), que só montam o título do banner:
 // as mesmas respostas de nicho dão sempre os mesmos pesquisadores, na mesma ordem e com os mesmos índices.
-import { q } from "@/lib/db";
+import { pool, q } from "@/lib/db";
 import { embedConsulta } from "@/lib/vetorial";
 import { ARVORE, type Opcao } from "./estrutura";
 import { decodificar } from "./texto";
@@ -70,9 +70,44 @@ const FRASES = new Map<string, string>();
 async function vetorDaFrase(frase: string): Promise<string | null> {
   const guardado = FRASES.get(frase);
   if (guardado) return guardado;
-  const v = await embedConsulta(frase);
+  // 10 s (e não os 4 s da busca): sem o vetor, o índice muda; esperar mais no começo a frio mantém o link reproduzível
+  const v = await embedConsulta(frase, 10_000);
   if (v) { if (FRASES.size >= 2000) FRASES.clear(); FRASES.set(frase, v); }
   return v;
+}
+
+/** Nichos amplos: acima disto (teto de publicações do núcleo), a consulta do ranking roda sem laços aninhados. */
+export const NICHO_AMPLO = 12000;
+const TETOS = new Map<string, number>();
+/** Teto do tamanho do nicho: a menor contagem de publicações entre as opções do núcleo (em memória; núcleos são finitos). */
+async function tetoDoNicho(nucleo: string[]): Promise<number> {
+  const k = nucleo.join("|");
+  if (!TETOS.has(k)) {
+    const [r] = await q<{ n: number }>(`SELECT min(n)::int AS n FROM (SELECT count(*) AS n FROM quiz_opcao_work WHERE opcao_id = ANY($1::text[]) GROUP BY opcao_id) x`, [nucleo]);
+    TETOS.set(k, r?.n ?? 0);
+  }
+  return TETOS.get(k)!;
+}
+
+/** Consulta do ranking. Os CTEs materializados chegam ao planejador com estimativa de 1–2 linhas; em nichos amplos
+ *  (10+ mil candidatos) ele escolhia laços aninhados e as junções viravam quadráticas: epidemiologia × humanos levava
+ *  15–18 s, e cai para ~2 s com junções por hash. Em nichos menores, os laços aninhados (por índice) são mais rápidos
+ *  (cardio: ~0,8 s com, ~1,5 s sem), então só desligamos acima de NICHO_AMPLO. */
+async function rankear<T>(sql: string, params: unknown[], amplo: boolean): Promise<T[]> {
+  if (!amplo) return q<T>(sql, params);
+  const cliente = await pool.connect();
+  try {
+    await cliente.query("BEGIN");
+    await cliente.query("SET LOCAL enable_nestloop = off");
+    const r = await cliente.query(sql, params);
+    await cliente.query("COMMIT");
+    return r.rows as T[];
+  } catch (e) {
+    await cliente.query("ROLLBACK").catch(() => {});
+    throw e;
+  } finally {
+    cliente.release();
+  }
 }
 
 /** O núcleo: método e sub-objeto (ou objeto, se o sub-objeto foi pulado). Se faltar um, o outro sozinho. */
@@ -109,7 +144,8 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
   // filtro Qualis (D-035): JOIN direto, para o plano não testar publicação a publicação
   const juntaQualis = opts.soQualis ? "JOIN mv_work_qualis mq ON mq.work_id = qw.work_id" : "";
 
-  const linhas = await q<Alinhado & { inst_ok: boolean }>(
+  const amplo = (await tetoDoNicho(nuc.map((o) => o.id))) > NICHO_AMPLO;
+  const linhas = await rankear<Alinhado & { inst_ok: boolean }>(
     `WITH sel AS (SELECT * FROM unnest($1::text[], $2::real[]) AS s(opcao_id, peso)),
      origem AS (SELECT latitude AS lat, longitude AS lon, uf FROM institutions WHERE id = $3),
      ow AS MATERIALIZED (SELECT qw.work_id, qw.opcao_id, qw.v * s.peso AS v, s.peso FROM quiz_opcao_work qw JOIN sel s USING (opcao_id) ${juntaQualis}),
@@ -148,10 +184,10 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
                             + ${pA} * afin + ${pT} * afin_texto) / ${soma})::int AS indice
        FROM base
       WHERE ($8 = 'ne') OR ($8 = 'uf' AND uf = (SELECT uf FROM origem)) OR ($8 = 'raio' AND distancia_km <= $9::real)
-      ORDER BY indice DESC, proeminencia DESC LIMIT 300`,
+      ORDER BY indice DESC, proeminencia DESC, id LIMIT 300`,   // id: desempate estável (o mesmo link, a mesma lista)
     [ids, pesos, opts.instituicao, nuc.map((o) => o.id), excluidas, vetor,
       facetas.reduce((t, [f, o]) => t + (nuc.some((n) => n.id === o.id) ? 0 : ARVORE.pesos_faceta[f] ?? 1), 0), filtro.tipo,
-      filtro.tipo === "raio" ? filtro.km : null, anc.p90, anc.p999, vTexto, anc.t90, anc.t999]);
+      filtro.tipo === "raio" ? filtro.km : null, anc.p90, anc.p999, vTexto, anc.t90, anc.t999], amplo);
 
   const t2 = Date.now();
   const elegiveis = linhas

@@ -58,3 +58,21 @@ export function miniMapa(pontos: { lat: number | null; lon: number | null }[]): 
 }
 
 export const PROPORCAO_MAPA = (geo.viewBox[3] + 60) / (geo.viewBox[2] + 60);   // altura / largura
+
+/** Fontes do site para os banners (Lexend nos títulos, DM Sans no texto; licença OFL, em public/fontes/).
+ *  O gerador de PNG (next/og) lê TTF/OTF/WOFF, não WOFF2 nem fontes variáveis: por isso os arquivos estáticos em WOFF. */
+type Fonte = { name: string; data: ArrayBuffer; weight: 400 | 700; style: "normal" };
+let fontes: Promise<Fonte[]> | null = null;
+export function carregarFontes(): Promise<Fonte[]> {
+  fontes ??= (async () => {
+    const { readFile } = await import("node:fs/promises");
+    const { join } = await import("node:path");
+    const ler = async (arq: string) => { const b = await readFile(join(process.cwd(), "public", "fontes", arq)); return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer; };
+    return Promise.all([
+      ["DM Sans", "DMSans-400.woff", 400], ["DM Sans", "DMSans-700.woff", 700],
+      ["Lexend", "Lexend-400.woff", 400], ["Lexend", "Lexend-700.woff", 700],
+    ].map(async ([name, arq, weight]) => ({ name: name as string, data: await ler(arq as string), weight: weight as 400 | 700, style: "normal" as const })));
+  })().catch((e) => { fontes = null; throw e; });
+  return fontes;
+}
+export const TITULO = "Lexend";

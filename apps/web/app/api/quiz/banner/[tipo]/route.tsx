@@ -5,7 +5,7 @@ import { ImageResponse } from "next/og";
 import { alinhar } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
 import { montarTitulo } from "@/lib/quiz/titulo";
-import { ACENTO, DESTAQUE, FUNDO, INICIAIS, LIMA, MUDO, PAINEL, PROPORCAO_MAPA, TINTA, corta, iniciais, logoSvg, miniMapa } from "@/lib/quiz/visual";
+import { ACENTO, DESTAQUE, FUNDO, INICIAIS, LIMA, MUDO, PAINEL, PROPORCAO_MAPA, TINTA, TITULO, carregarFontes, corta, iniciais, logoSvg, miniMapa } from "@/lib/quiz/visual";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -21,7 +21,7 @@ function Cabecalho({ texto }: { texto: string }) {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <img src={logoSvg()} width={78} height={98} alt="" />
-        <div style={{ display: "flex", gap: 12, fontSize: 44, color: TINTA }}><span>Ciência</span><span style={{ fontWeight: 700 }}>Nordeste</span></div>
+        <div style={{ display: "flex", gap: 12, fontSize: 44, color: TINTA }}><span>Ciência</span><span style={{ fontWeight: 700, fontFamily: TITULO }}>Nordeste</span></div>
       </div>
       <div style={{ display: "flex", fontSize: 28, color: TINTA, background: LIMA, border: `4px solid ${TINTA}`, borderRadius: 999, padding: "8px 22px" }}>{texto}</div>
     </div>
@@ -63,16 +63,16 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
     const nTrilha = story ? 6 : 3;
     return new ImageResponse(
       (
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "sans-serif" }}>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "DM Sans" }}>
           {formas}
           <Cabecalho texto="Que cientista você é" />
           <div style={cartao({ padding: story ? "64px 56px" : "40px 48px", gap: story ? 28 : 16 })}>
             <div style={{ display: "flex", fontSize: 30, letterSpacing: 4, color: MUDO }}>SEU TÍTULO</div>
-            <div style={{ display: "flex", fontSize: tam, fontWeight: 700, lineHeight: 1.02, color: TINTA }}>{t.principal}</div>
+            <div style={{ display: "flex", fontSize: tam, fontWeight: 700, fontFamily: TITULO, lineHeight: 1.02, color: TINTA }}>{t.principal}</div>
             {t.secundario && <div style={{ display: "flex", fontSize: story ? 48 : 40, color: TINTA }}>{t.secundario}</div>}
             <div style={{ display: "flex", height: 6, width: "100%", background: TINTA, borderRadius: 3, margin: "12px 0" }} />
             <div style={{ display: "flex", fontSize: 30, letterSpacing: 4, color: MUDO }}>SEU NICHO</div>
-            <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, lineHeight: 1.1, color: TINTA }}>{corta(t.nicho, 70)}</div>
+            <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, fontFamily: TITULO, lineHeight: 1.1, color: TINTA }}>{corta(t.nicho, 70)}</div>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 18 }}>
             {t.trilha.slice(0, nTrilha).map((x, i) => (
@@ -83,7 +83,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
           <Rodape />
         </div>
       ),
-      { width: W, height: H, headers: { "cache-control": "public, max-age=3600" } },
+      { width: W, height: H, fonts: await carregarFontes(), headers: { "cache-control": "public, max-age=3600" } },
     );
   }
 
@@ -95,12 +95,12 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
   const mapaW = story ? 330 : 250, mapaH = mapaW * PROPORCAO_MAPA;
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "sans-serif" }}>
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "DM Sans" }}>
         <div style={{ position: "absolute", top: story ? 820 : 600, right: -230, width: 520, height: 520, borderRadius: 999, background: acento, border: `6px solid ${TINTA}` }} />
         <Cabecalho texto="Afinidades no Nordeste" />
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
-            <div style={{ display: "flex", fontSize: story ? 58 : 56, fontWeight: 700, color: TINTA, lineHeight: 1.05 }}>
+            <div style={{ display: "flex", fontSize: story ? 58 : 56, fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1.05 }}>
               {lista.length ? `${lista.length === 5 ? "Seus 5" : `${lista.length}`} pesquisador${lista.length > 1 ? "es" : ""} de afinidade no Nordeste` : "Ninguém no seu nicho, ainda"}
             </div>
             <div style={{ display: "flex", fontSize: 34, color: TINTA, background: PAINEL, border: `5px solid ${TINTA}`, borderRadius: 999, padding: "10px 26px", alignSelf: "flex-start" }}>{corta(t.nicho, 46)}</div>
@@ -109,7 +109,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
             <div style={{ display: "flex", position: "relative", width: mapaW, height: mapaH }}>
               <img src={mapa.src} width={mapaW} height={mapaH} alt="" />
               {mapa.pos.map((p, i) => p && (
-                <div key={i} style={{ position: "absolute", left: p.x * mapaW - 22, top: p.y * mapaH - 22, width: 44, height: 44, borderRadius: 999, background: acento, border: `5px solid ${TINTA}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: TINTA }}>{i + 1}</div>
+                <div key={i} style={{ position: "absolute", left: p.x * mapaW - 22, top: p.y * mapaH - 22, width: 44, height: 44, borderRadius: 999, background: acento, border: `5px solid ${TINTA}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, fontFamily: TITULO, color: TINTA }}>{i + 1}</div>
               ))}
             </div>
           )}
@@ -124,9 +124,9 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
                 <div style={cartao({ flexDirection: "row", alignItems: "center", gap: 24, flex: 1, padding: story ? "26px 30px 26px 66px" : "10px 22px 10px 58px", borderRadius: 24,
                   boxShadow: `10px 10px 0 ${TINTA}`, border: `5px solid ${TINTA}` })}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: story ? 88 : 66, height: story ? 88 : 66, borderRadius: 999, background: INICIAIS[i % INICIAIS.length],
-                    border: `5px solid ${TINTA}`, boxShadow: `5px 5px 0 ${TINTA}`, fontSize: story ? 34 : 26, fontWeight: 700, color: TINTA }}>{iniciais(x.nome)}</div>
+                    border: `5px solid ${TINTA}`, boxShadow: `5px 5px 0 ${TINTA}`, fontSize: story ? 34 : 26, fontWeight: 700, fontFamily: TITULO, color: TINTA }}>{iniciais(x.nome)}</div>
                   <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
-                    <div style={{ display: "flex", fontSize: story ? 36 : 30, fontWeight: 700, color: TINTA, lineHeight: 1.1 }}>{corta(x.nome, story ? 26 : 34)}</div>
+                    <div style={{ display: "flex", fontSize: story ? 33 : 29, fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1.1 }}>{corta(x.nome, story ? 28 : 32)}</div>
                     <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 40)}</div>
                     <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
                       {Array.from({ length: 10 }, (_, k) => (
@@ -136,13 +136,13 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: story ? 128 : 108, padding: story ? "10px 0" : "6px 0", background: LIMA,
                     border: `5px solid ${TINTA}`, borderRadius: 16, boxShadow: `6px 6px 0 ${TINTA}`, transform: `rotate(${-giro * 2}deg)` }}>
-                    <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, color: TINTA, lineHeight: 1 }}>{x.indice}</div>
+                    <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1 }}>{x.indice}</div>
                     <div style={{ display: "flex", fontSize: 18, color: TINTA, letterSpacing: 2 }}>COMPAT.</div>
                   </div>
                 </div>
                 <div style={{ position: "absolute", top: story ? -22 : -14, left: -18, width: story ? 70 : 56, height: story ? 70 : 56, display: "flex", alignItems: "center", justifyContent: "center",
                   background: acento, border: `5px solid ${TINTA}`, borderRadius: 14, boxShadow: `5px 5px 0 ${TINTA}`, transform: "rotate(-10deg)",
-                  fontSize: story ? 38 : 30, fontWeight: 700, color: TINTA }}>{i + 1}</div>
+                  fontSize: story ? 38 : 30, fontWeight: 700, fontFamily: TITULO, color: TINTA }}>{i + 1}</div>
               </div>
             );
           })}
@@ -152,6 +152,6 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
         <Rodape />
       </div>
     ),
-    { width: W, height: H, headers: { "cache-control": "public, max-age=3600" } },
+    { width: W, height: H, fonts: await carregarFontes(), headers: { "cache-control": "public, max-age=3600" } },
   );
 }

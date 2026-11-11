@@ -76,9 +76,6 @@ export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro
   const [erros, setErros] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
   const [falha, setFalha] = useState<string | null>(null);
-  const [codigo, setCodigo] = useState<string | null>(null);   // código de remoção (D-041), mostrado uma vez
-  const [pid, setPid] = useState<string | null>(null);
-  const [copiado, setCopiado] = useState(false);
   const pos = POS.has(d.filiacao);
   const muda = (p: Partial<DadosCadastro>) => {
     setD((x) => ({ ...x, ...p }));
@@ -111,7 +108,7 @@ export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro
         body: JSON.stringify({ ...d, participante_id: undefined, consentimento, site: isca }),
       });
       const j = await r.json().catch(() => ({}));
-      if (r.ok) { setPid(j.id ?? null); if (j.codigo) return setCodigo(j.codigo); return onPronto({ ...d, participante_id: j.id ?? null }); }
+      if (r.ok) return onPronto({ ...d, participante_id: j.id ?? null });   // direto para o quiz
       if (j.campos) setErros(j.campos);
       setFalha(j.erro ?? "Não foi possível salvar agora. Tente de novo em instantes.");
     } catch {
@@ -120,26 +117,6 @@ export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro
       setEnviando(false);
     }
   };
-
-  if (codigo) {
-    return (
-      <section className="quiz-cadastro qc-salvo" aria-labelledby="qc-salvo-titulo">
-        <div className="quiz-enunciado">
-          <span className="quiz-tag">cadastro salvo</span>
-          <h2 id="qc-salvo-titulo">Guarde o seu código</h2>
-        </div>
-        <p>Se quiser apagar o seu cadastro depois, é só informar este código. Ele não identifica você e aparece só agora.</p>
-        <div className="qc-codigo">
-          <code aria-label="Código de remoção">{codigo}</code>
-          <button type="button" className="qr-icone" title={copiado ? "Copiado" : "Copiar código"} aria-label={copiado ? "Código copiado" : "Copiar código"}
-            onClick={async () => { try { await navigator.clipboard.writeText(codigo); setCopiado(true); } catch { /* sem permissão */ } }}>
-            {copiado ? "✓" : "⧉"}
-          </button>
-        </div>
-        <button type="button" className="quiz-comecar" autoFocus onClick={() => onPronto({ ...d, participante_id: pid })}>Continuar para o quiz</button>
-      </section>
-    );
-  }
 
   return (
     <form className="quiz-cadastro" onSubmit={enviar} noValidate>

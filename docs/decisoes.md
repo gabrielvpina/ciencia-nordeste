@@ -504,3 +504,11 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Remover o cadastro (`scripts/quiz_remover.sh`) ou o expurgo de 24 meses apagam alinhamentos e arestas (`ON DELETE CASCADE`, testado).
   - Termos e consentimento revistos (versão `2026-11-11e`): dados coletados e finalidade passam a incluir "estudos sobre redes de afinidade científica, divulgados só de forma agregada ou sem identificação dos usuários".
   - A página de resultado avisa que abrir o link não grava nada.
+
+## D-043 — Sem código de remoção; o cadastro leva direto ao quiz
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **O quê:** sai a tela "Guarde o seu código" (D-041). Depois do cadastro, o quiz começa direto. O cadastro não gera mais o código: a coluna `codigo_remocao` (migração `0016`) fica nula, porque migrações aplicadas não são editadas (D-022). Saem também o `scripts/quiz_remover.sh` e as menções ao código nos termos, em `/sobre` e no modelo de issue.
+- **Revogação:** o responsável vai definir outro jeito de revogar o cadastro. Até lá, os pedidos chegam pelas issues (sem dados pessoais, segundo o modelo), e a remoção é feita por `psql`, levando junto os alinhamentos (`ON DELETE CASCADE`).
+- **Risco:** sem um identificador que não exponha a pessoa, a remoção por um canal público fica difícil. Registrado como pendente no achado 2 de `docs/revisao-lgpd.md`.
+- **Versão do consentimento:** `2026-11-11f` (os termos deixam de citar o código).

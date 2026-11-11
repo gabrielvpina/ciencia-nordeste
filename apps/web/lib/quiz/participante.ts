@@ -1,11 +1,11 @@
 // Cadastro dos participantes do quiz (D-037) e alinhamentos (D-042). Grava com o papel quiz_escrita (só INSERT) — uma
 // pool separada da do site, que só lê. O app nunca lê quiz_participantes, quiz_alinhamentos nem quiz_matches.
-import { createHash, randomInt, randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { Resultado } from "./alinhamento";
 import { ARVORE } from "./estrutura";
 
-export const CONSENTIMENTO_VERSAO = "2026-11-11e";   // b: sem e-mail; c: controlador, local do servidor e código de remoção; d: caixa curta + termos (D-041); e: respostas e matches gravados (D-042)
+export const CONSENTIMENTO_VERSAO = "2026-11-11f";   // b: sem e-mail; c: controlador e local do servidor; d: caixa curta + termos (D-041); e: respostas e matches gravados (D-042)
 export const FILIACOES = {
   graduacao: "Graduação", mestrado: "Mestrado", doutorado: "Doutorado",
   docente: "Docente", pesquisador: "Pesquisador(a)", mercado: "Profissional do mercado",
@@ -47,31 +47,17 @@ export function validar(c: Record<string, unknown>): { cadastro?: Cadastro; erro
   };
 }
 
-/** Código de remoção (D-041): 8 caracteres sem ambíguos (sem 0/O, 1/I/L), ex.: K7QM-4TZP. ~1,1 × 10¹² combinações. */
-const ALFABETO_CODIGO = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-export function novoCodigo(): string {
-  const c = Array.from({ length: 8 }, () => ALFABETO_CODIGO[randomInt(ALFABETO_CODIGO.length)]).join("");
-  return `${c.slice(0, 4)}-${c.slice(4)}`;
-}
-
-/** Grava o cadastro e devolve o id (fica só na memória do navegador, para ligar o alinhamento) e o código de remoção
- *  (mostrado uma vez à pessoa). O app não lê nenhum dos dois depois. */
-export async function gravar(c: Cadastro): Promise<{ id: string; codigo: string } | "indisponivel"> {
+/** Grava o cadastro e devolve o id, que fica só na memória do navegador para ligar o alinhamento (D-042).
+ *  O código de remoção (D-041) foi retirado: a coluna codigo_remocao fica nula (D-043). */
+export async function gravar(c: Cadastro): Promise<{ id: string } | "indisponivel"> {
   const p = pool();
   if (!p) return "indisponivel";
-  for (let tentativa = 0; ; tentativa++) {
-    const codigo = novoCodigo(), id = randomUUID();
-    try {
-      await p.query(
-        `INSERT INTO quiz_participantes (id, nome, instituicao_id, instituicao_texto, filiacao, programa_id, curso_texto, consentimento_versao, versao_quiz, codigo_remocao)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [id, c.nome, c.instituicao_id, c.instituicao_texto, c.filiacao, c.programa_id, c.curso_texto, CONSENTIMENTO_VERSAO, ARVORE.versao, codigo]);
-      return { id, codigo };
-    } catch (e) {
-      if ((e as { code?: string }).code === "23505" && tentativa < 3) continue;   // código repetido (raríssimo): sorteia outro
-      throw e;
-    }
-  }
+  const id = randomUUID();
+  await p.query(
+    `INSERT INTO quiz_participantes (id, nome, instituicao_id, instituicao_texto, filiacao, programa_id, curso_texto, consentimento_versao, versao_quiz)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    [id, c.nome, c.instituicao_id, c.instituicao_texto, c.filiacao, c.programa_id, c.curso_texto, CONSENTIMENTO_VERSAO, ARVORE.versao]);
+  return { id };
 }
 
 export type DadosAlinhamento = { respostas: string[]; texto_codigo: string | null; instituicao_id: string | null; so_qualis: boolean };

@@ -269,6 +269,12 @@ A primeira tela do quiz é um formulário curto, pensado para o celular:
 
 Se o cadastro falhar no servidor (banco fora do ar, papel não configurado), a pessoa vê um aviso e pode tentar de novo. O quiz não segue sem o cadastro, porque esse é o pedido do responsável.
 
+**Na tela:**
+- Cada passo do quiz é um endereço (`/quiz?passo=cadastro`, `?passo=0` … `9`), navegado pelo roteador do Next. Assim o "voltar" do navegador e do celular funciona.
+- As respostas e o cadastro ficam só na memória da página: nada vai para o `localStorage`, e recarregar no meio volta para o começo.
+- Ao escolher uma sugestão, grava-se o id; ao reescrever o campo, o id é descartado.
+- Enter escolhe a sugestão em destaque, em vez de enviar o formulário.
+
 ## Cartões dos banners (neo-brutalismo do site)
 
 Os cartões dos pesquisadores no banner de afinidades ganham um layout mais criativo, ainda só com cores e formas:
@@ -288,10 +294,12 @@ Os cartões dos pesquisadores no banner de afinidades ganham um layout mais cria
 - [x] Estrutura v2 por facetas, validada (280 pares)
 - [x] Migração `0012`, perfis temáticos, match e avaliação
 - [x] Rascunho dos banners com cores e formas
-- [ ] FUNED fora da base (D-038) e lista de bloqueio na ingestão
-- [ ] Cadastro dos participantes (D-037): migração `0014`, papel só de escrita, APIs de sugestões e de cadastro
-- [ ] Cartões neo-brutalistas nos banners
-- [ ] Interface do quiz (`/quiz`: cadastro, perguntas com barra de progresso, voltar pelo histórico) e página de resultado com compartilhamento
+- [x] FUNED fora da base (D-038): migração `0013` (381 publicações apagadas, 303 pesquisadores desvinculados) e `ROR_EXCLUIDOS` na Parte 1
+- [x] Cadastro dos participantes (D-037): migração `0014`, papel `quiz_escrita` (só `INSERT`; leitura recusada, testado), `/api/quiz/participante`, `/api/quiz/instituicoes`, `/api/quiz/programas`, aviso em `/sobre#privacidade-quiz`
+- [x] Cartões neo-brutalistas nos banners (figurinhas inclinadas, selo da posição, ticket do índice, medidor em blocos), story e post
+- [x] Interface do quiz (`/quiz`: abertura, cadastro, 10 perguntas com barra de progresso, voltar pelo histórico do navegador, teclado) e página de resultado (`/quiz/resultado`: banners, compartilhar/baixar, copiar link, lista de 15 com porquê e exemplos, filtro de distância, instituições e programas alinhados, metadados Open Graph). JavaScript: `/quiz` 4,8 kB da página + 87,3 kB compartilhados (92,1 kB no primeiro carregamento); `/quiz/resultado` 88,1 kB
 - [ ] Fontes do site nos banners (Lexend e DM Sans em `.ttf`; aguardando autorização para baixar)
 - [ ] Nova tela inicial e painel (seção 6 do pedido original)
-- [ ] Atualizar o `SCHEME.md` e o `README.md` com os números finais
+- [ ] Atualizar o `SCHEME.md` e o `README.md` com os números finais (após a FUNED: 110.783 publicações, 35.724 perfis temáticos)
+- [ ] Capturas de tela do quiz em 360, 390 e 430 px (o Chrome usado nos testes não reduz a janela abaixo da largura de desktop)
+- [ ] Latência dos nichos muito amplos (até ~2 s; primeira chamada após reiniciar até ~5 s)

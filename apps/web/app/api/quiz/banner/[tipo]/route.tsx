@@ -76,10 +76,8 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 18 }}>
             {t.trilha.slice(0, nTrilha).map((x, i) => (
-              <div key={x} style={{ display: "flex", alignItems: "center", gap: 18 }}>
-                <div style={{ display: "flex", fontSize: story ? 34 : 28, color: TINTA, background: i === 0 ? LIMA : PAINEL, border: `5px solid ${TINTA}`, borderRadius: 999, padding: story ? "12px 28px" : "8px 22px" }}>{corta(x, 34)}</div>
-                {i < Math.min(t.trilha.length, nTrilha) - 1 && <div style={{ display: "flex", fontSize: 40, color: TINTA }}>→</div>}
-              </div>
+              <div key={x} style={{ display: "flex", fontSize: story ? 34 : 28, color: TINTA, background: i === 0 ? LIMA : PAINEL, border: `5px solid ${TINTA}`,
+                borderRadius: 999, padding: story ? "12px 28px" : "8px 22px", boxShadow: `5px 5px 0 ${TINTA}` }}>{corta(x, 34)}</div>
             ))}
           </div>
           <Rodape />
@@ -102,7 +100,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
         <Cabecalho texto="Afinidades no Nordeste" />
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
-            <div style={{ display: "flex", fontSize: story ? 66 : 56, fontWeight: 700, color: TINTA, lineHeight: 1.05 }}>
+            <div style={{ display: "flex", fontSize: story ? 58 : 56, fontWeight: 700, color: TINTA, lineHeight: 1.05 }}>
               {lista.length ? `${lista.length === 5 ? "Seus 5" : `${lista.length}`} pesquisador${lista.length > 1 ? "es" : ""} de afinidade no Nordeste` : "Ninguém no seu nicho, ainda"}
             </div>
             <div style={{ display: "flex", fontSize: 34, color: TINTA, background: PAINEL, border: `5px solid ${TINTA}`, borderRadius: 999, padding: "10px 26px", alignSelf: "flex-start" }}>{corta(t.nicho, 46)}</div>
@@ -128,7 +126,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: story ? 88 : 66, height: story ? 88 : 66, borderRadius: 999, background: INICIAIS[i % INICIAIS.length],
                     border: `5px solid ${TINTA}`, boxShadow: `5px 5px 0 ${TINTA}`, fontSize: story ? 34 : 26, fontWeight: 700, color: TINTA }}>{iniciais(x.nome)}</div>
                   <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
-                    <div style={{ display: "flex", fontSize: story ? 36 : 30, fontWeight: 700, color: TINTA, lineHeight: 1.1 }}>{corta(x.nome, story ? 30 : 34)}</div>
+                    <div style={{ display: "flex", fontSize: story ? 36 : 30, fontWeight: 700, color: TINTA, lineHeight: 1.1 }}>{corta(x.nome, story ? 26 : 34)}</div>
                     <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 40)}</div>
                     <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
                       {Array.from({ length: 10 }, (_, k) => (
@@ -150,7 +148,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
           })}
           {!lista.length && <div style={cartao({ padding: 40, fontSize: 36, color: TINTA })}>Tente pular uma das perguntas mais específicas e refazer.</div>}
         </div>
-        {story && <div style={{ display: "flex", fontSize: 26, color: MUDO }}>Índice de compatibilidade (0–100) calculado a partir de publicações abertas (OpenAlex, CAPES).</div>}
+        {story && <div style={{ display: "flex", fontSize: 26, color: MUDO, marginTop: 36 }}>Índice de compatibilidade 0–100 · publicações abertas (OpenAlex, CAPES)</div>}
         <Rodape />
       </div>
     ),

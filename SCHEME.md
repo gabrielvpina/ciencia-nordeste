@@ -194,7 +194,7 @@ qualis_periodicos, venue_issns                (Qualis Periódicos 2021-2024 e IS
 
 researcher_embeddings   (perfil temático: média ponderada dos vetores das publicações, halfvec(768), HNSW; D-036)
 quiz_sinal, quiz_opcao_work, quiz_meta        (sinais das opções do quiz pré-calculados por publicação; D-036)
-quiz_participantes      (cadastro do quiz: nome, instituição, filiação, e-mail opcional, curso/programa, consentimento;
+quiz_participantes      (cadastro do quiz: nome, instituição, filiação, curso/programa, consentimento — sem e-mail;
                          gravado pelo papel quiz_escrita, só INSERT; o app não lê; retenção de 24 meses; D-037)
 
 users, profile_claims, profile_extras, removal_requests   (camada da aplicação)
@@ -319,7 +319,7 @@ Checklist:
 - Política de privacidade, responsável pelos dados e prazo para atender pedidos; base legal avaliada com orientação jurídica antes do lançamento.
 - **Cadastro do quiz (D-037), primeira coleta de dados pessoais informados pelo próprio usuário:**
   - **base legal:** consentimento explícito (caixa não marcada por padrão, com a finalidade escrita);
-  - **mínimo necessário:** nome, instituição, filiação, curso ou programa e e-mail opcional; não se grava IP, respostas nem resultado;
+  - **mínimo necessário:** nome, instituição, filiação e curso ou programa; sem e-mail ou outro contato; não se grava IP, respostas nem resultado;
   - **acesso:** gravação por um papel só de `INSERT`, e o app nunca lê os dados;
   - **retenção:** 24 meses, com expurgo automático;
   - **pedidos de acesso ou remoção:** pelo contato em `/sobre#privacidade-quiz`;

@@ -51,8 +51,8 @@ export default async function Sobre() {
       <p>Usamos apenas informações públicas sobre atividade científica (publicações, vínculos, pós-graduação). Não exibimos CPF, data de nascimento nem contatos. Se você encontrou um perfil seu com erro, ou quer ocultá-lo ou removê-lo, escreva para o responsável pelo projeto. A reivindicação de perfil com login pelo ORCID será habilitada quando o site entrar em produção.</p>
       <h3 id="privacidade-quiz">Quiz &ldquo;Que cientista é você?&rdquo;</h3>
       <ul>
-        <li><b>O que guardamos:</b> o nome, a instituição, o tipo de filiação, o curso ou programa e, se você quiser, o e-mail, informados no início do quiz, com o seu consentimento. <b>Não guardamos</b> as suas respostas, o seu resultado, o seu IP nem dados do navegador.</li>
-        <li><b>Para quê:</b> estatísticas sobre quem usa o quiz (filiações, instituições, programas) e, se você informou o e-mail, contato sobre o Ciência Nordeste. Esses dados não entram no cálculo das afinidades.</li>
+        <li><b>O que guardamos:</b> o nome, a instituição, o tipo de filiação e o curso ou programa, informados no início do quiz, com o seu consentimento. <b>Não guardamos</b> as suas respostas, o seu resultado, o seu IP nem dados do navegador.</li>
+        <li><b>Para quê:</b> apenas estatísticas sobre quem usa o quiz (filiações, instituições, programas). Não pedimos e-mail nem outro contato. Esses dados não entram no cálculo das afinidades.</li>
         <li><b>Quem acessa:</b> o site só consegue gravar esses dados, não lê-los. A leitura é restrita ao responsável pelo projeto.</li>
         <li><b>Por quanto tempo:</b> até 24 meses; depois, são apagados automaticamente.</li>
         <li><b>Seus direitos (LGPD):</b> você pode pedir acesso, correção ou remoção a qualquer momento{process.env.CONTATO_PRIVACIDADE ? <>, escrevendo para <b>{process.env.CONTATO_PRIVACIDADE}</b></> : <>, pelo <a href="https://github.com/gabrielvpina/ciencia-nordeste/issues" target="_blank" rel="noopener">repositório do projeto</a></>}.</li>

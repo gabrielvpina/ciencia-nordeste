@@ -393,6 +393,7 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - **Diversidade:** no máximo 2 pesquisadores por instituição no banner.
   - **Filtro Qualis:** respeita o D-035.
 - **Perfil temático** (`researcher_embeddings`, migração 0012): média dos vetores das publicações, ponderada por recência × autoria × tamanho da equipe, para 35.806 pesquisadores.
+- **Ambiente no título e no nicho:** só entra quando a pessoa diz que um lugar é essencial na pesquisa (pergunta "Algum ambiente é essencial na sua pesquisa?"). Com "Não, minha pesquisa não depende de um lugar", o título e o nicho ficam gerais (ex.: "Bioinformática de vírus"; "Sentinela dos anfíbios e répteis" em vez de "Sentinela da mata atlântica").
 - **Títulos:** sempre neutros e sem nomes licenciados, a pedido do responsável. São 25 arquétipos (habitat × estilo) mais os vínculos ("Fã nº 1 dos vírus", "Detetive do cérebro", "Sentinela da caatinga"). O validador barra marcas de gênero e nomes proibidos.
 - **Visual:** nesta fase, só cores e formas simples, sem ilustração SVG. Fundo pelo habitat, acento pelo ambiente, cartões neo-brutalistas e mini mapa do NE. PNG gerado no servidor (`next/og`), em 1080 × 1920 e 1080 × 1350.
 
@@ -403,19 +404,18 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - **nome completo**;
   - **instituição** por extenso, com sugestões das instituições do NE da base; aceita texto livre;
   - **tipo de filiação:** graduação, mestrado, doutorado, docente, pesquisador(a) ou profissional do mercado;
-  - **e-mail**, opcional;
   - **curso ou programa:** para quem está na pós, sugestões dos programas da base; senão, texto livre.
 
   Os dados ficam numa tabela própria, `quiz_participantes`. É a **primeira escrita do app**: até aqui ele só lia (D-022).
 - **Como, pela LGPD** (base legal: consentimento, art. 7º, I):
   - **Consentimento explícito:** caixa obrigatória, não marcada por padrão, com a finalidade escrita na tela e um link para a seção de privacidade em `/sobre`. Grava-se também a data e a versão do texto aceito.
-  - **Finalidade:** estatísticas agregadas sobre quem usa o quiz (filiação, instituições, programas) e, só se a pessoa informar o e-mail, contato sobre o Ciência Nordeste. **Os dados não entram no match.** A instituição escolhida na lista só serve para excluir os colegas dela do resultado, como antes.
+  - **Finalidade:** só estatísticas agregadas sobre quem usa o quiz (filiação, instituições, programas). **Não se pede e-mail nem outro contato** (o campo opcional de e-mail foi retirado a pedido do responsável, para reduzir riscos jurídicos; migração `0015`). **Os dados não entram no match.** A instituição escolhida na lista só serve para excluir os colegas dela do resultado, como antes.
   - **Mínimo necessário:** não se grava IP, navegador, respostas do quiz nem o resultado. As URLs de resultado e dos banners continuam levando só ids de opções e da instituição.
   - **Acesso restrito:** o app grava com um papel próprio do Postgres, `quiz_escrita`, que só tem `INSERT` na tabela. O app não lê esses dados. Leitura e exportação só pelo responsável, via `psql`.
   - **Retenção de 24 meses:** registros mais antigos são apagados pelo `scripts/publicar.sh` e pelo `scripts/carregar_banco.sh`.
   - **Pedidos de acesso, correção ou remoção** vão pelo contato indicado em `/sobre` (variável `CONTATO_PRIVACIDADE`).
   - **Backups:** os pacotes de `scripts/backup.sh` passam a conter dados pessoais. Já são legíveis só pelo dono, e isso fica explícito no guia.
-- **Proteção contra abuso:** campo-isca invisível para robôs, limites de tamanho, validação do e-mail e no máximo 10 cadastros por minuto por origem (em memória).
+- **Proteção contra abuso:** campo-isca invisível para robôs, limites de tamanho e no máximo 10 cadastros por minuto por origem (em memória).
 
 ## D-038 — FUNED fora da base (geocodificação errada no ROR)
 

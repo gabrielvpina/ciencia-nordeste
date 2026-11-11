@@ -49,7 +49,7 @@ A árvore deixa de ser uma árvore pura e passa a ser uma **sequência fixa de f
 
 | # | Bloco | Pergunta | Opções (resumo) | Para que serve |
 |---|---|---|---|---|
-| 1 | Cadastro | **Quem é você?** nome completo · instituição por extenso (sugestões da base) · tipo de filiação · e-mail (opcional) · curso ou programa (sugestões dos programas da base) · consentimento | ver "Cadastro" | a instituição, quando casada com a base, exclui os colegas do resultado; o resto só vai para `quiz_participantes` |
+| 1 | Cadastro | **Quem é você?** nome completo · instituição por extenso (sugestões da base) · tipo de filiação · curso ou programa (sugestões dos programas da base) · consentimento | ver "Cadastro" | a instituição, quando casada com a base, exclui os colegas do resultado; o resto só vai para `quiz_participantes` |
 | 2 | Perfil | **Num dia perfeito de trabalho, onde você está?** | no campo, de botas · na bancada, de jaleco · no computador, entre códigos e planilhas · com pessoas (pacientes, comunidades) · entre coleções, acervos e artigos | **habitat** do título (não entra no match) |
 | 3 | Nicho | **Qual é a sua ferramenta principal?** | campo e observação · experimentos de bancada · genética e biologia molecular · bioinformática e genômica · estatística, modelos e IA · química e compostos · clínica e intervenções · epidemiologia e saúde coletiva | faceta **método** (núcleo) |
 | 4 | Nicho | **O que você estuda?** | plantas · insetos e outros invertebrados · animais de produção · fauna silvestre e ecossistemas · microrganismos e parasitos · seres humanos · alimentos · solo, água e clima | faceta **objeto** |
@@ -57,7 +57,7 @@ A árvore deixa de ser uma árvore pura e passa a ser uma **sequência fixa de f
 | 6 | Perfil | **Quando aparece um problema novo, você…** | testa uma hipótese na hora · junta todos os dados primeiro · monta um modelo · chama gente para pensar junto · vai atrás do que ninguém viu | **estilo** do título (não entra no match) |
 | 7 | Nicho | **Qual é o seu foco?** (opções filtradas pelo objeto) | melhoramento e genética · doenças e pragas · manejo e produção · produtos e compostos · diversidade e conservação · diagnóstico e tratamento · prevenção e vigilância | faceta **foco** |
 | 8 | Nicho | **Em que escala?** | moléculas e genes · células e tecidos · organismos inteiros · populações e comunidades · paisagens e ecossistemas | faceta **escala** |
-| 9 | Nicho | **Onde o seu objeto vive ou acontece?** | caatinga e semiárido · mata atlântica e brejos · mar, mangues e estuários · lavouras e fazendas · cidades, hospitais e serviços · tanto faz | faceta **ambiente** (o sabor do Nordeste) |
+| 9 | Nicho | **Algum ambiente é essencial na sua pesquisa?** | caatinga e semiárido · mata atlântica e brejos · mar, mangues e estuários · lavouras e fazendas · cidades, hospitais e serviços · "Não, minha pesquisa não depende de um lugar" | faceta **ambiente**; só aparece no título e no nicho quando um lugar é essencial |
 | 10 | Perfil | **O seu objeto de estudo é…** | minha paixão, falo dele até em festas · um mistério que quero desvendar · algo que preciso proteger · uma ferramenta para resolver problemas reais | **vínculo** do título (não entra no match) |
 | 11 | Nicho | **O seu trabalho serve principalmente para…** | produzir alimento melhor · cuidar da saúde das pessoas · conservar a natureza · criar produtos e tecnologias · entender como a vida funciona | faceta **impacto** |
 
@@ -256,12 +256,11 @@ A primeira tela do quiz é um formulário curto, pensado para o celular:
 | Nome completo | sim | texto (2 a 120 caracteres) |
 | Instituição | sim | texto por extenso, com sugestões das instituições do NE da base (`/api/quiz/instituicoes`). Escolhendo uma sugestão, grava-se também o id. Sem sugestão, vale o texto livre. |
 | Tipo de filiação | sim | graduação · mestrado · doutorado · docente · pesquisador(a) · profissional do mercado |
-| E-mail | não | validado; usado só para contato sobre o projeto |
 | Curso ou programa | sim | para mestrado, doutorado, docente e pesquisador(a): sugestões dos programas de pós da base (`/api/quiz/programas`), priorizando os da instituição escolhida; para graduação e profissional do mercado: texto livre |
 | Consentimento | sim | caixa não marcada por padrão, com a finalidade escrita e um link para `/sobre#privacidade-quiz` |
 
 **Armazenamento** (migração `0014_quiz_participantes`):
-- **Tabela `quiz_participantes`:** id, data, nome, instituição (id e texto), filiação, e-mail, programa (id e texto), versão do consentimento e versão da estrutura do quiz.
+- **Tabela `quiz_participantes`:** id, data, nome, instituição (id e texto), filiação, programa (id e texto), versão do consentimento e versão da estrutura do quiz. **Sem e-mail** (retirado a pedido do responsável; migração `0015`).
 - **Papel `quiz_escrita`:** só `INSERT` na tabela. O app usa `DATABASE_URL_QUIZ` com esse papel. A senha vem de `QUIZ_DB_PASSWORD` no `.env` e é aplicada pelo `scripts/migrar.sh`.
 - **O app nunca lê a tabela.**
 - **Retenção de 24 meses** (expurgo automático).

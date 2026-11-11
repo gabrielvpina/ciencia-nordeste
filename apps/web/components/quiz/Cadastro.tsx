@@ -1,18 +1,18 @@
 "use client";
-// Cadastro do quiz (D-037): nome, instituição (com sugestões da base), filiação, e-mail opcional, curso ou programa
+// Cadastro do quiz (D-037): nome, instituição (com sugestões da base), filiação, curso ou programa
 // (com sugestões dos programas de pós) e consentimento. Os dados vão só para /api/quiz/participante; nada fica no navegador.
 import { useEffect, useRef, useState } from "react";
 
 export type DadosCadastro = {
   nome: string; instituicao_texto: string; instituicao_id: string | null; filiacao: string;
-  email: string; curso_texto: string; programa_id: string | null;
+  curso_texto: string; programa_id: string | null;
 };
 const FILIACOES: [string, string][] = [
   ["graduacao", "Graduação"], ["mestrado", "Mestrado"], ["doutorado", "Doutorado"],
   ["docente", "Docente"], ["pesquisador", "Pesquisador(a)"], ["mercado", "Profissional do mercado"],
 ];
 const POS = new Set(["mestrado", "doutorado", "docente", "pesquisador"]);
-const VAZIO: DadosCadastro = { nome: "", instituicao_texto: "", instituicao_id: null, filiacao: "", email: "", curso_texto: "", programa_id: null };
+const VAZIO: DadosCadastro = { nome: "", instituicao_texto: "", instituicao_id: null, filiacao: "", curso_texto: "", programa_id: null };
 
 type Sugestao = { id: string; titulo: string; detalhe: string };
 
@@ -95,7 +95,6 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
     if (d.nome.trim().split(/\s+/).length < 2) er.nome = "Informe o nome completo (nome e sobrenome).";
     if (d.instituicao_texto.trim().length < 2) er.instituicao_texto = "Informe a sua instituição.";
     if (!d.filiacao) er.filiacao = "Escolha uma opção.";
-    if (d.email.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim())) er.email = "E-mail inválido (ou deixe em branco).";
     if (d.curso_texto.trim().length < 2) er.curso_texto = pos ? "Informe o seu programa." : "Informe o seu curso.";
     if (!consentimento) er.consentimento = "É preciso concordar para continuar.";
     setErros(er);
@@ -157,18 +156,13 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
           {erros.curso_texto && <small className="qc-erro">{erros.curso_texto}</small>}
         </div>
       )}
-      <div className="qc-campo">
-        <label htmlFor="qc-email">E-mail <span className="qc-opcional">(opcional)</span></label>
-        <input id="qc-email" type="email" inputMode="email" autoComplete="email" value={d.email} onChange={(e) => muda({ email: e.target.value })} maxLength={200} aria-invalid={!!erros.email} />
-        {erros.email && <small className="qc-erro">{erros.email}</small>}
-      </div>
       <div className="qc-isca" aria-hidden>
         <label>Não preencha: <input tabIndex={-1} autoComplete="off" value={isca} onChange={(e) => setIsca(e.target.value)} name="site" /></label>
       </div>
       <label className={`qc-consentimento${erros.consentimento ? " invalido" : ""}`}>
         <input type="checkbox" checked={consentimento} onChange={(e) => { setConsentimento(e.target.checked); setErros((x) => { const n = { ...x }; delete n.consentimento; return n; }); }} />
         <span>
-          Concordo que o Ciência Nordeste guarde estes dados para estatísticas sobre quem usa o quiz e, se informei o e-mail, para contato sobre o projeto.
+          Concordo que o Ciência Nordeste guarde estes dados só para estatísticas sobre quem usa o quiz.
           Minhas respostas e meu resultado não são gravados. Os dados ficam até 24 meses e posso pedir a remoção a qualquer momento
           {contato ? <> ({contato})</> : null}. <a href="/sobre#privacidade-quiz" target="_blank" rel="noopener">Saiba mais</a>
         </span>

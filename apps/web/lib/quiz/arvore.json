@@ -1,5 +1,5 @@
 {
- "versao": 4,
+ "versao": 5,
  "estrutura": "facetas (v2 do desenho, docs/etapas/13-quiz-alinhamento.md)",
  "telas": [
   "habitat",
@@ -2328,7 +2328,7 @@
   "ambiente": {
    "bloco": "nicho",
    "faceta": "ambiente",
-   "texto": "Onde o seu objeto vive ou acontece?",
+   "texto": "Algum ambiente é essencial na sua pesquisa?",
    "opcoes": [
     {
      "id": "ambiente.caatinga",
@@ -2462,7 +2462,7 @@
     },
     {
      "id": "ambiente.qualquer",
-     "rotulo": "Tanto faz / no laboratório",
+     "rotulo": "Não, minha pesquisa não depende de um lugar",
      "sinais": {},
      "visual": {
       "cor": "neutro"

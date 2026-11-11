@@ -70,8 +70,9 @@ def titulos(arv: dict[str, Any]) -> list[str]:
     alvos = {"sub_objeto": [o["sintagma"] for o in opcoes(P["sub_objeto"]) if "sintagma" in o],
              "ambiente": [o["sintagma"] for o in opcoes(P["ambiente"]) if "sintagma" in o]}
     for v in T["vinculos"].values():
-        if v["modelo"]:
-            saida += [v["modelo"].replace("{de}", de(s)) for s in alvos[v["usa"]]]
+        if v["modelo"]:   # sem ambiente essencial, o vínculo "proteger" usa o sub-objeto (lib/quiz/titulo.ts)
+            usa = alvos["sub_objeto"] + (alvos["ambiente"] if v["usa"] == "ambiente" else [])
+            saida += [v["modelo"].replace("{de}", de(s)) for s in usa]
     return saida
 
 

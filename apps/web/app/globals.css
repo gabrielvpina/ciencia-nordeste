@@ -692,9 +692,7 @@ main:has(.quiz) { max-width: none; padding: 0; }
 .quiz-opcao:hover { background: var(--accent-soft); }
 .quiz-opcao:active, .quiz-opcao.escolhida { transform: translate(2px, 2px); box-shadow: none; background: var(--flow); }
 .quiz-opcao.anterior { background: var(--accent-soft); }
-.quiz-perfil .quiz-opcao:nth-child(odd) { transform: rotate(-.6deg); }
-.quiz-perfil .quiz-opcao:nth-child(even) { transform: rotate(.6deg); }
-.quiz-perfil .quiz-opcao.escolhida { transform: translate(2px, 2px); }
+/* alternativas alinhadas, sem inclinação */
 .quiz-pular { grid-column: 1 / -1; min-height: 48px; border: 1.5px dashed var(--stroke); border-radius: 14px; background: transparent; color: var(--muted); font: inherit; font-size: .88rem; cursor: pointer; }
 .quiz-pular.escolhida { background: var(--accent-soft); color: var(--fg); }
 @media (prefers-reduced-motion: reduce) { .quiz-pergunta { animation: none; } .quiz-progresso i, .quiz-opcao { transition: none; } }
@@ -800,7 +798,6 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
 .quiz-opcao { width: 100%; min-height: 52px; }
 .quiz-nenhuma { border-style: dashed; background: transparent; box-shadow: none; }
 .quiz-nenhuma b { font-weight: 500; }
-.quiz-perfil .quiz-opcao.quiz-nenhuma { transform: none; }
 
 /* Quiz: processando o perfil (entre a última resposta e o resultado) */
 .quiz-processando { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; text-align: center; padding: 32px 0; }
@@ -844,3 +841,6 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
 /* /sobre#termos: termos de uso e compartilhamento de dados (D-041) */
 ol.termos { padding-left: 1.4em; display: grid; gap: 8px; line-height: 1.5; }
 ol.termos li::marker { font-weight: 700; }
+/* resultado: título do tipo de cientista maior (o nicho quebra em linhas, nunca é cortado) */
+.qr-cabeca h1 { font-size: clamp(2.5rem, 11vw, 4rem); line-height: 1; text-wrap: balance; }
+.qr-nicho { font-size: 1.15rem; text-wrap: pretty; overflow-wrap: anywhere; }

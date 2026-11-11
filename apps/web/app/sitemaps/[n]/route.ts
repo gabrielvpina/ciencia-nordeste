@@ -11,7 +11,7 @@ export async function GET(_req: Request, { params }: { params: { n: string } }) 
     const inst = await q<{ id: string }>(`SELECT institution_id AS id FROM mv_instituicao_stats WHERE works > 0 OR programas > 0`);
     const prog = await q<{ id: string }>(`SELECT id FROM graduate_programs`);
     return xml(urlset([
-      ...["", "/instituicoes", "/programas", "/mapa", "/sobre"].map((p) => `${s}${p}`),
+      ...["", "/instituicoes", "/programas", "/painel", "/quiz", "/sobre"].map((p) => `${s}${p}`),
       ...inst.map((i) => `${s}/instituicao/${i.id}`),
       ...prog.map((p) => `${s}/programa/${p.id}`),
     ]));

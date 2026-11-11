@@ -18,7 +18,7 @@ export default function RedeEntidade({ tipo, id, nome, abas }: { tipo: "pesquisa
   return (
     <section className="mapa-col" aria-busy={!rede && !erro}>
       <div className="mapa-cabecalho">
-        <a href="/" className="voltar">← mapa geral</a>
+        <a href="/painel" className="voltar">← mapa geral</a>
         {abas ?? <b>Rede de colaboração</b>}
         {rede && (
           <span className="meta">

@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="marca-nome">Ciência <b>Nordeste</b></span>
           </a>
           <nav className="nav">
-            <a href="/">Mapa</a><a href="/instituicoes">Instituições</a><a href="/programas">Programas</a><a href="/sobre">Sobre</a>
+            <a href="/painel">Painel</a><a href="/quiz">Quiz</a><a href="/instituicoes">Instituições</a><a href="/programas">Programas</a><a href="/sobre">Sobre</a>
           </nav>
           <div className="topo-acoes">
             <a className="botao-icone" href={REPOSITORIO} target="_blank" rel="noopener" title="Código no GitHub" aria-label="Repositório no GitHub">
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </header>
         <main>{children}</main>
         <footer>
-          {soQualis() && <>Contagens só com publicações em revistas com Qualis (filtro na <a href="/">tela inicial</a>).{" "}</>}
+          {soQualis() && <>Contagens só com publicações em revistas com Qualis (filtro no <a href="/painel">painel</a>).{" "}</>}
           Dados obtidos de fontes abertas: OpenAlex (CC0), ROR (CC0), CAPES Dados Abertos (CC-BY), INEP e IBGE.{" "}
           {RECURSOS.login ? "Este é você? Entre com seu ORCID para reivindicar o perfil." : "Encontrou um erro sobre você?"} <a href="/sobre">Saiba mais</a>. Criado por <a href="/sobre#autor">Gabriel Pina</a>.
         </footer>

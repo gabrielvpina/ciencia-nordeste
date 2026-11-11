@@ -429,3 +429,23 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
     - desvincula os pesquisadores (sem apagá-los; os que ficarem sem produção saem na próxima ingestão);
     - apaga a instituição.
   - **Depois:** visões materializadas, perfis temáticos e sinais do quiz são recalculados.
+
+## D-039 — Nova tela inicial: busca e dois caminhos (painel e quiz)
+
+- **Data:** 2026-11-11 (branch `quiz`)
+- **O quê:** a tela inicial (`/`) fica mais leve: o título, a **busca unificada** (nomes e temas, como antes) e dois cartões grandes:
+  - **"Ver o painel"** leva a `/painel`;
+  - **"Descobrir meu perfil de cientista"** leva ao quiz (`/quiz`, etapa 13).
+
+  Abaixo, os números da base (pesquisadores, publicações, instituições, programas), que respeitam o filtro Qualis (D-035).
+- **Painel (`/painel`):** é a antiga tela inicial inteira (D-031): busca com destaque no mapa, filtro "só revistas com Qualis", áreas, produção por ano, mapa, instituição selecionada, seletores e KPIs.
+  - Os filtros agora vão na URL (`?uf=PE&area=…&de=…&ate=…`, via `replaceState`, sem criar histórico), então o link do painel abre já filtrado.
+  - Endereços antigos com parâmetros (`/?uf=…`) e `/mapa` redirecionam para `/painel` com os mesmos parâmetros.
+- **Código:** a busca saiu para `components/BuscaGeral.tsx`, usada nas duas telas. `components/Inicio.tsx` virou `components/Painel.tsx`.
+- **Navegação:**
+  - o menu "Mapa" virou **"Painel"** e ganhou o item **"Quiz"**;
+  - no celular, a marca e o GitHub ficam na primeira linha e o menu numa segunda linha, que rola de lado;
+  - o aviso do rodapé sobre o filtro Qualis aponta para o painel;
+  - os links "← mapa geral" dos perfis levam ao painel;
+  - o sitemap troca `/mapa` por `/painel` e inclui `/quiz`.
+- **Por quê:** o mapa é rico, mas pesado como primeira impressão no celular. A maioria chega querendo buscar alguém ou, agora, fazer o quiz. A busca continua no topo das duas telas.

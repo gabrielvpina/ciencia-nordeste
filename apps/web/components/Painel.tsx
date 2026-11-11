@@ -1,15 +1,15 @@
 "use client";
-// Tela inicial: busca em destaque no topo; abaixo, um painel em três colunas — áreas | mapa | seletores e filtros do mapa.
+// Painel (/painel, D-039): busca no topo; abaixo, três colunas — áreas | mapa | seletores e filtros do mapa.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AREAS_ORDEM, rotuloArea } from "@/components/mapa/areas";
 import { Estrela } from "@/components/Logo";
 import MapaNordeste from "@/components/mapa/MapaNordeste";
+import BuscaGeral from "@/components/BuscaGeral";
 import type { DadosMapa, ModoMapa, PontoInst } from "@/components/mapa/tipos";
-import type { ResultadoBusca } from "@/app/api/busca/route";
-import type { ResultadoTema } from "@/lib/vetorial";
 import type { ResumoInstituicao } from "@/app/api/instituicao-resumo/route";
 import { UFS, fmt } from "@/lib/areas";
+import type { Filtros } from "@/lib/filtros";
 import { gravarSoQualis, paramQualis } from "@/lib/qualis-cookie";
 
 type Resumo = { pesquisadores: string; works: string; works_qualis: string; instituicoes: string; programas: string; teses: string };
@@ -18,9 +18,8 @@ const MODOS: { id: Exclude<ModoMapa, "rede">; rotulo: string; titulo: string; le
   { id: "ligacoes", rotulo: "Colaboração", titulo: "Coautoria entre instituições do Nordeste", legenda: "Espessura do arco = publicações em comum (as 160 ligações mais fortes). Passe o mouse numa instituição para isolar a rede dela." },
   { id: "areas", rotulo: "Áreas", titulo: "Produção de cada estado por área", legenda: "Cada rosca divide a produção do estado entre as áreas. Escolha uma área à esquerda para colorir os estados por ela." },
 ];
-const EXEMPLOS = ["dengue e arboviroses", "UFPE", "melhoramento genético de caprinos", "saúde bucal", "plantas medicinais da caatinga"];
 
-export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { resumo: Resumo; inicial: DadosMapa; periodo: { min: number; max: number }; soQualisInicial: boolean }) {
+export default function Painel({ resumo, inicial, periodo, soQualisInicial, filtros }: { resumo: Resumo; inicial: DadosMapa; filtros: Filtros; periodo: { min: number; max: number }; soQualisInicial: boolean }) {
   const ANOS = Array.from({ length: periodo.max - periodo.min + 1 }, (_, i) => periodo.min + i);
   const faixa = `${periodo.min}–${periodo.max}`, faixaCurta = `${periodo.min}–${String(periodo.max).slice(2)}`;
   // Filtro "só revistas com Qualis" (D-035): vale para o site inteiro (cookie); muda o mapa, as áreas, os anos, os totais e as buscas.
@@ -30,20 +29,20 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
   const alternarQualis = (v: boolean) => { gravarSoQualis(v); setSoQualis(v); router.refresh(); };
   const [modo, setModo] = useState<Exclude<ModoMapa, "rede">>("densidade");
   const [forma, setForma] = useState<"colunas" | "bolhas">("bolhas");
-  const [uf, setUf] = useState("");
-  const [area, setArea] = useState("");
-  const [de, setDe] = useState(periodo.min);
-  const [ate, setAte] = useState(periodo.max);
+  const [uf, setUf] = useState(filtros.uf ?? "");
+  const [area, setArea] = useState(filtros.area ?? "");
+  const [de, setDe] = useState(Math.max(periodo.min, filtros.de));
+  const [ate, setAte] = useState(Math.min(periodo.max, filtros.ate));
   const [dados, setDados] = useState<DadosMapa>(inicial);
   const [carregando, setCarregando] = useState(false);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [destaque, setDestaque] = useState<string | null>(null);
-  const [termo, setTermo] = useState("");
-  const [res, setRes] = useState<ResultadoBusca | null>(null);
-  const [tema, setTema] = useState<ResultadoTema | null>(null);
-  const [buscandoTema, setBuscandoTema] = useState(false);
   const primeira = useRef(true);
-  const campo = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const qs = new URLSearchParams({ ...(uf && { uf }), ...(area && { area }), ...(de !== periodo.min && { de: String(de) }), ...(ate !== periodo.max && { ate: String(ate) }) });
+    window.history.replaceState(null, "", qs.toString() ? `/painel?${qs}` : "/painel");
+  }, [uf, area, de, ate, periodo]);
 
   useEffect(() => {
     if (primeira.current) { primeira.current = false; return; }
@@ -53,27 +52,6 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
     fetch(`/api/mapa?${qs}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => r.json()).then(setDados).catch(() => {}).finally(() => setCarregando(false));
     return () => ctl.abort();
   }, [uf, area, de, ate, soQualis]);
-
-  useEffect(() => {
-    const q = termo.trim();
-    if (q.length < 4) { setTema(null); return; }
-    const ctl = new AbortController();
-    const t = setTimeout(() => {
-      setBuscandoTema(true);
-      fetch(`/api/tema?q=${encodeURIComponent(q)}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => (r.ok ? r.json() : null)).then(setTema)
-        .catch(() => {}).finally(() => setBuscandoTema(false));
-    }, 450);
-    return () => { clearTimeout(t); ctl.abort(); };
-  }, [termo, soQualis]);
-
-  useEffect(() => {
-    if (termo.trim().length < 2) { setRes(null); return; }
-    const ctl = new AbortController();
-    const t = setTimeout(() => {
-      fetch(`/api/busca?q=${encodeURIComponent(termo)}&${paramQualis(soQualis)}`, { signal: ctl.signal }).then((r) => r.json()).then(setRes).catch(() => {});
-    }, 250);
-    return () => { clearTimeout(t); ctl.abort(); };
-  }, [termo, soQualis]);
 
   // Ranking: só instituições principais (subunidades ficam dentro da principal, como no mapa).
   const { ranking, subunidades, total } = useMemo(() => {
@@ -103,54 +81,13 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
   const tudo = de === ANOS[0] && ate === ANOS[ANOS.length - 1];
 
     const maxArea = Math.max(1, areasUf[0]?.n ?? 1);
-  const temNome = res && (res.pesquisadores.length || res.instituicoes.length || res.programas.length);
-  const temTema = tema && (tema.pesquisadores.length || tema.publicacoes.length);
-  const mostrarResultados = termo.trim().length >= 2;
 
   return (
-    <div className="inicio">
+    <div className="inicio painel">
       <section className="hero" aria-labelledby="hero-titulo">
-        <h1 id="hero-titulo">Quem pesquisa o quê no <b>Nordeste</b> <Estrela lima tamanho={22} /></h1>
+        <h1 id="hero-titulo">Painel da pesquisa no <b>Nordeste</b> <Estrela lima tamanho={22} /></h1>
         <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados, {faixa}.</p>
-        <div className="busca-grande">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-          <input ref={campo} id="busca" type="search" value={termo} onChange={(e) => setTermo(e.target.value)} autoComplete="off"
-            onKeyDown={(e) => { if (e.key === "Escape") setTermo(""); }}
-            placeholder="Busque um pesquisador, instituição, programa ou tema de pesquisa" aria-label="Buscar" />
-          {termo && <button type="button" className="limpar" onClick={() => { setTermo(""); campo.current?.focus(); }} aria-label="Limpar busca">×</button>}
-        </div>
-        {!mostrarResultados && (
-          <p className="exemplos"><span>Experimente:</span>{EXEMPLOS.map((x) => <button key={x} type="button" className="chip" onClick={() => setTermo(x)}>{x}</button>)}</p>
-        )}
-        {mostrarResultados && (
-          <div className="resultados-grade" aria-live="polite">
-            {res && !temNome && !temTema && !buscandoTema && <p className="meta">Nada encontrado para “{termo}”.</p>}
-            <Coluna titulo="Pesquisadores" itens={res?.pesquisadores ?? []} href={(id) => `/pesquisador/${id}`} />
-            <Coluna titulo="Instituições" itens={res?.instituicoes ?? []} href={(id) => `/instituicao/${id}`} onFoco={setDestaque} />
-            <Coluna titulo="Programas de pós" itens={res?.programas ?? []} href={(id) => `/programa/${id}`} />
-            {(temTema || buscandoTema) && (
-              <div className="coluna coluna-tema">
-                <h3>Por tema <span className="meta">{buscandoTema ? "buscando…" : tema?.vetorial ? "busca semântica PT/EN" : "só texto"}</span></h3>
-                {tema && (
-                  <>
-                    <ul>{tema.pesquisadores.slice(0, 3).map((p) => (
-                      <li key={p.id}><a href={`/pesquisador/${p.id}`}>{p.nome}</a><span className="meta">{p.n} publicaç{p.n > 1 ? "ões" : "ão"} no tema</span></li>
-                    ))}</ul>
-                    <ul className="pubs">{tema.publicacoes.slice(0, 2).map((w) => (
-                      <li key={w.id}>{w.doi ? <a href={`https://doi.org/${w.doi}`} target="_blank" rel="noopener noreferrer">{w.titulo}</a> : <span>{w.titulo}</span>}
-                        <span className="meta">{w.ano}{w.area ? ` · ${rotuloArea(w.area)}` : ""}</span></li>
-                    ))}</ul>
-                    {tema.instituicoes.length > 0 && (
-                      <p className="nuvem-mini">{tema.instituicoes.map((i) => (
-                        <a key={i.id} href={`/instituicao/${i.id}`} className="chip" onPointerEnter={() => setDestaque(i.id)} onPointerLeave={() => setDestaque(null)}>{i.nome} · {i.n}</a>
-                      ))}</p>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        <BuscaGeral soQualis={soQualis} onFoco={setDestaque} />
       </section>
 
       <div className="cockpit">
@@ -304,27 +241,6 @@ export default function Inicio({ resumo, inicial, periodo, soQualisInicial }: { 
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-/** Coluna de resultados: mostra até LIMITE itens; o resto fica atrás de "mais N". */
-const LIMITE = 4;
-function Coluna({ titulo, itens, href, onFoco }: { titulo: string; itens: { id: string; nome: string; detalhe: string }[]; href: (id: string) => string; onFoco?: (id: string | null) => void }) {
-  const [aberta, setAberta] = useState(false);
-  if (!itens.length) return null;
-  const visiveis = aberta ? itens : itens.slice(0, LIMITE);
-  return (
-    <div className="coluna">
-      <h3>{titulo} <span className="meta">{itens.length}</span></h3>
-      <ul>{visiveis.map((i) => (
-        <li key={i.id} onPointerEnter={() => onFoco?.(i.id)} onPointerLeave={() => onFoco?.(null)}>
-          <a href={href(i.id)}>{i.nome}</a><span className="meta">{i.detalhe}</span>
-        </li>
-      ))}</ul>
-      {itens.length > LIMITE && (
-        <button type="button" className="mais-itens" onClick={() => setAberta(!aberta)}>{aberta ? "mostrar menos" : `mais ${itens.length - LIMITE}`}</button>
-      )}
     </div>
   );
 }

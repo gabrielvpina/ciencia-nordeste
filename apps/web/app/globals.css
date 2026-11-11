@@ -755,3 +755,42 @@ main:has(.quiz) { max-width: none; padding: 0; }
 .qr-simples { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .qr-aviso { font-size: .8rem; }
 @media (max-width: 420px) { .qr-pessoas li { grid-template-columns: auto 1fr auto; } .qr-pessoas .avatar-ini { display: none; } }
+
+/* ===== Tela inicial (D-039): busca + dois caminhos (painel e quiz) + números da base ===== */
+main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
+.abertura { display: grid; gap: 28px; }
+.abertura .hero { gap: 10px; padding-top: 12px; }
+.abertura .hero h1 { font-size: clamp(1.6rem, 4.6vw, 2.4rem); }
+.abertura .resultados-grade { width: 100%; text-align: left; }
+.caminhos { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .caminhos { grid-template-columns: 1fr 1fr; } }
+.caminho { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 14px; row-gap: 4px; align-items: center;
+  padding: 18px 20px; border: var(--b) solid var(--stroke); border-radius: var(--r-lg); background: var(--panel); color: var(--fg);
+  box-shadow: var(--hard); text-decoration: none; transition: transform .12s, box-shadow .12s; }
+.caminho:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--shadow-c); text-decoration: none; }
+.caminho:active { transform: translate(2px, 2px); box-shadow: none; }
+.caminho:focus-visible { outline: 3px solid var(--accent-vivo); outline-offset: 3px; }
+.caminho-icone { grid-row: 1 / span 2; width: 56px; height: 56px; display: grid; place-items: center; border: var(--b) solid var(--stroke); border-radius: 16px;
+  box-shadow: var(--hard-s); font: 700 1.8rem var(--font-display); transform: rotate(-5deg); }
+.caminho-icone svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.caminho b { font: 700 1.15rem/1.2 var(--font-display); }
+.caminho span:not(.caminho-icone) { color: var(--muted); font-size: .9rem; line-height: 1.35; }
+.caminho-painel .caminho-icone { background: var(--accent-vivo); color: var(--on-accent); }
+.caminho-quiz { background: var(--flow); color: var(--on-hl); }
+.caminho-quiz span:not(.caminho-icone) { color: inherit; opacity: .85; }
+.caminho-quiz .caminho-icone { background: var(--panel); color: var(--fg); transform: rotate(6deg); }
+.numeros { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 700px) { .numeros { grid-template-columns: repeat(4, 1fr); } }
+.numeros li { display: flex; flex-direction: column; padding: 10px 14px; border: var(--b) solid var(--stroke); border-radius: var(--r-md); background: var(--panel);
+  color: var(--muted); font-size: .8rem; }
+.numeros b { font: 600 1.35rem/1.2 var(--font-display); color: var(--fg); font-variant-numeric: tabular-nums; letter-spacing: -.4px; }
+@media (prefers-reduced-motion: reduce) { .caminho { transition: none; } }
+
+/* Cabeçalho no celular: marca e GitHub na 1ª linha; o menu inteiro na 2ª, rolando de lado se faltar espaço */
+@media (max-width: 699px) {
+  .topo { display: grid; grid-template-columns: 1fr auto; row-gap: 8px; }
+  .topo .topo-acoes { grid-column: 2; grid-row: 1; padding-left: 0; border-left: 0; }
+  .nav { grid-column: 1 / -1; margin: 0 -16px; padding: 0 12px 2px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 2px; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { flex: none; }
+}

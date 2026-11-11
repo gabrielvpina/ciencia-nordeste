@@ -18,7 +18,7 @@ export default async function ProducaoEntidade({ tipo, id, nome, abas }: { tipo:
   return (
     <section className="mapa-col">
       <div className="mapa-cabecalho">
-        <a href="/" className="voltar">← mapa geral</a>
+        <a href="/painel" className="voltar">← mapa geral</a>
         {abas}
       </div>
       <div className="producao-area">

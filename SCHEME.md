@@ -16,7 +16,7 @@
 | Dados | 754 instituições, 313 programas, 5.583 docentes, 144.891 pesquisadores, 111.164 publicações (2022–2026), 15.047 teses e dissertações, 43 fotos com licença livre |
 | Identidade | 2.653 docentes ligados a perfis OpenAlex por regra aprovada (D-018); 5.336 pares de pesquisadores e 53 de instituições aguardam revisão manual |
 | Banco | PostgreSQL 16 + pgvector no Docker; 7 migrações (`ingest/sql/migracoes/`); carga idempotente (`scripts/carregar_banco.sh`); 111 mil vetores com índice HNSW |
-| App | Next.js 14.2.35 no Docker (http://localhost:3000): tela inicial com busca unificada (nome e **tema**, semântica PT/EN) e mapa próprio do NE (modos produção, colaboração, áreas); perfis de pesquisador, instituição e programa com rede de colaboração em arco |
+| App | Next.js 14.2.35 no Docker (http://localhost:3000): tela inicial com busca unificada (nome e **tema**, semântica PT/EN) e acesso ao painel e ao quiz; painel (`/painel`) com mapa próprio do NE (modos produção, colaboração, áreas); perfis de pesquisador, instituição e programa com rede de colaboração em arco |
 | Quiz (branch `quiz`, etapa 13) | "Que cientista é você?": cadastro curto (D-037), 10 perguntas por facetas, match com até 5 pesquisadores de outras instituições e índice de compatibilidade (D-036), banners em PNG gerados no servidor |
 | Qualidade | `scripts/verificar.sh` (ruff, mypy, typecheck, build, migrações num banco vazio) e CI do GitHub Actions pronta |
 | Pendências do responsável | revisar as filas; enviar o pedido LAI (`docs/pedido_lai_cnpq.md`); domínio e VPS para a produção; depois, cliente ORCID de produção |
@@ -73,7 +73,7 @@ Tamanho do recorte (cargas de 2026-11-09, recorte ampliado D-017):
 - Repositório navegável de **instituições, programas, pesquisadores e produção** do recorte, com filtros por estado, município, instituição, área e tema.
 - Página de **pesquisador**: vínculo, programas (CAPES), tópicos, publicações do período, coautores, orientações (teses CAPES).
 - Página de **instituição** e de **programa de pós** (conceito CAPES, área, docentes, produção).
-- **Mapa próprio** do Nordeste (SVG, sem serviços externos) como tela inicial, com modos produção, colaboração e áreas, e filtros por área, estado e período.
+- **Mapa próprio** do Nordeste (SVG, sem serviços externos) no painel (`/painel`, D-039), com modos produção, colaboração e áreas, e filtros por área, estado e período.
 - **Rede de colaboração** em arco nos perfis: parceiros no NE e coautoria externa (Brasil fora do NE e países).
 - Busca unificada em português, sem precisar de acento: pesquisador, instituição e programa.
 - Login com **ORCID** para reivindicar o perfil; edição de informações complementares e foto. **Só na produção** (D-024).
@@ -283,7 +283,7 @@ Cuidados:
 - [x] SEO básico (metadados por página, sitemap em blocos, robots) e página "Sobre os dados".
 - [x] Busca por tema (vetorial multilíngue, híbrida, balanceada por idioma; precisão de 100% nas 20 consultas de teste) (D-028).
 - [x] Perfil temático por pesquisador (`researcher_embeddings`), base do quiz e de "pesquisadores parecidos" (D-036).
-- [ ] Quiz "Que cientista é você?" (branch `quiz`, etapa 13): estrutura, match e banners prontos; cadastro, interface e nova tela inicial em andamento.
+- [ ] Quiz "Que cientista é você?" (branch `quiz`, etapa 13): estrutura, match e banners prontos; cadastro, interface e nova tela inicial (D-039) prontos.
 - [ ] Filtro por município; página de resultados completa por tema; "pesquisadores parecidos" no perfil.
 - [ ] Rede de coautoria pessoa × pessoa como grafo (hoje: arcos entre instituições e lista de coautores).
 

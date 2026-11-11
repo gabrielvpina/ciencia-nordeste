@@ -178,7 +178,9 @@ As combinações completas são milhões, então não dá para percorrer todas, 
 
 A checagem estática continua no `scripts/verificar.sh`. Ela confere estrutura, ids, opções por tela (por objeto, quando filtradas) e sintagmas. Também confere os títulos (completos, neutros, sem nomes licenciados, até 42 caracteres) e que as perguntas de perfil não têm sinais de match.
 
-**Primeira validação da v2** (`arvore.json` versão 3; relatório em `ingest/relatorios/quiz_validacao.md`):
+**Filtros por método (versão 4, pedido do responsável):** cada objeto lista os métodos que fazem sentido para ele (`metodos`); por exemplo, Campo não oferece Saúde humana nem Alimentos, e Clínica só oferece humanos, animais de produção, microrganismos e alimentos. Os pares sem nenhum pesquisador saem (`sem_metodos` no sub-objeto; hoje, Estatística e IA × Cavalos). Resultado: **280 pares**, 0 vazios, 15 raros (1 a 4 pesquisadores), mediana de 83 por par, Jaccard máximo entre sub-objetos irmãos de 0,43 — **validação OK**.
+
+**Primeira validação da v2** (`arvore.json` versão 3, antes dos filtros):
 
 | Item | Resultado |
 |---|---|

@@ -1,5 +1,5 @@
 {
- "versao": 3,
+ "versao": 4,
  "estrutura": "facetas (v2 do desenho, docs/etapas/13-quiz-alinhamento.md)",
  "telas": [
   "habitat",
@@ -320,7 +320,15 @@
      "sintagma": {
       "artigo": "as",
       "nome": "plantas"
-     }
+     },
+     "metodos": [
+      "metodo.campo",
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica"
+     ]
     },
     {
      "id": "objeto.insetos",
@@ -340,7 +348,16 @@
      "sintagma": {
       "artigo": "os",
       "nome": "insetos"
-     }
+     },
+     "metodos": [
+      "metodo.campo",
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.epidemio"
+     ]
     },
     {
      "id": "objeto.producao",
@@ -366,7 +383,17 @@
      "sintagma": {
       "artigo": "os",
       "nome": "rebanhos"
-     }
+     },
+     "metodos": [
+      "metodo.campo",
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.clinica",
+      "metodo.epidemio"
+     ]
     },
     {
      "id": "objeto.fauna",
@@ -388,7 +415,15 @@
      "sintagma": {
       "artigo": "a",
       "nome": "biodiversidade"
-     }
+     },
+     "metodos": [
+      "metodo.campo",
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica"
+     ]
     },
     {
      "id": "objeto.micro",
@@ -409,7 +444,17 @@
      "sintagma": {
       "artigo": "os",
       "nome": "micróbios"
-     }
+     },
+     "metodos": [
+      "metodo.campo",
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.clinica",
+      "metodo.epidemio"
+     ]
     },
     {
      "id": "objeto.humanos",
@@ -432,7 +477,16 @@
      "sintagma": {
       "artigo": "a",
       "nome": "saúde humana"
-     }
+     },
+     "metodos": [
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.clinica",
+      "metodo.epidemio"
+     ]
     },
     {
      "id": "objeto.alimentos",
@@ -451,7 +505,15 @@
      "sintagma": {
       "artigo": "os",
       "nome": "alimentos"
-     }
+     },
+     "metodos": [
+      "metodo.bancada",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.clinica",
+      "metodo.epidemio"
+     ]
     },
     {
      "id": "objeto.ambiente",
@@ -476,9 +538,17 @@
      "sintagma": {
       "artigo": "o",
       "nome": "solo e a água"
-     }
+     },
+     "metodos": [
+      "metodo.campo",
+      "metodo.bancada",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica"
+     ]
     }
-   ]
+   ],
+   "filtra_por": "metodo"
   },
   "sub_objeto": {
    "bloco": "nicho",
@@ -962,7 +1032,10 @@
        "artigo": "os",
        "nome": "cavalos"
       },
-      "nicho": "de equinos"
+      "nicho": "de equinos",
+      "sem_metodos": [
+       "metodo.dados"
+      ]
      }
     ],
     "objeto.fauna": [
@@ -1845,7 +1918,8 @@
       "nicho": "da poluição e dos contaminantes"
      }
     ]
-   }
+   },
+   "filtra_por": "metodo"
   },
   "estilo": {
    "bloco": "perfil",

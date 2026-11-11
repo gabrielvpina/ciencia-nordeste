@@ -128,6 +128,17 @@ def estatico(arv: dict[str, Any]) -> list[str]:
             if faceta in ("metodo", "sub_objeto") and not o.get("nicho"):
                 erros.append(f"{oid}: sem fragmento do nicho escrito")
             erros += [f"{oid}: objeto desconhecido {x!r}" for x in o.get("objetos", []) if x not in obj_ids]
+            met_ids = {m["id"] for m in opcoes(P["metodo"])}
+            erros += [f"{oid}: método desconhecido {x!r}" for x in o.get("metodos", []) + o.get("sem_metodos", []) if x not in met_ids]
+    # filtros por método: cada método oferece >= 2 objetos, e cada objeto >= 2 sub-objetos para cada método que o oferece
+    for m in opcoes(P["metodo"]):
+        objs = [o for o in opcoes(P["objeto"]) if m["id"] in o.get("metodos", [m["id"]])]
+        if len(objs) < MIN_OPCOES:
+            erros.append(f"{m['id']}: só {len(objs)} objeto(s) oferecido(s)")
+        for o in objs:
+            subs = [s for s in P["sub_objeto"]["opcoes_por"].get(o["id"], []) if m["id"] not in s.get("sem_metodos", [])]
+            if len(subs) < MIN_OPCOES:
+                erros.append(f"{m['id']} × {o['id']}: só {len(subs)} sub-objeto(s)")
     # cada objeto precisa de pelo menos 2 focos
     if "foco" in P:
         por_obj = collections.Counter(x for o in opcoes(P["foco"]) for x in o.get("objetos", sorted(obj_ids)))
@@ -226,7 +237,11 @@ def pares(arv: dict[str, Any]) -> list[Par]:
     saida = []
     for m in opcoes(P["metodo"]):
         for oid, subs in P["sub_objeto"]["opcoes_por"].items():
+            if m["id"] not in objetos[oid].get("metodos", [m["id"]]):
+                continue                                          # objeto não oferecido para este método
             for s in subs:
+                if m["id"] in s.get("sem_metodos", []):
+                    continue                                      # par sem nicho, retirado
                 saida.append(Par(m["id"], oid, s["id"], f"{m['rotulo']} × {s['rotulo']}",
                                  _sinais(m, w["metodo"], "metodo") + _sinais(objetos[oid], w["objeto"], "")
                                  + _sinais(s, w["sub_objeto"], "sub")))

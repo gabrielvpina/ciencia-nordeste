@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { filtrarOpcoes } from "@/lib/quiz/filtros";
 import type { estruturaCliente } from "@/lib/quiz/estrutura";
 import Cadastro, { type DadosCadastro } from "./Cadastro";
+import Processando from "./Processando";
 
 type Estrutura = ReturnType<typeof estruturaCliente>;
 type Tela = Estrutura["telas"][number];
@@ -17,6 +18,7 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
   const [respostas, setRespostas] = useState<Record<string, string | null>>({});   // tela -> opção (null = pulou)
   const [cadastro, setCadastro] = useState<DadosCadastro | null>(null);
   const [escolhida, setEscolhida] = useState<string | null>(null);
+  const [processando, setProcessando] = useState(false);   // última resposta dada: espera o resultado
   const telas = estrutura.telas;
   const total = telas.length + 1;   // cadastro + perguntas
 
@@ -31,7 +33,7 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
     const passo = f.tipo === "abertura" ? "" : f.tipo === "cadastro" ? "?passo=cadastro" : `?passo=${f.i}`;
     router.push(`/quiz${passo}`, { scroll: true });
   }, [router]);
-  useEffect(() => { setEscolhida(null); }, [p]);
+  useEffect(() => { setEscolhida(null); setProcessando(false); }, [p]);
 
   const opcoesDe = useCallback((t: Tela, r: Record<string, string | null>) =>
     filtrarOpcoes(t, r.metodo ?? undefined, r.objeto ?? undefined), []);
@@ -42,6 +44,7 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
     const ids = telas.map((t) => r[t.id]).filter((x): x is string => !!x);
     const qs = new URLSearchParams({ r: ids.join(",") });
     if (cadastro?.instituicao_id) qs.set("i", cadastro.instituicao_id);
+    setProcessando(true);
     router.push(`/quiz/resultado?${qs}`);
   }, [telas, opcoesDe, ir, cadastro, router]);
 
@@ -56,6 +59,8 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
     const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.setTimeout(() => avancar(i, r), reduzir ? 0 : 170);
   };
+
+  if (processando) return <div className="quiz"><Processando /></div>;
 
   const passo = fase.tipo === "abertura" ? 0 : fase.tipo === "cadastro" ? 1 : fase.i + 2;
   return (
@@ -99,12 +104,11 @@ function Pergunta({ tela, opcoes, atual, escolhida, onResponder }: {
   escolhida: string | null; onResponder: (id: string | null) => void;
 }) {
   const lista = useRef<HTMLDivElement>(null);
-  const duasColunas = opcoes.length > 4;
   useEffect(() => { lista.current?.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true }); }, []);
   const teclas = (e: React.KeyboardEvent) => {
     const bs = [...(lista.current?.querySelectorAll<HTMLButtonElement>("button") ?? [])];
     const i = bs.indexOf(document.activeElement as HTMLButtonElement);
-    const passo = { ArrowDown: duasColunas ? 2 : 1, ArrowUp: duasColunas ? -2 : -1, ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    const passo = { ArrowDown: 1, ArrowUp: -1, ArrowRight: 1, ArrowLeft: -1 }[e.key];
     if (passo && i >= 0) { e.preventDefault(); bs[Math.max(0, Math.min(bs.length - 1, i + passo))]?.focus(); }
   };
   return (
@@ -113,14 +117,17 @@ function Pergunta({ tela, opcoes, atual, escolhida, onResponder }: {
         <span className="quiz-tag">{tela.bloco === "perfil" ? "sobre você" : "sua pesquisa"}</span>
         <h2 id={`q-${tela.id}`}>{tela.texto}</h2>
       </div>
-      <div ref={lista} className={`quiz-opcoes${duasColunas ? " duas" : ""}`} role="group" aria-label={tela.texto} onKeyDown={teclas}>
+      <div ref={lista} className="quiz-opcoes" role="group" aria-label={tela.texto} onKeyDown={teclas}>
         {opcoes.map((o) => (
           <button key={o.id} type="button" className={`quiz-opcao${escolhida === o.id ? " escolhida" : ""}${atual === o.id ? " anterior" : ""}`}
             onClick={() => onResponder(o.id)} aria-pressed={atual === o.id}>
             <b>{o.rotulo}</b>{o.descricao && <small>{o.descricao}</small>}
           </button>
         ))}
-        <button type="button" className={`quiz-pular${escolhida === "pular" ? " escolhida" : ""}`} onClick={() => onResponder(null)}>Nenhuma dessas / prefiro pular</button>
+        <button type="button" className={`quiz-opcao quiz-nenhuma${escolhida === "pular" ? " escolhida" : ""}${atual === null ? " anterior" : ""}`}
+          onClick={() => onResponder(null)} aria-pressed={atual === null}>
+          <b>Nenhuma dessas</b><small>prefiro pular esta pergunta</small>
+        </button>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@
 // mais alinhados. Tudo recalculado no servidor a partir dos ids na URL; nada é gravado (D-037).
 import type { Metadata } from "next";
 import Avatar from "@/components/Avatar";
-import { CompartilharBanner, CopiarLink } from "@/components/quiz/Compartilhar";
+import { CompartilharBanner, CopiarLink, Refazer } from "@/components/quiz/Compartilhar";
 import { nomePrograma } from "@/lib/programas";
 import { alinhar, type Filtro } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
@@ -59,17 +59,17 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
 
       <div className="qr-banners">
         <figure className="qr-banner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={bPerfil} alt={`Cartão: ${t.principal}. ${t.nicho}.`} width={1080} height={1920} />
+          <div className="qr-img" data-espera="gerando o cartão…">{/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={bPerfil} alt={`Cartão: ${t.principal}. ${t.nicho}.`} width={1080} height={1920} /></div>
           <CompartilharBanner src={bPerfil} nome="meu-perfil-de-cientista" texto={`Sou "${t.principal}" no Ciência Nordeste. E você?`} />
         </figure>
         <figure className="qr-banner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={bAfin} alt={`Cartão: pesquisadores de afinidade no Nordeste — ${r.banner.map((x) => x.nome).join(", ") || "nenhum ainda"}.`} width={1080} height={1920} />
+          <div className="qr-img" data-espera="gerando o cartão…">{/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={bAfin} alt={`Cartão: pesquisadores de afinidade no Nordeste — ${r.banner.map((x) => x.nome).join(", ") || "nenhum ainda"}.`} width={1080} height={1920} /></div>
           <CompartilharBanner src={bAfin} nome="minhas-afinidades-no-nordeste" texto="Meus pesquisadores de afinidade no Nordeste, pelo Ciência Nordeste." />
         </figure>
       </div>
-      <div className="qr-acoes centro"><CopiarLink /><a className="botao-sec" href="/quiz">Refazer o quiz</a></div>
+      <div className="qr-acoes qr-acoes-geral"><CopiarLink /><Refazer /></div>
 
       <section className="painel-card qr-lista">
         <h2>Quem pesquisa como você <small>{r.lista.length ? `${r.lista.length} pesquisadores · índice de compatibilidade 0–100` : ""}</small></h2>

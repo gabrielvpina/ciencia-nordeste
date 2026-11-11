@@ -737,7 +737,7 @@ main:has(.quiz) { max-width: none; padding: 0; }
 .qr-banner img { width: 100%; height: auto; border: var(--b) solid var(--stroke); border-radius: 18px; box-shadow: var(--hard); background: var(--panel); }
 .qr-acoes { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .qr-acoes .quiz-comecar { width: auto; flex: 1; min-height: 48px; font-size: 1rem; }
-.qr-acoes.centro { justify-content: center; }
+.qr-acoes-geral { justify-content: center; }
 .qr-acoes .botao-sec { text-decoration: none; display: inline-flex; align-items: center; min-height: 48px; }
 .qr-filtro { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .86rem; margin-bottom: 10px; }
 .qr-filtro input[type="number"] { width: 72px; margin: 0 4px; padding: 4px 6px; border: 1.5px solid var(--stroke); border-radius: 8px; font: inherit; }
@@ -794,3 +794,39 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
   .nav::-webkit-scrollbar { display: none; }
   .nav a { flex: none; }
 }
+
+/* Quiz: alternativas sempre empilhadas; "Nenhuma dessas" é uma alternativa como as outras, só mais discreta */
+.quiz-opcoes.duas { grid-template-columns: 1fr; }
+.quiz-opcao { width: 100%; min-height: 52px; }
+.quiz-nenhuma { border-style: dashed; background: transparent; box-shadow: none; }
+.quiz-nenhuma b { font-weight: 500; }
+.quiz-perfil .quiz-opcao.quiz-nenhuma { transform: none; }
+
+/* Quiz: processando o perfil (entre a última resposta e o resultado) */
+.quiz-processando { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; text-align: center; padding: 32px 0; }
+.quiz-processando h2 { margin: 0; font-size: clamp(1.4rem, 6vw, 1.8rem); }
+.quiz-progresso.grande { flex: none; width: min(360px, 100%); height: 22px; }
+.quiz-progresso.grande i { transition: width .1s linear; }
+.qp-etapa { margin: 0; min-height: 2.6em; color: var(--muted); font-size: .98rem; }
+.quiz-selo.girando { animation: selo-gira 1.4s ease-in-out infinite; }
+@keyframes selo-gira { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg) scale(1.06); } }
+
+/* Resultado: ações em ícones (compartilhar, baixar, copiar link, refazer) */
+.qr-acoes { justify-content: center; gap: 12px; }
+.qr-icone { width: 52px; height: 52px; display: grid; place-items: center; border: var(--b) solid var(--stroke); border-radius: 14px; background: var(--panel); color: var(--fg);
+  box-shadow: var(--hard-s); cursor: pointer; text-decoration: none; transition: transform .08s, box-shadow .08s; }
+.qr-icone:hover { background: var(--accent-soft); text-decoration: none; }
+.qr-icone:active { transform: translate(2px, 2px); box-shadow: none; }
+.qr-icone:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.qr-icone svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.qr-icone.principal { background: var(--accent-vivo); color: var(--on-accent); }
+.qr-icone.feito { background: var(--flow); color: var(--on-hl); }
+@media (prefers-reduced-motion: reduce) { .quiz-selo.girando { animation: none; } .quiz-progresso.grande i, .qr-icone { transition: none; } }
+/* opções logo abaixo da pergunta (sem o vão que sobrava em telas altas) */
+.quiz-pergunta { justify-content: flex-start; gap: 22px; }
+
+/* banner ainda sendo gerado: o aviso fica atrás da imagem (some quando ela chega) */
+.qr-img { position: relative; display: grid; border-radius: 18px; }
+.qr-img::before { content: attr(data-espera); position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: .9rem;
+  border: var(--b) solid var(--stroke); border-radius: 18px; background: repeating-linear-gradient(-45deg, var(--panel) 0 14px, var(--accent-soft) 14px 28px); }
+.qr-img img { position: relative; background: transparent; }

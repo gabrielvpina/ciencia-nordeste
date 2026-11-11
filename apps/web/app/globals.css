@@ -846,3 +846,7 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
 .qc-codigo code { flex: 1; text-align: center; font: 700 1.6rem/1 var(--font-display); letter-spacing: 3px; padding: 16px; border: var(--b) dashed var(--stroke);
   border-radius: 14px; background: var(--panel); color: var(--fg); user-select: all; }
 .qc-codigo .qr-icone { font-size: 1.3rem; }
+
+/* /sobre#termos: termos de uso e compartilhamento de dados (D-041) */
+ol.termos { padding-left: 1.4em; display: grid; gap: 8px; line-height: 1.5; }
+ol.termos li::marker { font-weight: 700; }

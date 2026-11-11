@@ -484,4 +484,5 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - o cadastro gera um **código de remoção** aleatório de 8 caracteres (migração `0016`), mostrado uma vez numa tela após o cadastro;
   - o modelo de issue `.github/ISSUE_TEMPLATE/privacidade.md` pede só o código e avisa para não escrever dados pessoais;
   - `scripts/quiz_remover.sh CÓDIGO` apaga o registro.
+- **Termos (revisão do mesmo dia, versão `2026-11-11d`):** a caixa de concordância ficou curta: "Tenho 18 anos ou mais e aceito os termos de uso e compartilhamento de dados", com link para `/sobre#termos`. Os termos, em linguagem jurídica neutra, tratam de objeto, controlador, dados, finalidade (só estatística), base legal, compartilhamento (só operadores de infraestrutura), prazo de 24 meses, segurança, direitos, idade mínima e alterações. A pedido do responsável, nenhum texto cita a AWS nem os EUA; o risco quanto ao art. 33 fica registrado em `docs/revisao-lgpd.md` (achado 1).
 - **Escolha única:** as perguntas do quiz continuam aceitando uma resposta cada (decisão do responsável). A múltipla escolha alargaria o núcleo do match e tenderia a reduzir a precisão.

@@ -67,7 +67,7 @@ async function buscarInstituicoes(t: string): Promise<Sugestao[]> {
   return r.map((x) => ({ id: x.id, titulo: x.nome, detalhe: [x.sigla, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · ") }));
 }
 
-export default function Cadastro({ inicial, contato, onPronto }: { inicial: DadosCadastro | null; contato: string | null; onPronto: (d: DadosCadastro) => void }) {
+export default function Cadastro({ inicial, onPronto }: { inicial: DadosCadastro | null; contato?: string | null; onPronto: (d: DadosCadastro) => void }) {
   const [d, setD] = useState<DadosCadastro>(inicial ?? VAZIO);
   const [consentimento, setConsentimento] = useState(false);
   const [isca, setIsca] = useState("");
@@ -184,10 +184,8 @@ export default function Cadastro({ inicial, contato, onPronto }: { inicial: Dado
       <label className={`qc-consentimento${erros.consentimento ? " invalido" : ""}`}>
         <input type="checkbox" checked={consentimento} onChange={(e) => { setConsentimento(e.target.checked); setErros((x) => { const n = { ...x }; delete n.consentimento; return n; }); }} />
         <span>
-          Tenho 18 anos ou mais e concordo que o responsável pelo Ciência Nordeste guarde estes dados, num servidor nos EUA (AWS),
-          só para estatísticas sobre quem usa o quiz. Minhas respostas e meu resultado não são gravados. Os dados ficam até
-          24 meses e posso pedir a remoção a qualquer momento{contato ? <> ({contato})</> : null}.{" "}
-          <a href="/sobre#privacidade-quiz" target="_blank" rel="noopener">Saiba mais</a>
+          Tenho 18 anos ou mais e aceito os{" "}
+          <a href="/sobre#termos" target="_blank" rel="noopener">termos de uso e compartilhamento de dados</a>.
         </span>
       </label>
       {erros.consentimento && <small className="qc-erro">{erros.consentimento}</small>}

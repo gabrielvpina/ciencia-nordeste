@@ -64,12 +64,27 @@ export default async function Sobre() {
         <li><b>Correção, ocultação ou remoção:</b> se um perfil seu tem erro, ou se você não quer aparecer no site nem no quiz, peça por {canal}. Perfis ocultados saem das páginas, das buscas e do quiz.</li>
       </ul>
 
+      <h3 id="termos">Termos de uso e compartilhamento de dados</h3>
+      <p className="meta">Versão de 11 de novembro de 2026. Aplicam-se ao cadastro do quiz &ldquo;Que cientista é você?&rdquo;.</p>
+      <ol className="termos">
+        <li><b>Objeto.</b> Estes termos regem a coleta e o tratamento dos dados pessoais informados pelo usuário no cadastro do quiz, nos termos da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais, LGPD).</li>
+        <li><b>Controlador.</b> O tratamento é realizado pelo responsável pelo projeto Ciência Nordeste, identificado nesta página.</li>
+        <li><b>Dados coletados.</b> Nome, instituição de vínculo, tipo de filiação e curso ou programa, além da data do cadastro, da versão destes termos e de um código aleatório de remoção. As respostas do quiz, o resultado e a descrição livre da pesquisa não são armazenados.</li>
+        <li><b>Finalidade.</b> Os dados são utilizados exclusivamente para a produção de estatísticas agregadas sobre o perfil dos usuários do quiz. Não são utilizados para o cálculo das afinidades, para contato, para publicidade nem para qualquer outra finalidade.</li>
+        <li><b>Base legal.</b> O tratamento fundamenta-se no consentimento do titular (art. 7º, I, da LGPD), manifestado de forma livre, informada e inequívoca no momento do cadastro.</li>
+        <li><b>Compartilhamento.</b> Os dados não são vendidos, cedidos nem compartilhados com terceiros, ressalvados os prestadores de infraestrutura estritamente necessários ao funcionamento do serviço, que atuam como operadores e não podem utilizá-los para fins próprios, e as hipóteses de requisição por autoridade competente, na forma da lei.</li>
+        <li><b>Armazenamento e eliminação.</b> Os dados são armazenados pelo prazo máximo de 24 (vinte e quatro) meses, contados do cadastro, e eliminados automaticamente ao fim desse prazo, ou antes, a pedido do titular.</li>
+        <li><b>Segurança.</b> São adotadas medidas técnicas para proteger os dados contra acessos não autorizados, entre elas acesso restrito ao responsável pelo projeto e conexão criptografada.</li>
+        <li><b>Direitos do titular.</b> O titular pode, a qualquer tempo, requerer a confirmação do tratamento, o acesso, a correção ou a eliminação dos dados e revogar o consentimento (art. 18 da LGPD), pelo canal indicado nesta página, informando o código de remoção recebido no cadastro.</li>
+        <li><b>Idade mínima.</b> O cadastro é restrito a maiores de 18 (dezoito) anos.</li>
+        <li><b>Alterações.</b> Estes termos podem ser atualizados. A versão aceita é registrada com o cadastro, e alterações relevantes de finalidade dependerão de novo consentimento.</li>
+      </ol>
+
       <h3 id="privacidade-quiz">Quiz &ldquo;Que cientista é você?&rdquo;</h3>
       <ul>
         <li><b>O que guardamos:</b> o nome, a instituição, o tipo de filiação e o curso ou programa, informados no início do quiz, além da data, da versão do texto aceito e de um código aleatório de remoção. <b>Não guardamos</b> as suas respostas, o seu resultado, o seu IP nem dados do navegador.</li>
         <li><b>Base legal:</b> o seu consentimento (LGPD, art. 7º, I), que você pode revogar a qualquer momento pedindo a remoção. O quiz é para maiores de 18 anos.</li>
         <li><b>Para quê:</b> apenas estatísticas agregadas sobre quem usa o quiz (filiações, instituições, programas). Não pedimos e-mail nem outro contato, não vendemos nem compartilhamos os dados, e eles não entram no cálculo das afinidades.</li>
-        <li><b>Onde ficam:</b> num servidor da Amazon Web Services nos EUA (Virgínia do Norte). Isso é uma transferência internacional de dados, feita com o seu consentimento específico (LGPD, art. 33, VIII), informado na caixa de concordância.</li>
         <li><b>Descrição da pesquisa (opcional):</b> o texto que você escreve depois de &ldquo;especificamente?&rdquo; é enviado uma vez ao site, no fim do quiz, para virar um vetor numérico. Ele <b>não é gravado</b> nem registrado. O link do resultado leva só um resumo numérico do tema (128 números de baixa precisão), do qual não dá para recuperar as suas palavras.</li>
         <li><b>Quem acessa:</b> o site só consegue gravar esses dados, não lê-los. A leitura é restrita ao responsável pelo projeto. Os backups do banco ficam em arquivos acessíveis só a ele.</li>
         <li><b>Por quanto tempo:</b> até 24 meses; depois, são apagados automaticamente.</li>

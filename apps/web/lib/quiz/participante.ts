@@ -4,7 +4,7 @@ import { randomInt, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import { ARVORE } from "./estrutura";
 
-export const CONSENTIMENTO_VERSAO = "2026-11-11c";   // b: sem e-mail; c: controlador, servidor nos EUA e código de remoção (D-041)
+export const CONSENTIMENTO_VERSAO = "2026-11-11d";   // b: sem e-mail; c: controlador, local do servidor e código de remoção; d: caixa curta + termos em /sobre#termos (D-041)
 export const FILIACOES = {
   graduacao: "Graduação", mestrado: "Mestrado", doutorado: "Doutorado",
   docente: "Docente", pesquisador: "Pesquisador(a)", mercado: "Profissional do mercado",

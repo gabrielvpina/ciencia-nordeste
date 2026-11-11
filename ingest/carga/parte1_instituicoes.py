@@ -107,6 +107,13 @@ class OrgRor:
 # --------------------------------------------------------------------------- fontes
 
 
+# Organizações do ROR fora do recorte apesar do que o ROR diz (localização errada), com o motivo. Nunca entram na base.
+ROR_EXCLUIDOS: dict[str, str] = {
+    "01qgvp179": "Fundação Ezequiel Dias (FUNED): sede em Belo Horizonte (MG); o ROR a localiza em 'Gameleira', "
+                 "casado por engano com o município de Gameleira (PE). D-038.",
+}
+
+
 def carregar_ror(http: ClienteHttp) -> tuple[dict[str, OrgRor], str]:
     resp = http.get(ROR_CONCEPT_DOI)
     m = re.search(r"/records/(\d+)", resp.url_final or "")
@@ -123,6 +130,9 @@ def carregar_ror(http: ClienteHttp) -> tuple[dict[str, OrgRor], str]:
             continue
         uf = (lin["locations.geonames_details.country_subdivision_code"] or "").split(";")[0].strip()
         rid = lin["id"].rsplit("/", 1)[-1]
+        if rid in ROR_EXCLUIDOS:
+            log.info("ROR %s fora do recorte: %s", rid, ROR_EXCLUIDOS[rid])
+            continue
         rotulos = valores_ror_por_idioma(lin["names.types.label"])
         nomes = list(dict.fromkeys([lin["names.types.ror_display"]] + valores_ror(lin["names.types.label"]) + valores_ror(lin["names.types.alias"])))
         rel = []

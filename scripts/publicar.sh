@@ -83,6 +83,10 @@ fi
 
 # ---- 5. migrações e reinício ----
 passo "Aplicando migrações"; ./scripts/migrar.sh
+# a estrutura do quiz mudou (ou uma migração nova): recopia os sinais das opções para o banco (só Python do sistema + psql)
+if muda apps/web/lib/quiz/arvore.json || muda ingest/sql/migracoes/ || muda ingest/carga/quiz_preparar.py; then
+  passo "Preparando o quiz"; python3 -m ingest.carga.quiz_preparar
+fi
 passo "Reiniciando o app"; docker compose up -d; docker compose restart web
 
 # ---- 6. testes ----

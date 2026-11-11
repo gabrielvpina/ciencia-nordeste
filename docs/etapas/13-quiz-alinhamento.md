@@ -200,6 +200,53 @@ Ajustes feitos durante a validação:
 - sinais mais específicos para farinhas e para ingredientes funcionais;
 - a ordem do encaixe passou a usar **só as publicações do nicho** (que casam método e sub-objeto), e não toda a produção do pesquisador naquela área. É também o que o match vai usar.
 
+## Implementação do match (passo 2)
+
+**Banco (migração `0012_quiz_perfis`):**
+- `researcher_embeddings`: perfil temático de **35.806 pesquisadores** (todos os ativos, com 3 ou mais publicações; média de 8 publicações por perfil), índice HNSW por cosseno.
+  - Calculado por `ingest/sql/perfis_tematicos.sql` em cerca de 70 s, idempotente.
+  - O pgvector 0.8.6 soma e tira média de `halfvec`, mas não multiplica por escalar. A soma ponderada é feita em `vector`, com um vetor de pesos.
+  - Peso de cada publicação = recência (1,0 no último ano, −0,1 por ano) × autoria (1,0 como primeiro, último ou correspondente; 0,6 no meio) × equipe (1,0 até 10 autores; √(10/n) acima).
+- `quiz_sinal` e `quiz_opcao_work`: os sinais de cada opção de nicho e quanto cada publicação casa cada opção. São 710 mil pares, pré-calculados por `python3 -m ingest.carga.quiz_preparar` em cerca de 20 s.
+  - O script é só biblioteca padrão + psql, então roda no servidor.
+  - É chamado pelo `carregar_banco.sh` e pelo `publicar.sh` quando o `arvore.json` muda.
+- `quiz_meta`: a versão da estrutura carregada.
+
+**App:**
+- `lib/quiz/estrutura.ts` interpreta as respostas e recusa ids desconhecidos ou incoerentes (ex.: um sub-objeto de outro objeto, um método não oferecido para o objeto).
+- `lib/quiz/alinhamento.ts` faz o match, só com as facetas de nicho.
+- `POST /api/quiz/resultado` não grava nada e responde com `cache-control: no-store`.
+
+**Índice de compatibilidade (0–100)** = 100 × (0,30 cobertura + 0,20 concentração + 0,20 volume + 0,30 afinidade):
+- **cobertura:** para cada faceta respondida fora do núcleo, a fração das publicações do nicho que a casa, ponderada pelo peso da faceta;
+- **concentração:** publicações no nicho ÷ produção no recorte, cheia a partir de 50%;
+- **volume:** ln(1 + publicações no nicho) ÷ ln(16), cheio a partir de 15;
+- **afinidade:** cosseno do perfil com a frase do nicho, posicionado entre os percentis 90 (0) e 99,9 (1) da população inteira para aquela frase. Os cossenos do e5 ficam espremidos entre 0,84 e 0,91, e o percentil puro dava quase 1 a qualquer candidato.
+
+Sem o serviço `embed`, os outros três componentes se renormalizam. Para entrar, o pesquisador precisa de 2 ou mais publicações no núcleo e índice de pelo menos 35. A proeminência (produção, h-index, docência, PQ) só soma até 3 pontos **na ordem**, nunca no índice. No banner entram no máximo 2 pesquisadores por instituição; na lista, 3.
+
+**Avaliação** (`python -m ingest.carga.avaliar_quiz`, 15 caminhos × instituição, filtro Qualis ligado; relatório em `ingest/relatorios/avaliacao_quiz.md`):
+
+| Item | Resultado |
+|---|---|
+| Exclusão da instituição e das ligadas | ok nos 15 |
+| Máximo por instituição no banner | 2 |
+| Separação perfil × match (mesmos nomes, ordem e índices) | ok nos 15 |
+| Coerência temática (exemplo com termo esperado) | média 89%, mínima 60% |
+| Índice do 1º do banner | mediana 78 (de 56 a 99) |
+| Índice do 5º do banner | mediana 71 (de 53 a 97) |
+| Latência no servidor | mediana 400 ms; 4 nichos muito amplos entre 1,1 e 2,1 s |
+
+**Problemas de desempenho resolvidos:**
+- **exclusões:** a visão de vínculos era recalculada para cada candidato. Agora a lista de instituições excluídas é calculada antes.
+- **similaridade:** os percentis da população eram refeitos por candidato. Agora as âncoras saem numa consulta à parte (~100 ms).
+- **filtro Qualis:** o `EXISTS` linha a linha virou um `JOIN`.
+- **cobertura:** a agregação era refeita por candidato. Agora é materializada.
+
+**Pendências do match:**
+- latência dos nichos muito amplos (Epidemiologia × infecções, Química × plantas medicinais, Clínica × boca e dentes, Clínica × movimento), com cerca de 27 mil publicações no nicho;
+- a primeira chamada depois de reiniciar o app leva 1 a 2 s, porque aquece o modelo.
+
 ## Privacidade
 
 - Nada é gravado na primeira versão.

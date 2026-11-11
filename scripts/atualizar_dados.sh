@@ -118,7 +118,8 @@ for e in "${PLANO[@]}"; do
                    docker compose stop > /dev/null
                    "$PY" -m ingest.carga.parte8_embeddings embeddings ;;
     banco)         ./scripts/carregar_banco.sh ;;
-    vetores)       "$PY" -m ingest.carga.parte8_embeddings carregar ;;
+    vetores)       "$PY" -m ingest.carga.parte8_embeddings carregar
+                   docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f ingest/sql/perfis_tematicos.sql' ;;
     app)           docker compose up -d --wait embed web ;;
     conferencia)
       contar > ingest/dados/.contagem-depois

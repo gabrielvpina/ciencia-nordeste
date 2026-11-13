@@ -211,3 +211,14 @@ Um comando faz a ordem completa acima, com backup antes e depois e uma conferên
 
 Feitas: 0, 1, 2, 5, 4. Próximas: 3 grupos (pedido LAI em `docs/pedido_lai_cnpq.md`), 6 complementos (teses/orientações CAPES, FAPs, BDTD), 7 fotos.
 Ordem e justificativa na seção final de `relatorios/diagnostico_fontes.md`.
+
+### Parte 10 — biografias públicas do ORCID (D-055)
+
+```bash
+python -m ingest.carga.parte10_bios [--limite 25000] [--dias 90]
+```
+
+Consulta `pub.orcid.org/v3.0/{orcid}/biography` (API pública, liberada em D-003) para os pesquisadores visíveis com ORCID, dos mais
+ativos para os menos, pulando quem foi consultado nos últimos `--dias`. Sem cache em disco e sem e-mail no User-Agent. Limpa o
+texto (sem HTML, e-mails nem telefones; menos de 80 caracteres não é exibido) e grava em `researcher_bios` (migração 0020).
+No `scripts/atualizar_dados.sh`, é a etapa `bios`, depois de `vetores`. Cerca de 11% de quem tem ORCID tem biografia pública.

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Avatar, { type Foto } from "@/components/Avatar";
+import BioOrcid from "@/components/BioOrcid";
 import ListaCoautores from "@/components/ListaCoautores";
 import Recolhivel from "@/components/Recolhivel";
 import RedeCoautoria from "@/components/RedeCoautoria";
@@ -56,7 +57,7 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
   );
   if (!p) notFound();
 
-  const [programas, works, coautores, orientacoes, fotos] = await Promise.all([
+  const [programas, works, coautores, orientacoes, fotos, bios] = await Promise.all([
     q<Programa>(
       `SELECT DISTINCT ON (g.id) g.id, g.name, g.entity_acronym, g.grade, f.category, f.base_year
          FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id
@@ -77,7 +78,11 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
          FROM theses t JOIN graduate_programs g ON g.id = t.program_id
         WHERE t.advisor_researcher_id = $1 ORDER BY t.year DESC, t.title LIMIT 30`, [p.id]),
     q<NonNullable<Foto>>(`SELECT license, author, source_page_url FROM researcher_photos WHERE researcher_id = $1`, [p.id]),
+    // biografia pública do ORCID (D-055); só a que passou na limpeza (status 200)
+    q<{ texto: string; orcid: string; atualizado: string | null; idioma: string | null }>(
+      `SELECT texto, orcid, atualizado_orcid::text AS atualizado, idioma FROM researcher_bios WHERE researcher_id = $1 AND status = 200 AND texto IS NOT NULL`, [p.id]),
   ]);
+  const bio = bios[0];
 
   const abas = <AbasEntidade base={`/pesquisador/${p.id}`} ativa={visao} coautores="Coautores" />;
   return (
@@ -102,6 +107,8 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
       {p.topicos && p.topicos.length > 0 && <p>{p.topicos.map((t) => <span key={t} className="tag">{t}</span>)}</p>}
         </div>
       </div>
+
+      {bio && <BioOrcid texto={bio.texto} orcid={bio.orcid} atualizado={bio.atualizado} idioma={bio.idioma} />}
 
       {programas.length > 0 && (
         <>

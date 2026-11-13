@@ -776,3 +776,19 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Caminhos antigos: coerência igual (87%).
   - A latência subiu nesta rodada (mediana de ~2 s), medida com a máquina sobrecarregada (carga 9 em 6 núcleos, com um processo externo de análise de disco). Uma consulta fixa de referência rodou em 98 ms. É preciso medir de novo com a máquina livre.
 - **Próximo passo para o ambiente pesar no match:** dar ao ambiente sinais além do texto, com dados abertos (ver a proposta na conversa: biomas do IBGE por município, unidades de conservação, CNES).
+
+## D-055 — Biografias públicas do ORCID nas páginas dos pesquisadores
+
+- **Data:** 2026-11-13 (pedido do responsável).
+- **Fonte:** API pública do ORCID (`/v3.0/{orcid}/biography`; liberada em D-003). Os dados públicos dos registros são CC0, e o texto é escrito pela própria pessoa.
+- **Amostra:** em 150 pesquisadores sorteados entre os que têm ORCID, 11% têm biografia pública (~9 mil dos 82,9 mil com ORCID). Mediana de ~600 caracteres; maioria em português; formato de resumo estilo Lattes; parte desatualizada.
+- **Coleta** (`ingest/carga/parte10_bios.py` → `researcher_bios`, migração 0020):
+  - Incremental, dos mais ativos para os menos, renovando a cada 90 dias, até 25 mil por execução (etapa `bios` do `atualizar_dados.sh`).
+  - Sem cache em disco e sem o e-mail de contato no User-Agent (o ORCID não exige).
+  - Limpeza: sem HTML; e-mails, telefones e rótulos de contato vazios removidos; textos com menos de 80 caracteres não são exibidos. O idioma é marcado por contagem de palavras comuns.
+  - A carga do banco usa atualizações, então as biografias sobrevivem às recargas; só somem com o perfil, quando ele é fundido a outro.
+- **Página do pesquisador:**
+  - Bloco "Sobre", recolhido em 5 linhas com "Ler mais".
+  - Linha de fonte: "Texto do próprio pesquisador no ORCID · atualizado em mm/aaaa · ver no ORCID", com "em inglês" quando for o caso.
+  - O texto é mostrado como a pessoa escreveu. Perfis ocultos não mostram a biografia.
+- **Privacidade:** inventário de `docs/revisao-lgpd.md` e `/sobre` (fontes e "Dados dos pesquisadores") atualizados.

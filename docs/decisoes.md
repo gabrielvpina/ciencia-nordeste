@@ -684,3 +684,31 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - O logo grande deixa de ser cortado na borda. No perfil, fica inteiro, como figurinha no canto (na faixa coberta pela interface). No de afinidades, sai, porque repetia o mapa.
   - O de afinidades ganha uma manchete grande ("Quem pesquisa como eu", com traço verde-limão) no lugar do selo pequeno.
   - O selo do perfil fica maior.
+
+## D-051 — Quiz guiado pelos dados: auditoria, palavras-chave corrigidas, pergunta de tema e novos nichos
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Auditoria** (`python -m ingest.carga.auditar_quiz` → `ingest/relatorios/quiz_auditoria.md` e `.json`):
+  - Mede, para cada opção, o tamanho, os pesquisadores e a pureza (parcela das publicações nos tópicos OpenAlex mais comuns).
+  - Lista os temas reais por sub-objeto e as lacunas (tópicos com muitos pesquisadores e pouca cobertura).
+- **Achado 1, palavras-chave ambíguas:**
+  - Termos curtos casavam como início de outras palavras: "ant" → "antimicrobial", "mel" → "mellitus", "kid" → "kidney", "farm" → "farmácia". Outros casavam com sentidos diferentes: "recife" (a cidade), "polpa" (dentária), "restoration" (dentária), "irrigation" (de canal), "community" (saúde).
+  - Correção: termos de até 4 letras viram palavra inteira, aceitando o plural (`quiz_preparar` e o validador), e 22 termos ambíguos foram trocados por expressões específicas.
+  - Efeito: "Besouros, borboletas…" foi de 18 mil para 3,2 mil publicações (pureza nos 5 tópicos principais de 13% para 42%); "Abelhas", de 20% para 66%; "Caprinos", de 38% para 57%. O ambiente "mar" ganhou tópicos marinhos reais.
+- **Achado 2, especificidade:** cada sub-objeto reúne de 4 a 8 temas reais bem distintos.
+  - Nova pergunta **tema** ("Qual destes temas é mais o seu?"), logo depois do sub-objeto: 204 temas em 45 sub-objetos (`ingest/carga/quiz_expandir.py`).
+  - Cada tema usa como sinal os tópicos OpenAlex reais mais comuns entre os pesquisadores do Nordeste naquele sub-objeto, com rótulo em português, sintagma para o título ("Detetive da leishmaniose") e trecho do nicho ("Epidemiologia da leishmaniose da caatinga").
+  - O tema entra no núcleo do match no lugar do sub-objeto (peso 2,5). Se deixar menos de 5 pessoas para o banner, o match é refeito com o sub-objeto.
+  - A descrição livre passa a vir depois do tema.
+- **Achado 3, lacunas:**
+  - Novo objeto **Cuidado, serviços e formação em saúde**, com quatro sub-objetos: enfermagem e segurança do paciente, envelhecimento, formação em saúde e saúde do trabalhador. Também tem temas.
+  - "Álcool e outras drogas" entrou como tema de "Cérebro e mente".
+- **Estrutura:**
+  - Versão 6 da árvore: 11 perguntas (12 telas com a instituição). Os limites do validador sobem para 20 telas e 10 opções por pergunta.
+  - Títulos principais possíveis: de 157 para 781.
+  - Nada foi removido: links antigos (sem tema) continuam abrindo.
+- **Lacunas na auditoria seguinte:** de 16 para 2. Os relatórios ficam em `ingest/relatorios/` (fora do git, como os outros).
+- **Avaliação:**
+  - Caminhos antigos (`avaliar_quiz`): coerência temática igual (média de 88%), exclusão e diversidade ok; latência mediana de 537 para 379 ms.
+  - Pergunta de tema (`avaliar_quiz_temas`, 40 temas): a aderência do banner ao tema escolhido foi de 26% para 60% em média (lista de 15: de 25% para 57%); 39 de 40 banners com 5 pessoas.
+  - Os casos sem ganho combinam o tema com um método que o avaliador fixa por objeto e que quase ninguém usa naquele tema; nesses casos vale a regra de reserva.

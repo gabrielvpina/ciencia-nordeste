@@ -36,12 +36,12 @@ RAIZ = Path(__file__).resolve().parents[2]
 ARQ_ARVORE = RAIZ / "apps" / "web" / "lib" / "quiz" / "arvore.json"
 DIR_RELATORIOS = RAIZ / "ingest" / "relatorios"
 
-MIN_OPCOES, MAX_OPCOES = 2, 8
-MAX_TELAS = 11                                   # contando a instituição
+MIN_OPCOES, MAX_OPCOES = 2, 10
+MAX_TELAS = 20                                   # contando a instituição (D-051: até 20 perguntas)
 RAROS = 5                                        # pares do núcleo com menos que isto vão para revisão (o banner mostra "até 5")
 MAX_JACCARD = 0.5                                # top 10 de sub-objetos irmãos (mesmo método e objeto)
 MAX_TITULO = 42                                  # caracteres
-FACETAS_NICHO = {"metodo", "objeto", "sub_objeto", "foco", "escala", "ambiente", "impacto"}
+FACETAS_NICHO = {"metodo", "objeto", "sub_objeto", "tema", "foco", "escala", "ambiente", "impacto"}
 FACETAS_PERFIL = {"habitat", "estilo", "vinculo"}
 RE_TOPIC, RE_NUM = re.compile(r"^T\d+$"), re.compile(r"^\d+$")
 CONTRACAO = {"o": "do", "a": "da", "os": "dos", "as": "das"}
@@ -67,7 +67,7 @@ def titulos(arv: dict[str, Any]) -> list[str]:
     T = arv["titulos"]
     P = arv["perguntas"]
     saida = [t for linha in T["arquetipos"].values() for t in linha.values()] + [T["padrao"]]
-    alvos = {"sub_objeto": [o["sintagma"] for o in opcoes(P["sub_objeto"]) if "sintagma" in o],
+    alvos = {"sub_objeto": [o["sintagma"] for q in ("sub_objeto", "tema") if q in P for o in opcoes(P[q]) if "sintagma" in o],
              "ambiente": [o["sintagma"] for o in opcoes(P["ambiente"]) if "sintagma" in o]}
     for v in T["vinculos"].values():
         if v["modelo"]:   # sem ambiente essencial, o vínculo "proteger" usa o sub-objeto (lib/quiz/titulo.ts)
@@ -122,11 +122,11 @@ def estatico(arv: dict[str, Any]) -> list[str]:
                     erros.append(f"{oid}: tem sinais mas não tem frase (texto da consulta vetorial)")
                 erros += [f"{oid}: topic inválido {t!r}" for t in s.get("topics", []) if not RE_TOPIC.match(str(t))]
                 erros += [f"{oid}: subfield/field inválido {t!r}" for t in s.get("subfields", []) + s.get("fields", []) if not RE_NUM.match(str(t))]
-            if faceta in ("sub_objeto", "ambiente") and s and "sintagma" not in o:
+            if faceta in ("sub_objeto", "tema", "ambiente") and s and "sintagma" not in o:
                 erros.append(f"{oid}: sem sintagma (artigo + nome) para o título")
             if "sintagma" in o and o["sintagma"].get("artigo") not in CONTRACAO:
                 erros.append(f"{oid}: artigo do sintagma inválido")
-            if faceta in ("metodo", "sub_objeto") and not o.get("nicho"):
+            if faceta in ("metodo", "sub_objeto", "tema") and not o.get("nicho"):
                 erros.append(f"{oid}: sem fragmento do nicho escrito")
             erros += [f"{oid}: objeto desconhecido {x!r}" for x in o.get("objetos", []) if x not in obj_ids]
             met_ids = {m["id"] for m in opcoes(P["metodo"])}
@@ -272,7 +272,7 @@ def banco(arv: dict[str, Any]) -> tuple[Path, bool]:
 CREATE TEMP TABLE sinal (cam int, tipo text, valor text, peso real, papel text);
 INSERT INTO sinal VALUES {valores};
 -- termos: no início de uma palavra, no título e nas palavras-chave ("fertiliz" casa "fertilization"; "app" não casa "approach")
-CREATE TEMP TABLE termo AS SELECT t AS termo, '\\m' || lower(f_unaccent(t)) AS re FROM unnest(ARRAY[{','.join(map(_lit, termos))}]::text[]) t;
+CREATE TEMP TABLE termo AS SELECT t AS termo, '\\m' || lower(f_unaccent(t)) || CASE WHEN char_length(t) <= 4 THEN '(s|es)?\\M' ELSE '' END AS re FROM unnest(ARRAY[{','.join(map(_lit, termos))}]::text[]) t;
 CREATE TEMP TABLE termo_work AS
   SELECT t.termo, w.id AS work_id FROM works w JOIN termo t ON lower(f_unaccent(w.title)) ~ t.re
   UNION

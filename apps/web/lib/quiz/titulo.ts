@@ -22,7 +22,8 @@ export function montarTitulo({ nicho, perfil }: Respostas): Titulo {
   const arquetipo = (habitat && estilo && T.arquetipos[habitat.id]?.[estilo.id]) || T.padrao;
 
   // o ambiente só entra no título e no nicho quando a pessoa disse que um lugar é essencial na pesquisa (pergunta 9)
-  const metodo = nicho.get("metodo"), sub = nicho.get("sub_objeto"), objeto = nicho.get("objeto");
+  // o tema (D-051), quando respondido, é o recorte mais específico: vale para o título e para o nicho escrito
+  const metodo = nicho.get("metodo"), sub = nicho.get("tema") ?? nicho.get("sub_objeto"), objeto = nicho.get("objeto");
   const ambiente = nicho.get("ambiente")?.id === AMBIENTE_GERAL ? undefined : nicho.get("ambiente");
 
   let doVinculo: string | null = null;

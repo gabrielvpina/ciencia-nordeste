@@ -110,15 +110,27 @@ async function rankear<T>(sql: string, params: unknown[], amplo: boolean): Promi
   }
 }
 
-/** O núcleo: método e sub-objeto (ou objeto, se o sub-objeto foi pulado). Se faltar um, o outro sozinho. */
-function nucleo(nicho: Map<string, Opcao>): Opcao[] {
-  const alvo = nicho.get("sub_objeto") ?? nicho.get("objeto");
+/** O núcleo: método e o recorte mais específico respondido (tema, D-051; senão sub-objeto; senão objeto).
+ *  Se faltar um, o outro sozinho. `semTema`: o mesmo, ignorando o tema (usado se o tema deixar gente de menos). */
+function nucleo(nicho: Map<string, Opcao>, semTema = false): Opcao[] {
+  const alvo = (semTema ? undefined : nicho.get("tema")) ?? nicho.get("sub_objeto") ?? nicho.get("objeto");
   return [nicho.get("metodo"), alvo].filter((o): o is Opcao => !!o?.sinais && Object.keys(o.sinais).length > 0);
 }
 
-export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: string | null; soQualis: boolean; filtro?: Filtro; texto?: string | null }): Promise<Resultado> {
+type OpcoesAlinhar = { instituicao: string | null; soQualis: boolean; filtro?: Filtro; texto?: string | null };
+
+/** O tema (D-051) entra no núcleo: só fica quem publica naquele tema. Se isso deixar menos de 5 pessoas para o banner,
+ *  refaz com o sub-objeto no núcleo; o tema continua pesando na cobertura e na frase da busca por significado. */
+export async function alinhar(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): Promise<Resultado> {
+  const r = await alinharCom(nicho, opts, false);
+  if (!nicho.has("tema") || r.banner.length >= 5) return r;
+  const r2 = await alinharCom(nicho, opts, true);
+  return r2.banner.length > r.banner.length ? r2 : r;
+}
+
+async function alinharCom(nicho: Map<string, Opcao>, opts: OpcoesAlinhar, semTema: boolean): Promise<Resultado> {
   const facetas = [...nicho.entries()].filter(([, o]) => o.sinais && (o.sinais.topics || o.sinais.subfields || o.sinais.fields || o.sinais.termos));
-  const nuc = nucleo(nicho);
+  const nuc = nucleo(nicho, semTema);
   const vazio: Resultado = { versao: ARVORE.versao, tempos: {}, nucleo: nuc.map((o) => o.id), vetorial: false, texto: false, candidatos: 0, banner: [], lista: [], instituicoes: [], programas: [], origem: null };
   if (!nuc.length) return vazio;
 

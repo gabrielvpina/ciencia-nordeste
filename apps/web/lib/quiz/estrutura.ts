@@ -37,7 +37,9 @@ export type Respostas = {
 
 /** Opções que a pergunta oferece, dadas as respostas anteriores (filtros por objeto e por método). */
 export function opcoesOferecidas(pid: string, anteriores: Map<string, Opcao>): Opcao[] {
-  return filtrarOpcoes(ARVORE.perguntas[pid], anteriores.get("metodo")?.id, anteriores.get("objeto")?.id);
+  const q = ARVORE.perguntas[pid];
+  const dep = q.depende_de ? anteriores.get(ARVORE.perguntas[q.depende_de]?.faceta ?? q.depende_de)?.id : undefined;
+  return filtrarOpcoes(q, anteriores.get("metodo")?.id, anteriores.get("objeto")?.id, dep);
 }
 
 /**

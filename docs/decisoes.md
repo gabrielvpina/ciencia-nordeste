@@ -512,3 +512,22 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Revogação:** o responsável vai definir outro jeito de revogar o cadastro. Até lá, os pedidos chegam pelas issues (sem dados pessoais, segundo o modelo), e a remoção é feita por `psql`, levando junto os alinhamentos (`ON DELETE CASCADE`).
 - **Risco:** sem um identificador que não exponha a pessoa, a remoção por um canal público fica difícil. Registrado como pendente no achado 2 de `docs/revisao-lgpd.md`.
 - **Versão do consentimento:** `2026-11-11f` (os termos deixam de citar o código).
+
+## D-044 — Busca só pelo botão, página de resultados em três partes e painel numa tela
+
+- **Data:** 2026-11-13 (pedido do responsável)
+- **Por quê:** reduzir o custo da busca vetorial (cada pausa na digitação chamava o `embed` e o HNSW) e fazer o painel caber numa tela 16:9 sem rolagem.
+- **Busca:**
+  - A barra só busca ao apertar **Buscar** ou Enter; não há mais sugestões a cada letra. Na tela inicial, leva para `/busca?q=…`; no painel, os resultados ocupam o lugar dos cards de filtro (`/painel?q=…`).
+  - Três colunas (`components/ResultadosBusca.tsx`, `lib/busca.ts`):
+    1. **Nomes:** pesquisadores, instituições e programas por texto (trigrama), sem vetor.
+    2. **Pesquisadores no tema:** busca vetorial híbrida (D-028), mais as instituições do tema.
+    3. **Trabalhos:** artigos do tema e teses e dissertações (CAPES) cujo título ou palavras-chave trazem algum termo da consulta, com índice de texto em português (migração `0019`) e título pesando mais que as palavras-chave.
+  - **Consulta que parece nome** (sigla exata de instituição ou similaridade ≥ 0,6 com o nome de um pesquisador): as colunas 2 e 3 não rodam, e um botão permite "buscar como tema" (`&tema=1`). Palavra dentro do nome de instituição não conta, porque "caprinos" está em "Embrapa Caprinos e Ovinos".
+  - **Cache em memória** de até 300 consultas por 6 h (reinicia a cada publicação, quando os dados mudam). Os exemplos e os links repetidos não recalculam nada.
+  - `/api/busca` passa a devolver o resultado completo. `/api/tema` continua igual, porque é usado na avaliação (`avaliar_busca_tema.py`).
+- **Painel:**
+  - Sai o título "Painel da pesquisa no Nordeste" (fica só para leitores de tela) e saem os KPIs.
+  - À esquerda: busca compacta e, abaixo, os cards em duas colunas (áreas e instituição selecionada | seletores, Qualis e produção por ano). À direita: o mapa na altura da janela.
+  - Em janelas a partir de 1100 × 620, a página tem a altura da janela, sem rolagem: quem rola, se precisar, é a área dos cards ou cada coluna de resultados. Conferido em 1920 × 1080 e 1366 × 768. No celular, tudo fica empilhado.
+- **Medido (local, depois de aquecer):** a busca de tema levou de 60 a 900 ms na primeira vez e cerca de 10 ms no cache; a de nome, de 6 a 300 ms; as teses, de 2 a 15 ms com o índice.

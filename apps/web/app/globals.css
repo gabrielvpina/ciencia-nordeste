@@ -844,3 +844,89 @@ ol.termos li::marker { font-weight: 700; }
 /* resultado: título do tipo de cientista maior (o nicho quebra em linhas, nunca é cortado) */
 .qr-cabeca h1 { font-size: clamp(2.5rem, 11vw, 4rem); line-height: 1; text-wrap: balance; }
 .qr-nicho { font-size: 1.15rem; text-wrap: pretty; overflow-wrap: anywhere; }
+
+/* ===== Busca com botão (D-044): barra, página /busca e resultados em três colunas ===== */
+.visualmente-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.busca-bloco { display: grid; gap: 8px; justify-items: center; width: 100%; }
+.busca-bloco .busca-grande { margin-top: 0; }
+.busca-grande input { padding-right: 150px; }
+.busca-grande .limpar { right: 112px; }
+.botao-buscar { position: absolute; right: 6px; top: 6px; bottom: 6px; padding: 0 20px; border: var(--b) solid var(--stroke); border-radius: 99px;
+  background: var(--accent-vivo); color: var(--on-accent); font: 600 .95rem var(--font-display); cursor: pointer; box-shadow: var(--hard-s); }
+.botao-buscar:hover { filter: brightness(1.08); }
+.botao-buscar:active { transform: translate(1px, 1px); box-shadow: none; }
+.botao-buscar:disabled { opacity: .7; cursor: progress; }
+.botao-buscar:focus-visible { outline: 3px solid var(--accent-vivo); outline-offset: 2px; }
+.busca-bloco.compacta { justify-items: stretch; }
+.busca-bloco.compacta .busca-grande { width: 100%; }
+.busca-bloco.compacta .busca-grande input { padding: 9px 128px 9px 44px; font-size: .95rem; }
+.busca-bloco.compacta .busca-grande svg { left: 15px; width: 19px; height: 19px; }
+.busca-bloco.compacta .busca-grande .limpar { right: 96px; width: 28px; height: 28px; }
+.busca-bloco.compacta .botao-buscar { right: 5px; top: 5px; bottom: 5px; padding: 0 16px; font-size: .88rem; }
+@media (max-width: 520px) {
+  .busca-grande input { padding-right: 112px; font-size: 1rem; }
+  .busca-grande .limpar { right: 86px; }
+  .botao-buscar { padding: 0 14px; }
+}
+
+main:has(.pagina-busca) { max-width: 1320px; }
+.pagina-busca { display: grid; gap: 18px; }
+
+.res3 { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; text-align: left; }
+.res3-col { background: var(--panel); border: var(--b) solid var(--stroke); border-radius: var(--r-lg); padding: 12px 14px; box-shadow: var(--hard-s); min-width: 0; }
+.res3-col h3 { font: 600 .95rem var(--font-display); margin: 0 0 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.res3-col h3 .meta { font: 400 .74rem var(--font-body); }
+.res3-tema { border-top: 6px solid var(--flow); }
+.res3-col h3 + h4 { margin-top: 4px; }
+.res3-col h4 { font: 600 .7rem var(--font-body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 12px 0 2px; }
+.res3-col h4 .meta { margin-left: 4px; }
+.res3-lista { list-style: none; margin: 0; padding: 0; }
+.res3-lista li { display: flex; flex-direction: column; padding: 5px 8px; margin: 0 -8px; border-radius: 8px; min-width: 0; }
+.res3-lista li:hover { background: var(--accent-soft); }
+.res3-lista li > a, .res3-lista li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res3-lista li .meta { font-size: .76rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res3-pubs li > a, .res3-pubs li > span:first-child { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: .86rem; line-height: 1.35; }
+.res3-exemplo { font-size: .74rem; color: var(--muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res3-vazio { margin: 6px 0 0; font-size: .82rem; color: var(--muted); display: grid; gap: 8px; justify-items: start; }
+.res3-aviso { padding: 12px; }
+.res3 .mais-itens { margin-top: 2px; }
+@media (max-width: 900px) { .res3 { grid-template-columns: minmax(0, 1fr); } }
+
+/* ===== Painel (D-044): busca e cards à esquerda, mapa à direita; no desktop cabe numa tela ===== */
+main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
+.pn { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+.pn-esq { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.pn-cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); align-items: start; }
+.pn-coluna { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.pn-resultados { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.pn-res-topo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pn-res-topo .meta { font-size: .8rem; }
+.pn .painel-card { padding: 12px 14px; }
+.pn .painel-card h2 { margin-bottom: 6px; }
+.pn .linha-cap { margin-bottom: 6px; padding-bottom: 6px; }
+.pn .filtros-mapa { gap: 10px; }
+.pn .check-qualis { font-size: .84rem; }
+.pn .check-qualis small { color: var(--muted); font-weight: 400; }
+.pn .ano-col { grid-template-rows: auto 72px auto; }
+.pn .ano-barra { height: 72px; }
+.painel-card.mapa-card.pn-mapa { width: auto; }
+.pn-mapa .mapa-palco { height: 520px; }
+@media (min-width: 1100px) {
+  .pn { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+  .painel-card.mapa-card.pn-mapa { width: clamp(520px, calc((100dvh - 130px) * .8 + 40px), 56vw); }
+  .pn-mapa .mapa-palco { height: calc(100dvh - 190px); min-height: 480px; }
+}
+/* janela de desktop com altura suficiente: página do tamanho da janela, sem rolagem; quem rola é cada coluna */
+@media (min-width: 1100px) and (min-height: 620px) {
+  body:has(.pn) { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(.pn) > main { flex: 1; min-height: 0; width: 100%; }
+  body:has(.pn) > footer { width: 100%; max-width: none; padding: 6px 16px; font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pn { height: 100%; align-items: stretch; }
+  .pn-esq { min-height: 0; }
+  .pn-cards { flex: 1; min-height: 0; overflow-y: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 2px 4px 4px 2px; }
+  .pn-resultados { flex: 1; min-height: 0; }
+  .pn-resultados .res3 { flex: 1; min-height: 0; align-items: stretch; }
+  .pn-resultados .res3-col { overflow-y: auto; min-height: 0; }
+  .painel-card.mapa-card.pn-mapa { min-height: 0; }
+  .pn-mapa .mapa-palco { flex: 1; height: auto; min-height: 0; }
+}

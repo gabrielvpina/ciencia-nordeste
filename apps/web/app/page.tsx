@@ -29,7 +29,7 @@ export default async function Inicio({ searchParams }: { searchParams: Record<st
       <section className="hero" aria-labelledby="hero-titulo">
         <h1 id="hero-titulo">Quem pesquisa o quê no <b>Nordeste</b> <Estrela lima tamanho={22} /></h1>
         <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados.</p>
-        <BuscaGeral soQualis={sq} />
+        <BuscaGeral exemplos />
       </section>
 
       <nav className="caminhos" aria-label="Explorar">

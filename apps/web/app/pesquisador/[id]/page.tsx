@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Avatar, { type Foto } from "@/components/Avatar";
-import { Nuvem } from "@/components/Graficos";
+import ListaCoautores from "@/components/ListaCoautores";
+import Recolhivel from "@/components/Recolhivel";
+import RedeCoautoria from "@/components/RedeCoautoria";
 import { AREAS_ORDEM } from "@/components/mapa/areas";
 import { area } from "@/lib/areas";
 import { COR_CONCEITO, colunaDe, nomePrograma } from "@/lib/programas";
@@ -19,7 +21,7 @@ type Perfil = {
 };
 type Programa = { id: string; name: string; entity_acronym: string; grade: string; category: string; base_year: number };
 type Work = { id: string; title: string; year: number; venue: string | null; doi: string | null; primary_field: string };
-type Coautor = { id: string; display_name: string; n: number };
+type Coautor = { id: string; display_name: string; n: number; instituicao_id: string | null; detalhe: string };
 type Orientacao = { title: string; degree: string; year: number; author_name: string; programa: string; full_text_url: string | null };
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -63,17 +65,13 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
       `SELECT w.id, w.title, w.year, w.venue, w.doi, w.primary_field
          FROM work_authorships a JOIN works w ON w.id = a.work_id${juntaQualis(sq, "a.work_id")}
         WHERE a.researcher_id = $1 ORDER BY w.year DESC, w.cited_by_count DESC NULLS LAST LIMIT 50`, [p.id]),
-    q<Coautor>(sq
-      // com o filtro, os coautores são contados na hora, só nas publicações em revistas com Qualis
-      ? `SELECT r.id, r.display_name, count(DISTINCT b.work_id)::int AS n
-           FROM work_authorships a${juntaQualis(true, "a.work_id")}
+    q<Coautor>(
+      // contados direto das autorias (a tabela coauthorships não foi recalculada na última carga); com o filtro, só revistas com Qualis
+      `SELECT r.id, r.display_name, count(DISTINCT b.work_id)::int AS n, r.main_institution_id AS instituicao_id, concat_ws(' · ', i.acronym, i.uf) AS detalhe
+           FROM work_authorships a${juntaQualis(sq, "a.work_id")}
            JOIN work_authorships b ON b.work_id = a.work_id AND b.researcher_id IS NOT NULL AND b.researcher_id <> a.researcher_id
-           JOIN researchers r ON r.id = b.researcher_id AND NOT r.is_hidden
-          WHERE a.researcher_id = $1 GROUP BY r.id ORDER BY n DESC, r.display_name LIMIT 12`
-      : `SELECT r.id, r.display_name, c.shared_works_count AS n
-         FROM coauthorships c JOIN researchers r ON r.id = CASE WHEN c.researcher_a_id = $1 THEN c.researcher_b_id ELSE c.researcher_a_id END
-        WHERE c.researcher_a_id = $1 OR c.researcher_b_id = $1
-        ORDER BY c.shared_works_count DESC LIMIT 12`, [p.id]),
+           JOIN researchers r ON r.id = b.researcher_id AND NOT r.is_hidden LEFT JOIN institutions i ON i.id = r.main_institution_id
+          WHERE a.researcher_id = $1 GROUP BY r.id, i.acronym, i.uf ORDER BY n DESC, r.display_name LIMIT 20`, [p.id]),
     q<Orientacao>(
       `SELECT t.title, t.degree, t.year, t.author_name, g.name AS programa, t.full_text_url
          FROM theses t JOIN graduate_programs g ON g.id = t.program_id
@@ -81,11 +79,12 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
     q<NonNullable<Foto>>(`SELECT license, author, source_page_url FROM researcher_photos WHERE researcher_id = $1`, [p.id]),
   ]);
 
+  const abas = <AbasEntidade base={`/pesquisador/${p.id}`} ativa={visao} coautores="Coautores" />;
   return (
     <div className="explorar invertido">
-      {visao === "producao"
-        ? <ProducaoEntidade tipo="pesquisador" id={p.id} nome={p.display_name} abas={<AbasEntidade base={`/pesquisador/${p.id}`} ativa={visao} />} />
-        : <RedeEntidade tipo="pesquisador" id={p.id} nome={p.display_name} abas={<AbasEntidade base={`/pesquisador/${p.id}`} ativa={visao} />} />}
+      {visao === "producao" ? <ProducaoEntidade tipo="pesquisador" id={p.id} nome={p.display_name} abas={abas} />
+        : visao === "coautores" ? <RedeCoautoria tipo="pesquisador" id={p.id} abas={abas} />
+        : <RedeEntidade tipo="pesquisador" id={p.id} nome={p.display_name} abas={abas} />}
       <aside className="painel painel-perfil">
       <div className="perfil-topo">
         <Avatar id={p.id} nome={p.display_name} foto={fotos[0] ?? null} />
@@ -121,40 +120,40 @@ export default async function Pesquisador({ params, searchParams }: { params: { 
 
       {coautores.length > 0 && (
         <>
-          <h2>Principais coautores no Nordeste <small className="meta">tamanho = publicações em comum</small></h2>
-          <Nuvem itens={coautores.map((c) => ({ id: c.id, rotulo: c.display_name, peso: c.n, href: `/pesquisador/${c.id}`, detalhe: `${c.display_name}: ${c.n} publicações em comum` }))} />
+          <h2>Coautores mais frequentes <small className="meta">publicações em comum</small></h2>
+          <ListaCoautores itens={coautores.map((c) => ({ id: c.id, nome: c.display_name, n: c.n, instituicao_id: c.instituicao_id, detalhe: c.detalhe }))} />
         </>
       )}
 
       {orientacoes.length > 0 && (
         <>
-          <h2>Orientações concluídas (CAPES)</h2>
+          <h2>Orientações concluídas (CAPES) <small className="meta">{orientacoes.length}{orientacoes.length === 30 ? "+" : ""}</small></h2>
           <ul className="lista">
-            {orientacoes.map((o) => (
+            <Recolhivel visiveis={4} rotulo="Mostrar mais" lista>{orientacoes.map((o) => (
               <li key={o.title + o.year}>
                 {o.full_text_url ? <a href={o.full_text_url} target="_blank" rel="noopener noreferrer">{o.title}</a> : o.title}
-                <div className="meta">{o.degree?.toLowerCase()} · {o.author_name} · {o.programa} · {o.year}</div>
+                <div className="meta">{o.degree?.toLowerCase()} · {o.author_name} · {nomePrograma(o.programa)} · {o.year}</div>
               </li>
-            ))}
+            ))}</Recolhivel>
           </ul>
         </>
       )}
 
       <h2>Publicações recentes</h2>
       {works.length === 0 ? <p className="meta">Sem publicações do recorte ligadas a este perfil.</p> : (
-        porAno(works).map(([ano, ws]) => (
+        <Recolhivel visiveis={1} rotulo="Anos anteriores:">{porAno(works).map(([ano, ws]) => (
           <div key={ano} className="linha-tempo">
             <span className="lt-ano">{ano} <small>{ws.length}</small></span>
             <ul className="lista">
-              {ws.map((w) => (
+              <Recolhivel visiveis={3} rotulo="Mostrar mais" lista>{ws.map((w) => (
                 <li key={w.id}>
                   {w.doi ? <a href={`https://doi.org/${w.doi}`} target="_blank" rel="noopener noreferrer">{w.title}</a> : w.title}
                   <div className="meta"><i className="ponto" style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(w.primary_field))})` }} />{area(w.primary_field)}{w.venue ? ` · ${w.venue}` : ""}</div>
                 </li>
-              ))}
+              ))}</Recolhivel>
             </ul>
           </div>
-        ))
+        ))}</Recolhivel>
       )}
       </aside>
     </div>

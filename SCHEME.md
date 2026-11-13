@@ -13,10 +13,11 @@
 
 | Frente | Situação |
 |---|---|
-| Dados | 754 instituições, 313 programas, 5.583 docentes, 144.891 pesquisadores, 111.164 publicações (2022–2026), 15.047 teses e dissertações, 43 fotos com licença livre |
+| Dados | 753 instituições, 313 programas, 5.583 docentes, 144.891 pesquisadores, 110.783 publicações (2022–2026; 91.769 em revistas com Qualis), 15.047 teses e dissertações, 35.724 perfis temáticos, 43 fotos com licença livre |
 | Identidade | 2.653 docentes ligados a perfis OpenAlex por regra aprovada (D-018); 5.336 pares de pesquisadores e 53 de instituições aguardam revisão manual |
 | Banco | PostgreSQL 16 + pgvector no Docker; 7 migrações (`ingest/sql/migracoes/`); carga idempotente (`scripts/carregar_banco.sh`); 111 mil vetores com índice HNSW |
-| App | Next.js 14.2.35 no Docker (http://localhost:3000): tela inicial com busca unificada (nome e **tema**, semântica PT/EN) e mapa próprio do NE (modos produção, colaboração, áreas); perfis de pesquisador, instituição e programa com rede de colaboração em arco |
+| App | Next.js 14.2.35 no Docker (http://localhost:3000): tela inicial com busca unificada (nome e **tema**, semântica PT/EN) e acesso ao painel e ao quiz; painel (`/painel`) com mapa próprio do NE (modos produção, colaboração, áreas); perfis de pesquisador, instituição e programa com rede de colaboração em arco |
+| Quiz (branch `quiz`, etapa 13) | "Que cientista é você?": cadastro curto (D-037), 10 perguntas por facetas, match com até 5 pesquisadores de outras instituições e índice de compatibilidade (D-036), banners em PNG gerados no servidor |
 | Qualidade | `scripts/verificar.sh` (ruff, mypy, typecheck, build, migrações num banco vazio) e CI do GitHub Actions pronta |
 | Pendências do responsável | revisar as filas; enviar o pedido LAI (`docs/pedido_lai_cnpq.md`); domínio e VPS para a produção; depois, cliente ORCID de produção |
 
@@ -57,11 +58,11 @@ Tamanho do recorte (cargas de 2026-11-09, recorte ampliado D-017):
 
 | Item | Quantidade |
 |---|---|
-| Instituições do NE (ROR + INEP) | 754 (225 com produção no OpenAlex, entre elas as unidades da Embrapa no NE e a EMPARN) |
+| Instituições do NE (ROR + INEP) | 753, após a retirada da FUNED (D-038) (225 com produção no OpenAlex, entre elas as unidades da Embrapa no NE e a EMPARN) |
 | Programas de pós CAPES (2022–2024) | 313 distintos (284 em 2024: 155 de saúde e ciências biológicas, 114 de agrárias, alimentos, veterinária e biodiversidade, 15 de biotecnologia) |
 | Docentes de pós (ID_PESSOA) | 5.583 |
-| Works 2022–2026 | **111.164** (Medicina 56,3 mil; Agrárias e Biológicas 26,2 mil; demais saúde e biomédicas 27,6 mil; Veterinária 1,1 mil) |
-| Pesquisadores (autores com vínculo no NE) | 141.961 (58% com ORCID; 35,8 mil com 3+ works no período) |
+| Works 2022–2026 | **110.783**, 91.769 em revistas com Qualis (Medicina 56,1 mil; Agrárias e Biológicas 26,1 mil; demais saúde e biomédicas 27,5 mil; Veterinária 1,1 mil) |
+| Pesquisadores (autores com vínculo no NE) | 144.891 (57% com ORCID; 35.724 com 3+ works no período, que têm perfil temático para o quiz) |
 | Coautorias entre pesquisadores do NE | 722,7 mil pares |
 | Teses e dissertações (CAPES, 2022–2024) | 15.047, com orientador ligado ao perfil em 99,9% |
 | Publicações com financiamento declarado de FAP do NE | 6.837 (FACEPE, FAPESB e FUNCAP à frente) |
@@ -72,7 +73,7 @@ Tamanho do recorte (cargas de 2026-11-09, recorte ampliado D-017):
 - Repositório navegável de **instituições, programas, pesquisadores e produção** do recorte, com filtros por estado, município, instituição, área e tema.
 - Página de **pesquisador**: vínculo, programas (CAPES), tópicos, publicações do período, coautores, orientações (teses CAPES).
 - Página de **instituição** e de **programa de pós** (conceito CAPES, área, docentes, produção).
-- **Mapa próprio** do Nordeste (SVG, sem serviços externos) como tela inicial, com modos produção, colaboração e áreas, e filtros por área, estado e período.
+- **Mapa próprio** do Nordeste (SVG, sem serviços externos) no painel (`/painel`, D-039), com modos produção, colaboração e áreas, e filtros por área, estado e período.
 - **Rede de colaboração** em arco nos perfis: parceiros no NE e coautoria externa (Brasil fora do NE e países).
 - Busca unificada em português, sem precisar de acento: pesquisador, instituição e programa.
 - Login com **ORCID** para reivindicar o perfil; edição de informações complementares e foto. **Só na produção** (D-024).
@@ -186,7 +187,20 @@ institution_collaborations, researcher_topics, schema_migrations
 work_keywords (1,08 mi) e work_embeddings (halfvec(768), índice HNSW) — busca por tema (D-028)
 
 visões materializadas (atualizadas a cada carga): mv_resumo, mv_pesquisador_busca, mv_instituicao_stats,
-  mv_instituicao_areas, mv_work_inst, mv_mapa_producao, mv_mapa_colaboracao, mv_inst_externo
+  mv_instituicao_areas, mv_work_inst, mv_mapa_producao, mv_mapa_colaboracao, mv_inst_externo, mv_uf_ano_area,
+  mv_work_qualis (com works_qualis nas contagens, D-033 e D-035)
+
+qualis_periodicos, venue_issns                (Qualis Periódicos 2021-2024 e ISSNs das revistas, D-033)
+
+researcher_embeddings   (perfil temático: média ponderada dos vetores das publicações, halfvec(768), HNSW; D-036)
+quiz_sinal, quiz_opcao_work, quiz_meta        (sinais das opções do quiz pré-calculados por publicação; D-036)
+quiz_participantes      (cadastro do quiz: nome, instituição, filiação, curso/programa, consentimento — sem e-mail;
+                         gravado pelo papel quiz_escrita, só INSERT; o app não lê; retenção de 24 meses; D-037;
+                         coluna codigo_remocao sem uso desde a D-043)
+quiz_alinhamentos       (quiz concluído: respostas, código do texto, núcleo, candidatos; 1 por participante e conjunto
+                         de respostas; ON DELETE CASCADE do cadastro; D-042)
+quiz_matches            (arestas participante → pesquisador: índice, posição na lista e no banner; base da futura
+                         rede de afinidades; D-042)
 
 users, profile_claims, profile_extras, removal_requests   (camada da aplicação)
 ```
@@ -213,7 +227,7 @@ Regras de identidade:
 | 7 | Fotos: upload próprio + Wikidata/Commons com licença livre; WebP, lado máx. 400 px, sem EXIF | concluída para o Commons (43 fotos); upload próprio na Fase D |
 | — | Revisão de identidade: decisões, regra em lote, planilhas de pendentes e consolidação (`ingest/carga/revisao.py`) | em uso (2.653 aceites) |
 | — | Geometria do mapa (`ingest/carga/gerar_mapa_ne.py`, malha do IBGE) | gerada e versionada |
-| 8 | Busca por tema: palavras-chave + embeddings multilíngues (`ingest/carga/parte8_embeddings.py`) | concluída (111.143 vetores) |
+| 8 | Busca por tema: palavras-chave + embeddings multilíngues (`ingest/carga/parte8_embeddings.py`) | concluída (110.762 vetores) |
 
 Cuidados:
 - O filtro do OpenAlex por estado (`geo.region`) perde instituições sem estado preenchido (ex.: UFPB). A partir da Parte 1, o recorte regional do OpenAlex usa a **lista de IDs de instituições do NE** gerada na Parte 1.
@@ -273,7 +287,9 @@ Cuidados:
 - [x] Tela inicial = busca unificada (pesquisador, instituição, programa) + mapa; perfis com rede em arco (colaborações no NE e externas).
 - [x] SEO básico (metadados por página, sitemap em blocos, robots) e página "Sobre os dados".
 - [x] Busca por tema (vetorial multilíngue, híbrida, balanceada por idioma; precisão de 100% nas 20 consultas de teste) (D-028).
-- [ ] Filtro por município; página de resultados completa por tema; perfil temático e "pesquisadores parecidos".
+- [x] Perfil temático por pesquisador (`researcher_embeddings`), base do quiz e de "pesquisadores parecidos" (D-036).
+- [ ] Quiz "Que cientista é você?" (branch `quiz`, etapa 13): estrutura, match e banners prontos; cadastro, interface e nova tela inicial (D-039) prontos.
+- [ ] Filtro por município; página de resultados completa por tema; "pesquisadores parecidos" no perfil.
 - [ ] Rede de coautoria pessoa × pessoa como grafo (hoje: arcos entre instituições e lista de coautores).
 
 ### Fase D — Contas e reivindicação (adiada até a produção, D-024)
@@ -306,6 +322,13 @@ Checklist:
 - Em cada perfil: "Dados obtidos de fontes abertas (OpenAlex, CAPES, ORCID...). Este é você? Reivindique, corrija ou solicite remoção."
 - Fotos: só upload próprio ou imagem com licença livre (com crédito); padrão é avatar com iniciais.
 - Política de privacidade, responsável pelos dados e prazo para atender pedidos; base legal avaliada com orientação jurídica antes do lançamento.
+- **Cadastro do quiz (D-037), primeira coleta de dados pessoais informados pelo próprio usuário:**
+  - **base legal:** consentimento explícito (caixa não marcada por padrão, com a finalidade escrita);
+  - **mínimo necessário:** nome, instituição, filiação e curso ou programa; sem e-mail ou outro contato; não se grava IP, respostas nem resultado;
+  - **acesso:** gravação por um papel só de `INSERT`, e o app nunca lê os dados;
+  - **retenção:** 24 meses, com expurgo automático;
+  - **pedidos de acesso ou remoção:** pelo contato em `/sobre#privacidade-quiz`;
+  - **backups:** contêm esses dados e são legíveis só pelo dono.
 
 ## 14. Métricas para validar
 

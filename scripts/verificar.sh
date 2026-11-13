@@ -3,6 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 echo "== Python"; .venv/bin/ruff check ingest --select E,F,W,I --ignore E501 && .venv/bin/mypy --config-file ingest/pyproject.toml ingest
+echo "== Árvore do quiz"; .venv/bin/python -m ingest.carga.validar_arvore_quiz estatico   # ids, órfãos, ciclos, profundidade (sem banco)
 echo "== App (typecheck + build no Docker)"; docker compose build -q web
 echo "== Migrações num banco vazio (descartável, duas rodadas)"
 docker compose up -d --wait db >/dev/null

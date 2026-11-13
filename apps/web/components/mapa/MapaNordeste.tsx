@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "./mapa.css";
 import { AREAS_ORDEM, rotuloArea } from "./areas";
 import { CAIXA_UF, ESTADOS, VIEWBOX, arco, desprojetar, espalhar, fatia, projetar, unidadesPorKm } from "./projecao";
-import type { DadosMapa, ModoMapa, PontoInst } from "./tipos";
+import type { DadosMapa, Externo, ModoMapa, PontoInst } from "./tipos";
 
 type Props = {
   modo: ModoMapa;
@@ -38,9 +38,7 @@ const ANEL = { cx: VW / 2, cy: VH / 2 + 10, r: 600 };
 
 // Margens extras: topo para as barras do litoral norte; direita, no modo rede, para as âncoras externas.
 const topoExtra = (modo: ModoMapa) => (modo === "densidade" ? 60 : 30);
-const viewBox = (modo: ModoMapa) => [VX - 20, VY - topoExtra(modo), VW + (modo === "rede" ? 250 : 40), VH + topoExtra(modo) + 60];
-const ANCORA_BRASIL: [number, number] = [70, VH - 60];
-const ancoraExterior = (i: number): [number, number] => [VW + 150, 230 + i * 110];
+const viewBox = (modo: ModoMapa) => [VX - 20, VY - topoExtra(modo), VW + 40, VH + topoExtra(modo) + 60];   // destinos fora do NE ficam numa lista fora do desenho
 const TIPOS: Record<string, string> = {
   universidade: "Universidade", centro_universitario: "Centro universitário", faculdade: "Faculdade", instituto_federal: "Instituto federal",
   ensino: "Ensino", hospital_saude: "Hospital / saúde", instituto_pesquisa: "Instituto de pesquisa", governo: "Governo", empresa: "Empresa",
@@ -373,12 +371,11 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
 
         {modo === "rede" && dados.rede && (() => {
           const rede = dados.rede;
+          const foco = ativo;   // mouse no mapa ou realce vindo de fora (lista de coautores)
           const origem = rede.origem.map((id) => porId.get(id)).filter((p): p is Ponto => !!p);
           const o = origem[0];
           const parceiros = rede.parceiros.map((x) => ({ ...x, p: porId.get(x.id) })).filter((x): x is typeof x & { p: Ponto } => !!x.p);
           const maxP = Math.max(1, ...parceiros.map((x) => x.works), ...rede.externos.map((x) => x.works));
-          const externosExt = rede.externos.filter((x) => x.tipo === "exterior");
-          const brasil = rede.externos.find((x) => x.tipo === "brasil");
           const dicaParceiro = (p: Ponto, works: number): Dica => ({ titulo: p.nome, sub: [p.sigla, p.uf].filter(Boolean).join(" · "), linhas: [["Publicações em comum", fmt(works)]], nota: "Clique para abrir o perfil" });
           return (
             <g className={`mn-rede${foco ? " mn-com-foco" : ""}`}>
@@ -387,23 +384,6 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
                   style={{ strokeWidth: 0.8 + 7 * Math.sqrt(works / maxP), opacity: foco ? undefined : 0.3 + 0.6 * (works / maxP) }}
                   {...comDica(() => dicaParceiro(p, works), id)} />
               ))}
-              {o && brasil && brasil.works > 0 && (
-                <g className="mn-externo mn-externo-brasil" {...comDica(() => ({ titulo: brasil.rotulo, linhas: [["Publicações com coautoria", fmt(brasil.works)]], nota: "Posição ilustrativa" }))}>
-                  <path d={arco([o.x, o.y], ANCORA_BRASIL, 0.2)} className="mn-arco mn-arco-externo" style={{ strokeWidth: 0.8 + 7 * Math.sqrt(brasil.works / maxP) }} />
-                  <circle cx={ANCORA_BRASIL[0]} cy={ANCORA_BRASIL[1]} r={7} className="mn-ancora" />
-                  <text x={ANCORA_BRASIL[0]} y={ANCORA_BRASIL[1] + 26} className="mn-rotulo mn-rotulo-ancora">{brasil.rotulo}</text>
-                </g>
-              )}
-              {o && externosExt.map((x, i) => {
-                const alvo = ancoraExterior(i);
-                return (
-                  <g key={x.rotulo} className="mn-externo" {...comDica(() => ({ titulo: x.rotulo, linhas: [["Publicações com coautoria", fmt(x.works)]], nota: "Posição ilustrativa" }))}>
-                    <path d={arco([o.x, o.y], alvo, 0.15)} className="mn-arco mn-arco-externo" style={{ strokeWidth: 0.8 + 7 * Math.sqrt(x.works / maxP) }} />
-                    <circle cx={alvo[0]} cy={alvo[1]} r={7} className="mn-ancora" />
-                    <text x={alvo[0] + 12} y={alvo[1] + 5} className="mn-rotulo mn-rotulo-ancora" textAnchor="start">{x.rotulo}</text>
-                  </g>
-                );
-              })}
               {parceiros.map(({ id, works, p }) => (
                 <circle key={id} cx={p.x} cy={p.y} r={5 + 14 * Math.sqrt(works / maxP)} className={`mn-no${foco === id ? " mn-no-foco" : ""}`}
                   {...acionavel(id, p.nome)} {...comDica(() => dicaParceiro(p, works), id)} />
@@ -425,7 +405,7 @@ export default function MapaNordeste({ modo, dados, ufAtiva, areaAtiva, titulo, 
         ))}
       </svg>
 
-      <Legenda modo={modo} altura={altura} raioBolha={bolhas ? raioBolha : undefined} maxWorks={maxWorks} escala={tam.w ? Math.min(tam.w / viewBox(modo)[2], tam.h / viewBox(modo)[3]) : 0.5} />
+      <Legenda modo={modo} externos={dados.rede?.externos} altura={altura} raioBolha={bolhas ? raioBolha : undefined} maxWorks={maxWorks} escala={tam.w ? Math.min(tam.w / viewBox(modo)[2], tam.h / viewBox(modo)[3]) : 0.5} />
 
       {dica && (
         <div className="mn-dica" role="tooltip"
@@ -465,7 +445,7 @@ function semColisao<T extends { x: number; y: number }>(itens: T[], limite: numb
 
 
 /** Legenda em caixa no canto do mapa, por modo. */
-function Legenda({ modo, altura, raioBolha, maxWorks, escala }: { modo: ModoMapa; altura: (w: number) => number; raioBolha?: (w: number) => number; maxWorks: number; escala: number }) {
+function Legenda({ modo, externos = [], altura, raioBolha, maxWorks, escala }: { modo: ModoMapa; externos?: Externo[]; altura: (w: number) => number; raioBolha?: (w: number) => number; maxWorks: number; escala: number }) {
   if (modo === "densidade" && raioBolha) {
     const refs = [100, 1000, 10000].filter((v) => v <= maxWorks * 1.05);
     const rMax = Math.max(...refs.map((v) => raioBolha(v) * escala));
@@ -528,8 +508,16 @@ function Legenda({ modo, altura, raioBolha, maxWorks, escala }: { modo: ModoMapa
       <div className="chave">
         <span><i className="bola" style={{ background: "var(--mn-origem)" }} />Origem</span>
         <span><i className="bola" style={{ background: "var(--mn-no)" }} />Parceiras no NE</span>
-        <span><i className="tracejado" />Coautoria fora do NE (posição ilustrativa)</span>
       </div>
+      {externos.length > 0 && (
+        <div className="mn-externos">
+          <b>Coautoria fora do Nordeste</b>
+          <ul>{externos.map((x) => (
+            <li key={x.rotulo}><span>{x.tipo === "brasil" ? "Outros estados" : x.rotulo}</span><em>{fmt(x.works)}</em>
+              <i style={{ width: `${(100 * x.works) / Math.max(...externos.map((e) => e.works))}%` }} /></li>
+          ))}</ul>
+        </div>
+      )}
     </div>
   );
 }

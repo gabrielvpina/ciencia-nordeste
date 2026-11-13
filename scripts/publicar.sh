@@ -83,6 +83,17 @@ fi
 
 # ---- 5. migrações e reinício ----
 passo "Aplicando migrações"; ./scripts/migrar.sh
+docker compose exec -T db sh -c 'psql -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DELETE FROM quiz_participantes WHERE criado_em < now() - interval '"'"'24 months'"'"'"' >/dev/null 2>&1 || true   # retenção do cadastro do quiz (D-037)
+# a estrutura do quiz mudou (ou uma migração nova): recopia os sinais das opções para o banco (só Python do sistema + psql)
+# migração nova (pode alterar dados, ex.: 0013): atualiza as visões e os perfis temáticos (só sem PACOTE: o backup já os traz)
+if [ -z "$PACOTE" ] && muda ingest/sql/migracoes/; then
+  passo "Atualizando visões e perfis temáticos"
+  docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f ingest/sql/atualizar_visoes.sql'
+  docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f ingest/sql/perfis_tematicos.sql'
+fi
+if muda apps/web/lib/quiz/arvore.json || muda ingest/sql/migracoes/ || muda ingest/carga/quiz_preparar.py; then
+  passo "Preparando o quiz"; python3 -m ingest.carga.quiz_preparar
+fi
 passo "Reiniciando o app"; docker compose up -d; docker compose restart web
 
 # ---- 6. testes ----

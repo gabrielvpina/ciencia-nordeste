@@ -21,3 +21,11 @@ for f in ingest/sql/migracoes/*.sql; do
   fi
 done
 psqlc -tA -c "\"SELECT 'aplicadas: ' || string_agg(version, ', ' ORDER BY version) FROM schema_migrations\""
+# Papel só de escrita do cadastro do quiz (0014, D-037): habilita o login com a senha do .env (QUIZ_DB_PASSWORD).
+# A senha vai por variável do psql (via entrada padrão), nunca na linha de comando.
+SENHA_QUIZ=$(grep -E '^QUIZ_DB_PASSWORD=' .env 2>/dev/null | tail -1 | cut -d= -f2- || true)
+if [ -n "$SENHA_QUIZ" ] && [ "$(psqlc -tA -c "\"SELECT count(*) FROM pg_roles WHERE rolname = 'quiz_escrita'\"")" = "1" ]; then
+  echo "ALTER ROLE quiz_escrita LOGIN PASSWORD :'senha';" | docker compose exec -T -e SENHA_QUIZ="$SENHA_QUIZ" db sh -c \
+    'psql -v ON_ERROR_STOP=1 -X -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v senha="$SENHA_QUIZ"'
+  echo "papel quiz_escrita: login habilitado"
+fi

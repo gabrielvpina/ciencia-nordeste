@@ -376,3 +376,238 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Banco (migração 0011):** as visões de contagem (`mv_resumo`, `mv_pesquisador_busca`, `mv_instituicao_stats`, `mv_instituicao_areas`, `mv_mapa_producao`, `mv_mapa_colaboracao`, `mv_inst_externo`, `mv_uf_ano_area`) foram recriadas com uma coluna `works_qualis` ao lado de `works`; o app escolhe a coluna. Nenhum dado novo: tudo vem de `mv_work_qualis`, que agora é a primeira do REFRESH em `carga.sql`.
 - **Contado na hora com o filtro:** coautores do pesquisador e parceiras da instituição (as tabelas `coauthorships` e `institution_collaborations` da ingestão não separam Qualis).
 - **Não muda:** número de pesquisadores, programas, teses e orientações (não são publicações em revista). A avaliação da busca por tema (`avaliar_busca_tema.py`) usa `ql=0`, a base inteira.
+
+## D-036 — Quiz "Que cientista é você?": estrutura por facetas, match e banners
+
+- **Data:** 2026-11-11 · **Branch:** `quiz` · **Etapa:** [13](etapas/13-quiz-alinhamento.md)
+- **Estrutura:** dado versionado em `apps/web/lib/quiz/arvore.json`. São 10 perguntas mais a instituição.
+  - **Nicho**, que alimenta o match: método, objeto, sub-objeto (42 opções), foco, escala, ambiente e impacto.
+  - **Perfil**, que só monta o título: habitat, estilo e vínculo.
+  - **Filtros:** cada objeto lista os métodos que fazem sentido para ele, e os pares método × sub-objeto sem pesquisadores saem. Ficam 280 pares no núcleo.
+- **Match e banner são processos separados.** O match (`lib/quiz/alinhamento.ts`) só lê as facetas de nicho e a instituição. O título e o nicho escrito (`lib/quiz/titulo.ts`) não alteram quem aparece. Um teste garante que trocar só as respostas de perfil não muda nomes, ordem nem índices.
+- **Match:**
+  - **Núcleo obrigatório:** 2 ou mais publicações que casem método e sub-objeto, sem alargar o nicho para completar a lista. Por isso o banner mostra **até 5** pesquisadores.
+  - **Índice de 0 a 100, em escala fixa** = 0,30 cobertura das demais facetas + 0,20 concentração no nicho + 0,20 volume + 0,30 afinidade. A afinidade é o cosseno do perfil temático com a frase do nicho, entre os percentis 90 e 99,9 da população.
+  - **Ordem (pedido do responsável):** entre os que passam no índice mínimo, quem tem **mais produção** vem antes. A ordem soma índice + 20 × produção total no período (escala log, cheia em 100 publicações) + 3 × proeminência (h-index, docência na pós, bolsa PQ). O índice mostrado não muda, então a ordem nem sempre segue o índice.
+  - **Exclusão:** fica de fora a instituição do usuário e as ligadas a ela (parent/child do ROR e vínculo de subunidade).
+  - **Diversidade:** o banner traz **instituições diferentes**. Só repete uma instituição (até 2 pessoas) se faltar gente para completar 5. A lista estendida aceita até 3 por instituição.
+  - **Filtro Qualis:** respeita o D-035.
+- **Perfil temático** (`researcher_embeddings`, migração 0012): média dos vetores das publicações, ponderada por recência × autoria × tamanho da equipe, para 35.806 pesquisadores.
+- **Ambiente no título e no nicho:** só entra quando a pessoa diz que um lugar é essencial na pesquisa (pergunta "Algum ambiente é essencial na sua pesquisa?"). Com "Não, minha pesquisa não depende de um lugar", o título e o nicho ficam gerais (ex.: "Bioinformática de vírus"; "Sentinela dos anfíbios e répteis" em vez de "Sentinela da mata atlântica").
+- **Títulos:** sempre neutros e sem nomes licenciados, a pedido do responsável. São 25 arquétipos (habitat × estilo) mais os vínculos ("Fã nº 1 dos vírus", "Detetive do cérebro", "Sentinela da caatinga"). O validador barra marcas de gênero e nomes proibidos.
+- **Visual:** nesta fase, só cores e formas simples, sem ilustração SVG. Fundo pelo habitat, acento pelo ambiente, cartões neo-brutalistas e mini mapa do NE. PNG gerado no servidor (`next/og`), em 1080 × 1920 e 1080 × 1350.
+
+## D-037 — Cadastro dos participantes do quiz (primeira escrita do app)
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **Decisão:** antes das perguntas, o quiz pede:
+  - **nome completo**;
+  - **instituição** por extenso, com sugestões das instituições do NE da base; aceita texto livre;
+  - **tipo de filiação:** graduação, mestrado, doutorado, docente, pesquisador(a) ou profissional do mercado;
+  - **curso ou programa:** para quem está na pós, sugestões dos programas da base; senão, texto livre.
+
+  Os dados ficam numa tabela própria, `quiz_participantes`. É a **primeira escrita do app**: até aqui ele só lia (D-022).
+- **Como, pela LGPD** (base legal: consentimento, art. 7º, I):
+  - **Consentimento explícito:** caixa obrigatória, não marcada por padrão, com a finalidade escrita na tela e um link para a seção de privacidade em `/sobre`. Grava-se também a data e a versão do texto aceito.
+  - **Finalidade:** só estatísticas agregadas sobre quem usa o quiz (filiação, instituições, programas). **Não se pede e-mail nem outro contato** (o campo opcional de e-mail foi retirado a pedido do responsável, para reduzir riscos jurídicos; migração `0015`). **Os dados não entram no match.** A instituição escolhida na lista só serve para excluir os colegas dela do resultado, como antes.
+  - **Mínimo necessário:** não se grava IP, navegador, respostas do quiz nem o resultado. As URLs de resultado e dos banners continuam levando só ids de opções e da instituição.
+  - **Acesso restrito:** o app grava com um papel próprio do Postgres, `quiz_escrita`, que só tem `INSERT` na tabela. O app não lê esses dados. Leitura e exportação só pelo responsável, via `psql`.
+  - **Retenção de 24 meses:** registros mais antigos são apagados pelo `scripts/publicar.sh` e pelo `scripts/carregar_banco.sh`.
+  - **Pedidos de acesso, correção ou remoção** vão pelo contato indicado em `/sobre` (variável `CONTATO_PRIVACIDADE`).
+  - **Backups:** os pacotes de `scripts/backup.sh` passam a conter dados pessoais. Já são legíveis só pelo dono, e isso fica explícito no guia.
+- **Proteção contra abuso:** campo-isca invisível para robôs, limites de tamanho e no máximo 10 cadastros por minuto por origem (em memória).
+
+## D-038 — FUNED fora da base (geocodificação errada no ROR)
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **Problema:** a Fundação Ezequiel Dias (FUNED, ROR `01qgvp179`) fica em Belo Horizonte (MG). O ROR a localiza em "Gameleira", e o nome foi casado com o município de Gameleira (PE). Com isso, ela entrou no recorte do NE com 303 pesquisadores vinculados, 415 publicações e 381 publicações que só estavam na base por causa dela.
+- **Correção:**
+  - **Ingestão:** a Parte 1 ganhou `ROR_EXCLUIDOS`, uma lista de ids do ROR fora do recorte, cada um com o motivo. A FUNED não volta numa próxima atualização.
+  - **Banco** (migração `0013_remover_funed`, idempotente):
+    - remove a FUNED das autorias;
+    - apaga as publicações que ficaram sem nenhuma instituição do NE;
+    - desvincula os pesquisadores (sem apagá-los; os que ficarem sem produção saem na próxima ingestão);
+    - apaga a instituição.
+  - **Depois:** visões materializadas, perfis temáticos e sinais do quiz são recalculados.
+
+## D-039 — Nova tela inicial: busca e dois caminhos (painel e quiz)
+
+- **Data:** 2026-11-11 (branch `quiz`)
+- **O quê:** a tela inicial (`/`) fica mais leve: o título, a **busca unificada** (nomes e temas, como antes) e dois cartões grandes:
+  - **"Ver o painel"** leva a `/painel`;
+  - **"Descobrir meu perfil de cientista"** leva ao quiz (`/quiz`, etapa 13).
+
+  Abaixo, os números da base (pesquisadores, publicações, instituições, programas), que respeitam o filtro Qualis (D-035).
+- **Painel (`/painel`):** é a antiga tela inicial inteira (D-031): busca com destaque no mapa, filtro "só revistas com Qualis", áreas, produção por ano, mapa, instituição selecionada, seletores e KPIs.
+  - Os filtros agora vão na URL (`?uf=PE&area=…&de=…&ate=…`, via `replaceState`, sem criar histórico), então o link do painel abre já filtrado.
+  - Endereços antigos com parâmetros (`/?uf=…`) e `/mapa` redirecionam para `/painel` com os mesmos parâmetros.
+- **Código:** a busca saiu para `components/BuscaGeral.tsx`, usada nas duas telas. `components/Inicio.tsx` virou `components/Painel.tsx`.
+- **Navegação:**
+  - o menu "Mapa" virou **"Painel"** e ganhou o item **"Quiz"**;
+  - no celular, a marca e o GitHub ficam na primeira linha e o menu numa segunda linha, que rola de lado;
+  - o aviso do rodapé sobre o filtro Qualis aponta para o painel;
+  - os links "← mapa geral" dos perfis levam ao painel;
+  - o sitemap troca `/mapa` por `/painel` e inclui `/quiz`.
+- **Por quê:** o mapa é rico, mas pesado como primeira impressão no celular. A maioria chega querendo buscar alguém ou, agora, fazer o quiz. A busca continua no topo das duas telas.
+
+## D-040 — Descrição livre da pesquisa no quiz, só como código no link
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **O quê:** uma última tela opcional no quiz: "Descreva a sua pesquisa em poucas palavras" (até 160 caracteres). Serve para refinar o match dentro do nicho escolhido nas respostas.
+- **Restrições:** o resultado precisa continuar reproduzível pelo link (D-036), e nada do quiz pode ser gravado (D-037). Pôr o texto na URL o deixaria no histórico, nos logs do Caddy e em todo link compartilhado. Guardá-lo no servidor quebraria a regra de não gravar.
+- **Como:**
+  - O servidor (`POST /api/quiz/texto`) transforma o texto em vetor (e5, 768 dimensões) e o projeta na **base PCA dos perfis temáticos**: 128 componentes, 79% da variância.
+  - Cada coeficiente é quantizado em 6 bits (±3σ), o que dá um caractere base64url. O código tem 129 caracteres: 1 de versão mais 128.
+  - O texto não é gravado, não vai para log e não volta ao navegador. O link leva `&t=<código>`.
+  - Página e banners reconstroem o vetor aproximado sem o serviço de embedding.
+- **Fidelidade:** com 30 consultas, Spearman de 0,991 entre as similaridades exatas e as reconstruídas, e 82% dos 100 perfis mais próximos em comum. Também foram testados 64 componentes × 8 bits (0,983), 96 × 8 (0,989) e 192 × 4 (0,991, mas com o mesmo tamanho e mais código).
+- **Peso:** a similaridade com o texto, ancorada como a afinidade, entra com 0,40, somado aos 1,00 das respostas; com texto, o texto vale ~29% do índice. Numa avaliação com 8 nichos amplos e descrições específicas, a aderência da lista de 15 subiu 25 pontos em média, sem nenhum caso pior. Com peso 0,25, o ganho era de 18 pontos.
+- **Estabilidade:** `apps/web/lib/quiz/base-texto-v1.json` não pode mudar, porque links compartilhados dependem dela. O script `ingest/carga/quiz_base_texto.py` se recusa a sobrescrevê-la. Uma base nova (por exemplo, com outro modelo de embedding) ganha outra versão, e o app passa a aceitar as duas.
+- **Junto:** o vetor da frase do nicho passou a ficar em memória. Antes, uma lentidão do serviço de embedding (limite de 4 s) fazia o mesmo link dar resultados diferentes; foi o que aconteceu na avaliação logo após reiniciar o app.
+- **Privacidade:** do código não se recuperam as palavras, só o tema aproximado. O aviso está na própria tela e em `/sobre#privacidade-quiz`.
+- **Posição e pergunta (revisão do mesmo dia):** a tela passou do fim do quiz para **logo depois de "especificamente?"**, com a pergunta "Qual organismo, doença ou sistema, exatamente?". A decisão veio de um experimento com 20 casos (`ingest/carga/experimento_quiz_textos.py`), que comparou textos sobre o objeto, a técnica e o objetivo da metodologia, sozinhos e combinados:
+  - **objeto:** maior ganho (aderência ao objeto na lista de 49% para 65%; no banner, de 54% para 72%) e nenhum caso pior;
+  - **técnica ou objetivo, somados ao objeto:** de 1 a 4 pontos a mais, dentro do ruído de 20 casos;
+  - **objetivo sozinho:** piorou 4 casos. A linguagem de objetivos é genérica ("melhorar a qualidade", "prevenir") e pode tirar a lista do nicho.
+
+  Por isso o quiz tem **uma** tela de texto, e não várias intercaladas, que também aumentariam a desistência no celular.
+
+## D-041 — Revisão de proteção de dados, código de remoção e escolha única no quiz
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **Revisão LGPD simples:** em `docs/revisao-lgpd.md`, com inventário, achados e pendências. Não é parecer jurídico. Mudanças que saíram dela:
+  - **Transferência internacional:** o servidor fica na AWS `us-east-1` (EUA). O consentimento passa a dizer isso (art. 33, VIII).
+  - **Controlador identificado** em `/sobre` (o autor, pessoa física), com a base legal de cada tratamento, a seção "Dados dos pesquisadores" e o link para a ANPD.
+  - **Maiores de 18:** a caixa de concordância começa por "Tenho 18 anos ou mais".
+  - **Versão do consentimento:** `2026-11-11c`.
+- **Canal dos titulares:** continuam as issues do GitHub (`CONTATO_PRIVACIDADE` vazio, a pedido do responsável). Como são públicas:
+  - o cadastro gera um **código de remoção** aleatório de 8 caracteres (migração `0016`), mostrado uma vez numa tela após o cadastro;
+  - o modelo de issue `.github/ISSUE_TEMPLATE/privacidade.md` pede só o código e avisa para não escrever dados pessoais;
+  - `scripts/quiz_remover.sh CÓDIGO` apaga o registro.
+- **Termos (revisão do mesmo dia, versão `2026-11-11d`):** a caixa de concordância ficou curta: "Tenho 18 anos ou mais e aceito os termos de uso e compartilhamento de dados", com link para `/sobre#termos`. Os termos, em linguagem jurídica neutra, tratam de objeto, controlador, dados, finalidade (só estatística), base legal, compartilhamento (só operadores de infraestrutura), prazo de 24 meses, segurança, direitos, idade mínima e alterações. A pedido do responsável, nenhum texto cita a AWS nem os EUA; o risco quanto ao art. 33 fica registrado em `docs/revisao-lgpd.md` (achado 1).
+- **Escolha única:** as perguntas do quiz continuam aceitando uma resposta cada (decisão do responsável). A múltipla escolha alargaria o núcleo do match e tenderia a reduzir a precisão.
+
+## D-042 — Guardar o alinhamento de quem fez o quiz (base da futura rede de afinidades)
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **O quê:** para cada quiz concluído por alguém com cadastro, grava-se o perfil de respostas e com quais pesquisadores houve match. Isso substitui a regra inicial de não gravar respostas (pedido original da etapa 13, D-037). O objetivo é uma futura rede (grafo) participante → pesquisador, que pode juntar instituições e programas de pós dos dois lados.
+- **Tabelas** (migrações `0017` e `0018`):
+  - **`quiz_alinhamentos`:** as respostas (ids na ordem das telas), o código do texto livre (D-040, nunca o texto), a instituição excluída, o filtro Qualis, o núcleo, o número de candidatos e uma `chave` (sha256 das respostas, do código e da instituição).
+  - **`quiz_matches`:** uma aresta por pesquisador da lista de 15 ou do banner de 5, com índice, posição em cada um e publicações no nicho.
+- **Como:**
+  - O cadastro devolve o id do participante, que fica só na memória do navegador.
+  - Ao concluir, o quiz chama `POST /api/quiz/alinhamento` uma vez, sem esperar a resposta. A rota recalcula o match como a página de resultado e grava.
+  - A página de resultado e os banners continuam sem gravar nada, porque são abertos também por quem recebe o link.
+  - Repetições (toque duplo, reenvio) são descartadas no navegador e no banco: chave única por participante e conjunto de respostas, com `ON CONFLICT DO NOTHING` sem alvo, que o papel só de `INSERT` pode usar. Quem volta e muda as respostas gera outro registro.
+- **Privacidade:**
+  - O papel `quiz_escrita` só insere; o app não lê nenhuma das tabelas (testado: leitura recusada).
+  - Remover o cadastro (`scripts/quiz_remover.sh`) ou o expurgo de 24 meses apagam alinhamentos e arestas (`ON DELETE CASCADE`, testado).
+  - Termos e consentimento revistos (versão `2026-11-11e`): dados coletados e finalidade passam a incluir "estudos sobre redes de afinidade científica, divulgados só de forma agregada ou sem identificação dos usuários".
+  - A página de resultado avisa que abrir o link não grava nada.
+
+## D-043 — Sem código de remoção; o cadastro leva direto ao quiz
+
+- **Data:** 2026-11-11 (pedido do responsável)
+- **O quê:** sai a tela "Guarde o seu código" (D-041). Depois do cadastro, o quiz começa direto. O cadastro não gera mais o código: a coluna `codigo_remocao` (migração `0016`) fica nula, porque migrações aplicadas não são editadas (D-022). Saem também o `scripts/quiz_remover.sh` e as menções ao código nos termos, em `/sobre` e no modelo de issue.
+- **Revogação:** o responsável vai definir outro jeito de revogar o cadastro. Até lá, os pedidos chegam pelas issues (sem dados pessoais, segundo o modelo), e a remoção é feita por `psql`, levando junto os alinhamentos (`ON DELETE CASCADE`).
+- **Risco:** sem um identificador que não exponha a pessoa, a remoção por um canal público fica difícil. Registrado como pendente no achado 2 de `docs/revisao-lgpd.md`.
+- **Versão do consentimento:** `2026-11-11f` (os termos deixam de citar o código).
+
+## D-044 — Busca só pelo botão, página de resultados em três partes e painel numa tela
+
+- **Data:** 2026-11-13 (pedido do responsável)
+- **Por quê:** reduzir o custo da busca vetorial (cada pausa na digitação chamava o `embed` e o HNSW) e fazer o painel caber numa tela 16:9 sem rolagem.
+- **Busca:**
+  - A barra só busca ao apertar **Buscar** ou Enter; não há mais sugestões a cada letra. Na tela inicial, leva para `/busca?q=…`; no painel, os resultados ocupam o lugar dos cards de filtro (`/painel?q=…`).
+  - Três colunas (`components/ResultadosBusca.tsx`, `lib/busca.ts`):
+    1. **Nomes:** pesquisadores, instituições e programas por texto (trigrama), sem vetor.
+    2. **Pesquisadores no tema:** busca vetorial híbrida (D-028), mais as instituições do tema.
+    3. **Trabalhos:** artigos do tema e teses e dissertações (CAPES) cujo título ou palavras-chave trazem algum termo da consulta, com índice de texto em português (migração `0019`) e título pesando mais que as palavras-chave.
+  - **Consulta que parece nome** (sigla exata de instituição ou similaridade ≥ 0,6 com o nome de um pesquisador): as colunas 2 e 3 não rodam, e um botão permite "buscar como tema" (`&tema=1`). Palavra dentro do nome de instituição não conta, porque "caprinos" está em "Embrapa Caprinos e Ovinos".
+  - **Cache em memória** de até 300 consultas por 6 h (reinicia a cada publicação, quando os dados mudam). Os exemplos e os links repetidos não recalculam nada.
+  - `/api/busca` passa a devolver o resultado completo. `/api/tema` continua igual, porque é usado na avaliação (`avaliar_busca_tema.py`).
+- **Painel:**
+  - Sai o título "Painel da pesquisa no Nordeste" (fica só para leitores de tela) e saem os KPIs.
+  - À esquerda: busca compacta e, abaixo, os cards em duas colunas (áreas e instituição selecionada | seletores, Qualis e produção por ano). À direita: o mapa na altura da janela.
+  - Em janelas a partir de 1100 × 620, a página tem a altura da janela, sem rolagem: quem rola, se precisar, é a área dos cards ou cada coluna de resultados. Conferido em 1920 × 1080 e 1366 × 768. No celular, tudo fica empilhado.
+- **Medido (local, depois de aquecer):** a busca de tema levou de 60 a 900 ms na primeira vez e cerca de 10 ms no cache; a de nome, de 6 a 300 ms; as teses, de 2 a 15 ms com o índice.
+
+## D-045 — Revisão de design do painel e da busca
+
+- **Data:** 2026-11-13. Pedido do responsável, seguindo a skill pública `frontend-design` da Anthropic. Usei as partes que valem para revisar uma identidade já definida: estrutura visual só quando informa algo, rótulos sem caixa alta, estado vazio que orienta e autocrítica com capturas de tela.
+- **Painel:**
+  - A instituição selecionada virou um cartão sobre o mapa, no canto inferior esquerdo, com botão de fechar e as 4 principais áreas. Ele só aparece quando há seleção; sai o card vazio "clique numa bolha".
+  - Os cards terminam junto com o mapa: o último card de cada coluna ocupa a altura que sobra.
+  - Em janelas baixas (altura até 820 px, como 1366 × 768), a "Produção por ano" desce para baixo das áreas, as áreas viram linhas de uma só altura e os cards ficam mais compactos. Conferido sem rolagem em 1310 × 665, 1536 × 730, 1440 × 780 e 1920 × 946 (áreas úteis da janela).
+- **Resultados da busca:**
+  - Colunas sem conteúdo não ocupam espaço: viram uma linha de aviso. Se nada aparece, um aviso sugere o que tentar.
+  - Consulta sem sentido no acervo ("xyzqwk") não mostra mais vizinhos aleatórios. A regra exige duas coisas: afinidade do melhor vizinho abaixo de 0,825 e nenhuma coincidência de texto em títulos ou teses. Medido: ruído até 0,821; temas reais a partir de 0,835; "solo" (0,812) passa pelo texto.
+  - O título de exemplo de cada pesquisador só aparece ao passar o mouse.
+  - Títulos e nomes de programas em CAIXA ALTA viram caixa normal.
+- **Ruído:**
+  - Saem as etiquetas "OpenAlex", "filtros", "mapa", "Nordeste" e a do modo do mapa.
+  - Os rótulos "MODO", "ESTADO" e "PERÍODO" e os subtítulos dos resultados ficam em caixa normal.
+  - As setas saem dos textos dos botões ("Ver perfil e rede", "Voltar aos filtros").
+- **Controles mais enxutos (mesmo dia, pedido do responsável: "muitos espaços vazios"):**
+  - Modo e forma do mapa ficam numa linha só; os estados também, com "Todos" e as 9 siglas.
+  - Os botões ficam mais baixos. Os seletores usam `aria-pressed` em vez de `role="tab"`.
+  - Os cards seguem uma nova grade: áreas (uma linha por área) ao lado dos filtros, com alturas parecidas, e a produção por ano na largura toda, embaixo, ocupando a altura que sobra.
+  - O layout "numa tela" vale a partir de 1280 px de largura; entre 1100 e 1279 px, a página empilha e rola.
+  - Conferido sem rolagem em 1310 × 665, 1440 × 780, 1536 × 730 e 1920 × 946. Em 1280 × 620, a página não rola, mas a área dos cards rola 30 px por dentro.
+- **Produção por ano e instituições (mesmo dia):**
+  - A produção por ano deixa de ser um card e vira um histograma pequeno, só com as barras preenchidas, sobre o controle de período. Cada barra fica acima do seu ano; clicar filtra o ano.
+  - O espaço vai para o card **Instituições com mais publicações**: o ranking que o mapa desenha, em duas colunas, reagindo a estado, área e período. Clicar seleciona a instituição no mapa, e passar o mouse destaca a bolha.
+  - Com um estado em destaque, o mapa mostra o botão **Ver todo o Nordeste**.
+
+## D-046 — Perfis de pesquisador e programa: conexões legíveis
+
+- **Data:** 2026-11-13 (pedido do responsável).
+- **Abas:**
+  - Pesquisador: **Mapa | Coautores | Produção**.
+  - Programa: **Mapa | Docentes | Produção**.
+  - Endereços `?ver=coautores` e `?ver=producao`; continuam funcionando sem JavaScript.
+- **Mapa da rede:**
+  - A coautoria fora do Nordeste deixou de ser um conjunto de linhas em posição ilustrativa sobre o mapa. Virou uma lista com números na legenda ("Outros estados", países).
+  - O desenho ganhou a largura que as âncoras ocupavam.
+  - Outras partes da página realçam uma instituição no mapa com o evento `cn:destaque`.
+- **Coautores:**
+  - Lista ordenada (nome, instituição, publicações em comum, barra) no lugar da nuvem de nomes. Passar o mouse realça a instituição do coautor no mapa.
+  - Contagem feita direto das autorias, porque a tabela `coauthorships` não foi recalculada na última carga.
+- **Rede de coautoria em anel** (`/api/coautoria`, `lib/coautoria.ts`, `components/RedeCoautoria.tsx`):
+  - Pesquisador no centro; os 30 coautores mais frequentes em volta, agrupados e coloridos por instituição.
+  - Linhas entre coautores = também publicaram juntos.
+  - Acima de 80 linhas, só as mais fortes, com o corte informado na legenda.
+  - Mouse ou foco isola as ligações de uma pessoa. No toque, o primeiro toque mostra as ligações e o segundo abre o perfil.
+  - No celular: enquadramento mais largo, rótulos curtos ("Marcelo S.") e nome só para os 12 maiores.
+- **Programa:**
+  - Aba "Docentes": a mesma rede, com os docentes do último ano-base agrupados por vínculo. Ela mostra a colaboração interna e quantos docentes não publicam com colegas. Ao lado fica uma tabela ordenável (publicações, % em A1–A2, orientações no programa, bolsa PQ).
+  - Na visão padrão: resumo dos vínculos, os 5 docentes com mais publicações, teses e dissertações por ano (colunas empilhadas, só preenchimento) e defesas recentes recolhíveis.
+  - Nomes, cidades e títulos da CAPES em maiúsculas viram caixa normal.
+- **Altura:**
+  - No desktop, as páginas de perfil têm a altura da janela; quem rola é a coluna lateral.
+  - Listas longas mostram os primeiros itens e o resto num `<details>`.
+  - No celular: indicadores em 3 colunas, avatar menor, listas de revistas e de publicações recolhidas.
+  - Corrigido: o mapa da rede sumia no celular, porque o `flex: 1` anulava a altura.
+- **Texto:** "filtro na tela inicial" virou "filtro do painel"; os links "← mapa geral" viraram "Painel".
+
+## D-047 — Menu retrátil, tela inicial alinhada e listas de programas e instituições no celular
+
+- **Data:** 2026-11-13 (pedido do responsável).
+- **Menu** (`components/MenuTopo.tsx`):
+  - No celular (abaixo de 700 px), os links ficam atrás de um botão e abrem como lista em largura total. Esc fecha o menu.
+  - A página atual fica destacada (`aria-current`). No desktop, nada muda.
+- **Tela inicial:**
+  - Título, busca, exemplos, os dois caminhos e os números ficam numa coluna de 880 px, com as mesmas bordas, centrada na altura da janela.
+  - Os números viraram uma faixa única com divisórias e são links (painel, instituições, programas).
+  - Sai o rótulo "Experimente:", e os exemplos cabem numa linha.
+  - No celular, os exemplos deslizam de lado numa linha só e os números ficam em 2 × 2.
+- **Instituições:**
+  - Corrigida a rolagem horizontal no celular: a página ficava com 934 px de largura. O seletor "Tamanho" não quebrava linha e alargava a grade, cujos itens têm largura mínima automática.
+  - Chips e seletores deslizam de lado.
+  - No celular, os cartões vêm 8 de cada vez.
+  - Altura no celular: de 6.400 para 2.900 px.
+- **Programas:**
+  - Filtro por nome ou instituição.
+  - Grupos recolhíveis: abertos só os 3 primeiros no desktop e o 1º no celular; com qualquer filtro, todos abrem.
+  - A tabela "área × conceito" cabe na largura do celular, com colunas de 34 px e bolhas menores.
+  - Altura no celular: de 33.900 para 7.100 px.

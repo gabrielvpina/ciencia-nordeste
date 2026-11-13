@@ -6,17 +6,23 @@ export type ModoBusca = "hibrido" | "vetor" | "texto";
 const K_RRF = 60;          // constante usual da Reciprocal Rank Fusion
 const CANDIDATOS = 200;    // vizinhos considerados em cada lista
 
-export async function embedConsulta(texto: string): Promise<string | null> {
+export async function embedConsulta(texto: string, limiteMs = 4000): Promise<string | null> {
+  const v = await embedVetor(texto, limiteMs);
+  return v ? `[${v.join(",")}]` : null;
+}
+
+/** Vetor do e5 (768, normalizado) para uma consulta; null se o serviço estiver fora do ar ou passar de `limiteMs`. */
+export async function embedVetor(texto: string, limiteMs = 4000): Promise<number[] | null> {
   const url = process.env.EMBED_URL;
   if (!url) return null;
   try {
     const r = await fetch(`${url}/embed`, {
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ texto }),
-      signal: AbortSignal.timeout(4000), cache: "no-store",
+      signal: AbortSignal.timeout(limiteMs), cache: "no-store",
     });
     if (!r.ok) return null;
     const { vetor } = (await r.json()) as { vetor: number[] };
-    return Array.isArray(vetor) && vetor.length === 768 ? `[${vetor.join(",")}]` : null;
+    return Array.isArray(vetor) && vetor.length === 768 ? vetor : null;
   } catch {
     return null;   // serviço fora do ar: a busca continua só pelo texto
   }

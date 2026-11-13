@@ -222,3 +222,12 @@
 .mn-barra circle.mn-bolha { fill: color-mix(in srgb, var(--tom) 78%, transparent); stroke: var(--mn-tinta); stroke-width: 1.6; transition: r .2s; }
 .lg-bolha { fill: color-mix(in srgb, var(--accent-vivo) 35%, transparent); stroke: var(--stroke); stroke-width: 1.2; }
 .lg-guia { stroke: var(--muted); stroke-dasharray: 2 2; }
+
+/* coautoria fora do Nordeste: lista na legenda (antes eram linhas sobre o mapa, em posição ilustrativa) */
+.mn-externos { flex: 1 1 100%; display: grid; gap: 4px; }
+.mn-externos b { font-weight: 600; color: var(--fg, #222); }
+.mn-externos ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px 16px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.mn-externos li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 4px; gap: 1px 6px; align-items: baseline; }
+.mn-externos li span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.mn-externos li em { font-style: normal; font-variant-numeric: tabular-nums; color: var(--muted, #666); }
+.mn-externos li i { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--mn-arco-externo, #888); }

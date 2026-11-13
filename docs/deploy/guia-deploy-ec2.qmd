@@ -223,7 +223,13 @@ POSTGRES_PASSWORD=<senha-forte>
 SITE_URL=https://seudominio.com.br
 # faz todos os comandos "docker compose" (e os scripts do projeto) usarem a configuração de produção
 COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml:docker-compose.https.yml
+# cadastro do quiz (D-037): senha do papel que só grava na tabela quiz_participantes (só letras e números)
+QUIZ_DB_PASSWORD=<gere com: openssl rand -hex 24>
+# contato para pedidos de acesso, correção ou remoção de dados, mostrado em /sobre
+CONTATO_PRIVACIDADE=<um e-mail do projeto>
 ```
+
+O `scripts/migrar.sh` aplica a senha do `QUIZ_DB_PASSWORD` ao papel `quiz_escrita`. Os backups (`scripts/backup.sh`) passam a conter os dados do cadastro do quiz: guarde-os com o mesmo cuidado do `.env`.
 
 Mantenha `POSTGRES_DB` e `POSTGRES_USER` iguais aos do seu computador. A chave do OpenAlex (`OPENALEX_API_KEY`) não é usada pelo app e pode ser apagada do servidor.
 

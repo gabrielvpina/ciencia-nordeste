@@ -28,6 +28,7 @@ const METRICAS: { id: Metrica; rotulo: string }[] = [
 ];
 const NOME_UF = Object.fromEntries(UFS);
 const PASSO = 24;
+const PASSO_CELULAR = 8;   // no celular, menos cartões de cada vez (cada um ocupa a largura toda)
 
 export default function ExplorarInstituicoes({ itens, ufInicial }: { itens: InstItem[]; ufInicial?: string }) {
   const [agrupar, setAgrupar] = useState<Agrupar>("uf");
@@ -46,7 +47,8 @@ export default function ExplorarInstituicoes({ itens, ufInicial }: { itens: Inst
       .filter((i) => !t || `${i.nome} ${i.sigla ?? ""}`.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").includes(t))
       .sort((a, b) => b[metrica] - a[metrica]);
   }, [itens, uf, fams, texto, metrica]);
-  useEffect(() => setMostrar(PASSO), [uf, fams, texto, metrica]);
+  const passo = () => (typeof window !== "undefined" && window.matchMedia("(max-width: 600px)").matches ? PASSO_CELULAR : PASSO);
+  useEffect(() => setMostrar(passo()), [uf, fams, texto, metrica]);
 
   const total = (k: Metrica) => filtrados.reduce((s, i) => s + i[k], 0);
   const alternarFam = (id: string) => setFams((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -73,14 +75,14 @@ export default function ExplorarInstituicoes({ itens, ufInicial }: { itens: Inst
           ))}</div>
         </div>
         <div className="ctrl"><span className="lbl">Estado</span>
-          <div className="chips">
+          <div className="chips chips-linha">
             <button className={`chip${!uf ? " chip-ativo" : ""}`} onClick={() => setUf("")}>Todos</button>
             {UFS.map(([s, n]) => <button key={s} title={n} className={`chip${uf === s ? " chip-ativo" : ""}`} aria-pressed={uf === s} onClick={() => setUf(uf === s ? "" : s)}>{s}</button>)}
           </div>
         </div>
       </div>
 
-      <div className="chips legenda-familias" aria-label="Tipos (clique para filtrar)">
+      <div className="chips chips-linha legenda-familias" aria-label="Tipos (clique para filtrar)">
         {FAMILIAS.map((f) => (
           <button key={f.id} className={`chip${fams.has(f.id) ? " chip-ativo" : ""}${fams.size && !fams.has(f.id) ? " chip-apagado" : ""}`} aria-pressed={fams.has(f.id)} onClick={() => alternarFam(f.id)}>
             <i className="ponto" style={{ background: `var(--area-${f.cor})` }} />{f.rotulo}
@@ -123,7 +125,7 @@ export default function ExplorarInstituicoes({ itens, ufInicial }: { itens: Inst
         })}
       </div>
       {filtrados.length > mostrar && (
-        <p className="centro-botao"><button className="botao-sec" onClick={() => setMostrar((n) => n + PASSO * 2)}>Mostrar mais ({fmt(filtrados.length - mostrar)} restantes)</button></p>
+        <p className="centro-botao"><button className="botao-sec" onClick={() => setMostrar((n) => n + passo() * 2)}>Mostrar mais ({fmt(filtrados.length - mostrar)} restantes)</button></p>
       )}
       {dica}
     </div>

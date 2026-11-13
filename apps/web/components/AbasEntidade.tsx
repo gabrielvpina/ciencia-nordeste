@@ -1,11 +1,15 @@
-// Alterna a coluna principal do perfil (programa ou pesquisador) entre o mapa da rede e a produção com Qualis.
-// São links (?ver=producao), não estado no navegador: cada visão tem endereço próprio e funciona sem JavaScript.
-export type Visao = "rede" | "producao";
+// Alterna a coluna principal do perfil (programa ou pesquisador): mapa da rede, rede de coautoria e produção com Qualis.
+// São links (?ver=…), não estado no navegador: cada visão tem endereço próprio e funciona sem JavaScript.
+export type Visao = "rede" | "coautores" | "producao";
 
-export const visaoDe = (v: string | string[] | undefined): Visao => (v === "producao" ? "producao" : "rede");
+export const visaoDe = (v: string | string[] | undefined): Visao => (v === "producao" ? "producao" : v === "coautores" ? "coautores" : "rede");
 
-export default function AbasEntidade({ base, ativa }: { base: string; ativa: Visao }) {
-  const abas: [Visao, string, string][] = [["rede", "Rede de colaboração", base], ["producao", "Produção", `${base}?ver=producao`]];
+export default function AbasEntidade({ base, ativa, coautores }: { base: string; ativa: Visao; coautores?: string }) {
+  const abas: [Visao, string, string][] = [
+    ["rede", "Mapa", base],
+    ...(coautores ? [["coautores", coautores, `${base}?ver=coautores`] as [Visao, string, string]] : []),
+    ["producao", "Produção", `${base}?ver=producao`],
+  ];
   return (
     <nav className="seg abas-entidade" aria-label="Visualização">
       {abas.map(([v, rotulo, href]) => (

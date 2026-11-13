@@ -29,8 +29,9 @@ export default async function Inicio({ searchParams }: { searchParams: Record<st
       <section className="hero" aria-labelledby="hero-titulo">
         <h1 id="hero-titulo">Quem pesquisa o quê no <b>Nordeste</b> <Estrela lima tamanho={22} /></h1>
         <p className="hero-sub">Pesquisadores, instituições e programas de pós em ciências da vida nos 9 estados.</p>
-        <BuscaGeral exemplos />
       </section>
+
+      <BuscaGeral exemplos />
 
       <nav className="caminhos" aria-label="Explorar">
         <a className="caminho caminho-painel" href="/painel">
@@ -38,7 +39,7 @@ export default async function Inicio({ searchParams }: { searchParams: Record<st
             <svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" /><path d="M9 4v14M15 6v14" /></svg>
           </span>
           <b>Ver o painel</b>
-          <span>Mapa das instituições, áreas, colaboração e produção por ano, com filtros por estado e período.</span>
+          <span>Mapa das instituições, áreas e colaboração, com filtros por estado e período.</span>
         </a>
         <a className="caminho caminho-quiz" href="/quiz">
           <span className="caminho-icone" aria-hidden>?</span>
@@ -49,10 +50,10 @@ export default async function Inicio({ searchParams }: { searchParams: Record<st
 
       {r && (
         <ul className="numeros" aria-label="A base em números">
-          <li><b>{fmt(r.pesquisadores)}</b>pesquisadores</li>
-          <li><b>{fmt(sq ? r.works_qualis : r.works)}</b>{sq ? "publicações com Qualis" : "publicações"}</li>
-          <li><b>{fmt(r.instituicoes)}</b>instituições</li>
-          <li><b>{fmt(r.programas)}</b>programas de pós</li>
+          <li><a href="/painel"><b>{fmt(r.pesquisadores)}</b>pesquisadores</a></li>
+          <li><a href="/painel"><b>{fmt(sq ? r.works_qualis : r.works)}</b>{sq ? "publicações com Qualis" : "publicações"}</a></li>
+          <li><a href="/instituicoes"><b>{fmt(r.instituicoes)}</b>instituições</a></li>
+          <li><a href="/programas"><b>{fmt(r.programas)}</b>programas de pós</a></li>
         </ul>
       )}
     </div>

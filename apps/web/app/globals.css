@@ -1213,3 +1213,84 @@ a.mais-itens { display: inline-block; margin-top: 6px; font-size: .84rem; }
   .painel-perfil h2 { margin-top: 18px; }
   .producao-area { padding: 10px 10px 20px; }
 }
+
+/* ===== Menu do topo retrátil no celular (D-047) ===== */
+.topo .nav { order: 1; }
+.topo .topo-acoes { order: 2; }
+.menu-botao { display: none; }
+.menu-botao svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.nav a[aria-current="page"] { border-color: var(--stroke); background: var(--accent-soft); }
+@media (max-width: 699px) {
+  .topo { display: grid; grid-template-columns: 1fr auto; row-gap: 0; padding: 10px 14px; }
+  .topo .topo-acoes { grid-column: 2; grid-row: 1; padding-left: 0; border-left: 0; gap: 6px; }
+  .menu-botao { display: inline-flex; }
+  .topo .nav { grid-column: 1 / -1; grid-row: 2; display: none; margin: 8px 0 0; padding: 6px 0 0; border-top: 2px dashed var(--line);
+    flex-direction: column; flex-wrap: nowrap; overflow: visible; gap: 2px; }
+  .topo .nav.aberto { display: flex; }
+  .topo .nav a { padding: 10px 12px; border-radius: 10px; font-size: 1rem; }
+}
+
+/* ===== Tela inicial (D-047): uma coluna só, com as bordas alinhadas, centrada na altura da janela ===== */
+main:has(.abertura) { max-width: 880px; padding: 24px 16px 32px; }
+.abertura { display: grid; gap: 22px; align-content: center; min-height: calc(100dvh - 190px); }
+.abertura .hero { padding-top: 0; gap: 8px; }
+.abertura .busca-bloco { gap: 10px; }
+.abertura .busca-grande { width: 100%; }
+.abertura .exemplos { width: 100%; justify-content: center; margin: 0; }
+.caminhos { gap: 14px; }
+.caminho { padding: 16px 18px; min-height: 104px; }
+.numeros { gap: 0; border: var(--b) solid var(--stroke); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--hard-s); overflow: hidden; }
+.numeros li { padding: 0; border: 0; border-radius: 0; background: none; }
+.numeros li + li { border-left: 2px dashed var(--line); }
+.numeros a { display: flex; flex-direction: column; padding: 12px 16px; color: var(--muted); font-size: .8rem; height: 100%; }
+.numeros a:hover { text-decoration: none; background: var(--accent-soft); }
+.numeros a:focus-visible { outline: 3px solid var(--accent-vivo); outline-offset: -3px; }
+@media (max-width: 699px) {
+  main:has(.abertura) { padding: 16px 14px 24px; }
+  .abertura { gap: 16px; min-height: 0; }
+  .abertura .hero h1 { font-size: 1.6rem; }
+  .abertura .hero-sub { font-size: .86rem; }
+  /* exemplos numa linha só, deslizando de lado */
+  .abertura .exemplos { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; margin: 0 -14px; padding: 2px 14px 4px; scrollbar-width: none; }
+  .abertura .exemplos::-webkit-scrollbar { display: none; }
+  .abertura .exemplos > * { flex: none; }
+  .caminho { min-height: 0; padding: 14px; }
+  .caminho-icone { width: 46px; height: 46px; font-size: 1.5rem; }
+  .numeros li:nth-child(3) { border-left: 0; }
+  .numeros li:nth-child(n+3) { border-top: 2px dashed var(--line); }
+}
+
+/* ===== Programas e Instituições no celular (D-047) ===== */
+.explorar-pagina > * { min-width: 0; }   /* itens de grade não alargam a página */
+.campo.filtro-texto { max-width: 100%; }
+.grupo-alternar { display: inline-flex; align-items: baseline; gap: 8px; border: 0; background: none; padding: 0; font: inherit; color: var(--fg); cursor: pointer; text-align: left; }
+.grupo-alternar:hover { color: var(--accent); }
+.grupo-alternar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.grupo-seta { display: inline-grid; place-items: center; width: 20px; height: 20px; border: 1.5px solid var(--stroke); border-radius: 6px; font: 700 .9rem/1 var(--font-body); flex: none; }
+.grupo-link { font: 400 .78rem var(--font-body); }
+.grupo-cards.fechado h3 { margin-bottom: 0; }
+@media (max-width: 699px) {
+  main:has(.explorar-pagina) { padding: 14px 12px 28px; }
+  .pagina-topo h1 { font-size: 1.45rem; }
+  .pagina-topo .campo.filtro-texto { width: 100%; }
+  .barra-controles { gap: 8px; }
+  .barra-controles .ctrl { display: grid; gap: 4px; width: 100%; min-width: 0; }
+  /* linhas de chips e seletores deslizam de lado em vez de quebrar em várias linhas */
+  .chips-linha, .barra-controles .seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+  .chips-linha::-webkit-scrollbar, .barra-controles .seg::-webkit-scrollbar { display: none; }
+  .chips-linha > *, .barra-controles .seg > * { flex: none; }
+  .legenda-familias { margin: 0 -12px; padding: 0 12px; }
+  /* matriz área × conceito compacta: cabe na largura, sem rolagem lateral */
+  .matriz { min-width: 0; grid-template-columns: minmax(0, 1fr) repeat(6, 34px) 30px; }
+  .mz-area { font-size: .74rem; padding: 3px 4px; min-height: 36px; line-height: 1.2; }
+  .mz-celula { height: 36px; }
+  .mz-bolha { max-width: 30px; max-height: 30px; font-size: .62rem; }
+  .mz-col { font-size: .7rem; gap: 2px; }
+  .mz-col i { width: 6px; height: 6px; }
+  .mz-total { font-size: .72rem; padding-right: 2px; }
+  .painel-card h2 small { display: block; text-align: left; margin-top: 2px; }
+  .grade-cards, .grade-prog { grid-template-columns: 1fr; gap: 8px; }
+  .secao-topo { gap: 6px; }
+}
+.abertura .exemplos { gap: 6px; }
+@media (min-width: 700px) { .abertura .exemplos .chip { font-size: .8rem; padding: 3px 10px; } }

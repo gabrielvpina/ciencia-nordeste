@@ -589,3 +589,25 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - No celular: indicadores em 3 colunas, avatar menor, listas de revistas e de publicações recolhidas.
   - Corrigido: o mapa da rede sumia no celular, porque o `flex: 1` anulava a altura.
 - **Texto:** "filtro na tela inicial" virou "filtro do painel"; os links "← mapa geral" viraram "Painel".
+
+## D-047 — Menu retrátil, tela inicial alinhada e listas de programas e instituições no celular
+
+- **Data:** 2026-11-13 (pedido do responsável).
+- **Menu** (`components/MenuTopo.tsx`):
+  - No celular (abaixo de 700 px), os links ficam atrás de um botão e abrem como lista em largura total. Esc fecha o menu.
+  - A página atual fica destacada (`aria-current`). No desktop, nada muda.
+- **Tela inicial:**
+  - Título, busca, exemplos, os dois caminhos e os números ficam numa coluna de 880 px, com as mesmas bordas, centrada na altura da janela.
+  - Os números viraram uma faixa única com divisórias e são links (painel, instituições, programas).
+  - Sai o rótulo "Experimente:", e os exemplos cabem numa linha.
+  - No celular, os exemplos deslizam de lado numa linha só e os números ficam em 2 × 2.
+- **Instituições:**
+  - Corrigida a rolagem horizontal no celular: a página ficava com 934 px de largura. O seletor "Tamanho" não quebrava linha e alargava a grade, cujos itens têm largura mínima automática.
+  - Chips e seletores deslizam de lado.
+  - No celular, os cartões vêm 8 de cada vez.
+  - Altura no celular: de 6.400 para 2.900 px.
+- **Programas:**
+  - Filtro por nome ou instituição.
+  - Grupos recolhíveis: abertos só os 3 primeiros no desktop e o 1º no celular; com qualquer filtro, todos abrem.
+  - A tabela "área × conceito" cabe na largura do celular, com colunas de 34 px e bolhas menores.
+  - Altura no celular: de 33.900 para 7.100 px.

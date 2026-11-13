@@ -42,7 +42,7 @@ export default function BuscaGeral({ inicial = "", onBuscar, onLimpar, autoFoco,
         <button type="submit" className="botao-buscar" disabled={ocupado} aria-busy={ocupado}>Buscar</button>
       </form>
       {exemplos && (
-        <p className="exemplos"><span>Experimente:</span>{EXEMPLOS.map((x) => (
+        <p className="exemplos" aria-label="Exemplos de busca">{EXEMPLOS.map((x) => (
           <button key={x} type="button" className="chip" onClick={() => { setTermo(x); buscar(x); }}>{x}</button>
         ))}</p>
       )}

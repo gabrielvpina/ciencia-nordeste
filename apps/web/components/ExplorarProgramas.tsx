@@ -1,6 +1,6 @@
 "use client";
 // Programas de pós: matriz área de avaliação × conceito CAPES (clicável, filtra) + cards agrupados.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDica } from "@/components/Dica";
 import { UFS, fmt } from "@/lib/areas";
 import CardPrograma from "@/components/CardPrograma";
@@ -26,11 +26,18 @@ export default function ExplorarProgramas({ itens, ufInicial, areaInicial }: { i
   const [uf, setUf] = useState(ufInicial && NOME_UF[ufInicial] ? ufInicial : "");
   const [nivel, setNivel] = useState("");
   const [agrupar, setAgrupar] = useState<Agrupar>("area");
+  const [texto, setTexto] = useState("");
+  const [trocados, setTrocados] = useState<Set<string>>(new Set());   // grupos que a pessoa abriu ou fechou
   const { props: dicaProps, dica } = useDica();
 
   // A matriz respeita UF e nível; área e conceito são escolhidos nela.
   const base = useMemo(() => itens.filter((p) => (!uf || p.uf === uf) && (!nivel || NIVEIS.find((n) => n.id === nivel)!.ok(niveis(p.nivel)))), [itens, uf, nivel]);
-  const filtrados = useMemo(() => base.filter((p) => (!area || p.area === area) && (!conceito || colunaDe(p.conceito) === conceito)), [base, area, conceito]);
+  const sem = (x: string) => x.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+  const filtrados = useMemo(() => {
+    const t = sem(texto.trim());
+    return base.filter((p) => (!area || p.area === area) && (!conceito || colunaDe(p.conceito) === conceito)
+      && (!t || sem(`${p.nome} ${p.sigla ?? ""} ${p.inst_nome ?? ""}`).includes(t)));
+  }, [base, area, conceito, texto]);
 
   const matriz = useMemo(() => {
     const m = new Map<string, Map<string, number>>();
@@ -59,7 +66,12 @@ export default function ExplorarProgramas({ itens, ufInicial, areaInicial }: { i
     return [...m.values()].sort((a, b) => b.itens.length - a.itens.length);
   }, [filtrados, agrupar]);
 
-  const algumFiltro = area || conceito || uf || nivel;
+  const algumFiltro = area || conceito || uf || nivel || texto;
+  // Grupos recolhidos: abertos só os primeiros (ou todos, com algum filtro). Evita uma página de 300 cartões.
+  const [abertosIniciais, setAbertosIniciais] = useState(3);
+  useEffect(() => { if (window.matchMedia("(max-width: 699px)").matches) setAbertosIniciais(1); }, []);   // no celular, só o 1º grupo aberto
+  const aberto = (k: string, i: number) => (!!algumFiltro || i < abertosIniciais) !== trocados.has(k);
+  const alternar = (k: string) => setTrocados((s) => { const n = new Set(s); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const docentes = filtrados.reduce((s, p) => s + (p.docentes ?? 0), 0);
 
   return (
@@ -69,21 +81,22 @@ export default function ExplorarProgramas({ itens, ufInicial, areaInicial }: { i
           <h1>Programas de pós-graduação</h1>
           <p className="meta">{fmt(filtrados.length)} programas · {fmt(docentes)} docentes no último ano-base · fonte: CAPES Dados Abertos (CC-BY)</p>
         </div>
+        <input className="campo filtro-texto" type="search" placeholder="Filtrar por nome ou instituição" value={texto} onChange={(e) => setTexto(e.target.value)} aria-label="Filtrar programas por nome ou instituição" />
       </header>
 
       <div className="barra-controles">
         <div className="ctrl"><span className="lbl">Estado</span>
-          <div className="chips">
+          <div className="chips chips-linha">
             <button className={`chip${!uf ? " chip-ativo" : ""}`} onClick={() => setUf("")}>Todos</button>
             {UFS.map(([s, n]) => <button key={s} title={n} className={`chip${uf === s ? " chip-ativo" : ""}`} aria-pressed={uf === s} onClick={() => setUf(uf === s ? "" : s)}>{s}</button>)}
           </div>
         </div>
         <div className="ctrl"><span className="lbl">Nível</span>
-          <div className="chips">{NIVEIS.map((n) => (
+          <div className="chips chips-linha">{NIVEIS.map((n) => (
             <button key={n.id} className={`chip${nivel === n.id ? " chip-ativo" : ""}`} aria-pressed={nivel === n.id} onClick={() => setNivel(nivel === n.id ? "" : n.id)}>{n.rotulo}</button>
           ))}</div>
         </div>
-        {algumFiltro && <button className="chip chip-limpar" onClick={() => { setArea(""); setConceito(""); setUf(""); setNivel(""); }}>limpar filtros</button>}
+        {algumFiltro && <button className="chip chip-limpar" onClick={() => { setArea(""); setConceito(""); setUf(""); setNivel(""); setTexto(""); }}>limpar filtros</button>}
       </div>
 
       <section className="painel-card">
@@ -129,17 +142,29 @@ export default function ExplorarProgramas({ itens, ufInicial, areaInicial }: { i
         </div>
       </div>
 
-      {grupos.map((g) => (
-        <section key={g.rotulo + (g.sub ?? "")} className="grupo-cards">
-          <h3>{g.href ? <a href={g.href}>{g.rotulo}</a> : g.rotulo}{g.sub && <small> {g.sub}</small>} <span className="contagem">{g.itens.length}</span></h3>
-          <div className="grade-cards grade-prog">
-            {g.itens.map((p) => (
-              <CardPrograma key={p.id} id={p.id} nome={p.nome} conceito={p.conceito} nivel={p.nivel} docentes={p.docentes}
-                meta={`${p.sigla ?? ""} · ${p.uf}${agrupar !== "area" ? ` · ${nomeArea(p.area)}` : ""}`} />
-            ))}
-          </div>
-        </section>
-      ))}
+      {grupos.map((g, i) => {
+        const k = g.rotulo + (g.sub ?? "");
+        const ab = aberto(k, i);
+        return (
+          <section key={k} className={`grupo-cards${ab ? "" : " fechado"}`}>
+            <h3>
+              <button type="button" className="grupo-alternar" aria-expanded={ab} onClick={() => alternar(k)}>
+                <span className="grupo-seta" aria-hidden>{ab ? "−" : "+"}</span>{g.rotulo}
+              </button>
+              {g.href && <a className="grupo-link" href={g.href}>perfil</a>}
+              {g.sub && <small> {g.sub}</small>} <span className="contagem">{g.itens.length}</span>
+            </h3>
+            {ab && (
+              <div className="grade-cards grade-prog">
+                {g.itens.map((p) => (
+                  <CardPrograma key={p.id} id={p.id} nome={p.nome} conceito={p.conceito} nivel={p.nivel} docentes={p.docentes}
+                    meta={`${p.sigla ?? ""} · ${p.uf}${agrupar !== "area" ? ` · ${nomeArea(p.area)}` : ""}`} />
+                ))}
+              </div>
+            )}
+          </section>
+        );
+      })}
       {dica}
     </div>
   );

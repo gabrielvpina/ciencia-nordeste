@@ -712,3 +712,11 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Caminhos antigos (`avaliar_quiz`): coerência temática igual (média de 88%), exclusão e diversidade ok; latência mediana de 537 para 379 ms.
   - Pergunta de tema (`avaliar_quiz_temas`, 40 temas): a aderência do banner ao tema escolhido foi de 26% para 60% em média (lista de 15: de 25% para 57%); 39 de 40 banners com 5 pessoas.
   - Os casos sem ganho combinam o tema com um método que o avaliador fixa por objeto e que quase ninguém usa naquele tema; nesses casos vale a regra de reserva.
+
+## D-052 — Quiz: cache das âncoras vetoriais e do resultado completo
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Âncoras:** os percentis 90 e 99,9 da similaridade com os ~36 mil perfis (a varredura vetorial mais cara, ~200 ms) ficam em memória por vetor: "f:" + frase do nicho e "t:" + código da descrição.
+- **Resultado completo:** fica num cache LRU em memória (500 entradas, 6 h). A chave são as facetas de nicho, a instituição, o filtro Qualis, o filtro de distância e o código da descrição. A gravação do alinhamento, a página e os banners reaproveitam o mesmo cálculo; a mesma página de novo caiu de ~1 s para ~0,02 s. Erros não ficam guardados.
+- **Verificação:** banners, ordem e índices são idênticos aos de antes do cache nos 15 caminhos de `avaliar_quiz`. A "coerência" (títulos de exemplo) ainda varia entre execuções. Não é efeito do cache: já variava antes. Entrou um desempate por id na ordem dos exemplos, mas há outra fonte de variação ainda não encontrada.
+- **Achado:** o custo maior dos banners agora é a geração do PNG (perfil ~2,3 s; afinidades ~4,5 s, dos quais só ~0,5 s é o match). O próximo passo é o cache HTTP dos PNGs (item 3 da análise) e simplificar o contorno do mapa.

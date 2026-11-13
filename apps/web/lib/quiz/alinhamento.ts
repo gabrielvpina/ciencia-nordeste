@@ -119,9 +119,49 @@ function nucleo(nicho: Map<string, Opcao>, semTema = false): Opcao[] {
 
 type OpcoesAlinhar = { instituicao: string | null; soQualis: boolean; filtro?: Filtro; texto?: string | null };
 
+/** Âncoras (percentis 90 e 99,9) da similaridade entre um vetor e os ~36 mil perfis: a varredura mais cara do match
+ *  (~200 ms). Dependem só do vetor e dos dados, então ficam em memória por chave ("f:" + frase do nicho, que é finita;
+ *  "t:" + código da descrição livre). Os dados mudam só em publicação, que reinicia o processo (D-052). */
+const ANCORAS = new Map<string, Promise<{ p90: number; p999: number }>>();
+function ancoras(chave: string, vetor: string): Promise<{ p90: number; p999: number }> {
+  let a = ANCORAS.get(chave);
+  if (!a) {
+    if (ANCORAS.size >= 4000) ANCORAS.clear();
+    a = q<{ p90: number; p999: number }>(
+      `SELECT percentile_cont(0.9) WITHIN GROUP (ORDER BY s) AS p90, percentile_cont(0.999) WITHIN GROUP (ORDER BY s) AS p999
+         FROM (SELECT 1 - (embedding <=> $1::halfvec) AS s FROM researcher_embeddings) x`, [vetor]).then(([r]) => r);
+    ANCORAS.set(chave, a);
+    a.catch(() => ANCORAS.delete(chave));   // erro não fica guardado
+  }
+  return a;
+}
+
+/** Resultado completo em memória (D-052): o mesmo resultado é pedido pela gravação do alinhamento, pela página e pelos
+ *  banners, e de novo por quem abre um link compartilhado. A chave é tudo o que muda o match: facetas de nicho, instituição,
+ *  filtro Qualis, filtro de distância e código da descrição. LRU com validade; erro não fica guardado. */
+const RESULTADOS = new Map<string, { em: number; r: Promise<Resultado> }>();
+const RES_MAX = 500, RES_MS = 6 * 60 * 60 * 1000;
+function chaveResultado(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): string {
+  return JSON.stringify([[...nicho.entries()].map(([f, o]) => `${f}=${o.id}`).sort(), opts.instituicao ?? null, opts.soQualis, opts.filtro ?? { tipo: "ne" }, opts.texto ?? null]);
+}
+
 /** O tema (D-051) entra no núcleo: só fica quem publica naquele tema. Se isso deixar menos de 5 pessoas para o banner,
  *  refaz com o sub-objeto no núcleo; o tema continua pesando na cobertura e na frase da busca por significado. */
-export async function alinhar(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): Promise<Resultado> {
+export function alinhar(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): Promise<Resultado> {
+  const k = chaveResultado(nicho, opts);
+  const achado = RESULTADOS.get(k);
+  if (achado && Date.now() - achado.em < RES_MS) {
+    RESULTADOS.delete(k); RESULTADOS.set(k, achado);   // mais recente no fim (LRU)
+    return achado.r;
+  }
+  const r = calcular(nicho, opts);
+  RESULTADOS.set(k, { em: Date.now(), r });
+  r.catch(() => RESULTADOS.delete(k));
+  while (RESULTADOS.size > RES_MAX) RESULTADOS.delete(RESULTADOS.keys().next().value!);
+  return r;
+}
+
+async function calcular(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): Promise<Resultado> {
   const r = await alinharCom(nicho, opts, false);
   if (!nicho.has("tema") || r.banner.length >= 5) return r;
   const r2 = await alinharCom(nicho, opts, true);
@@ -146,13 +186,12 @@ async function alinharCom(nicho: Map<string, Opcao>, opts: OpcoesAlinhar, semTem
   const soma = PESO_INDICE.cobertura + PESO_INDICE.concentracao + PESO_INDICE.volume + pA + pT;   // o que faltar, os outros se renormalizam
   const filtro = opts.filtro ?? { tipo: "ne" };
   const excluidas = await instituicoesExcluidas(opts.instituicao);
-  // âncoras da afinidade: percentis 90 e 99,9 da similaridade entre a frase e TODOS os perfis (uma vez por consulta)
-  // (o mesmo para o texto, numa só passada)
-  const [anc] = vetor || vTexto ? await q<{ p90: number; p999: number; t90: number; t999: number }>(
-    `SELECT percentile_cont(0.9) WITHIN GROUP (ORDER BY s) AS p90, percentile_cont(0.999) WITHIN GROUP (ORDER BY s) AS p999,
-            percentile_cont(0.9) WITHIN GROUP (ORDER BY t) AS t90, percentile_cont(0.999) WITHIN GROUP (ORDER BY t) AS t999
-       FROM (SELECT 1 - (embedding <=> $1::halfvec) AS s, 1 - (embedding <=> $2::halfvec) AS t FROM researcher_embeddings) x`, [vetor, vTexto])
-    : [{ p90: 0, p999: 1, t90: 0, t999: 1 }];
+  // âncoras da afinidade: percentis 90 e 99,9 da similaridade entre o vetor e TODOS os perfis; guardadas por vetor (D-052)
+  const [aF, aT] = await Promise.all([
+    vetor ? ancoras(`f:${frase}`, vetor) : Promise.resolve({ p90: 0, p999: 1 }),
+    vTexto && opts.texto ? ancoras(`t:${opts.texto}`, vTexto) : Promise.resolve({ p90: 0, p999: 1 }),
+  ]);
+  const anc = { p90: aF.p90, p999: aF.p999, t90: aT.p90, t999: aT.p999 };
   // filtro Qualis (D-035): JOIN direto, para o plano não testar publicação a publicação
   const juntaQualis = opts.soQualis ? "JOIN mv_work_qualis mq ON mq.work_id = qw.work_id" : "";
 
@@ -236,7 +275,7 @@ async function alinharCom(nicho: Map<string, Opcao>, opts: OpcoesAlinhar, semTem
      SELECT r.rid,
             -- exemplos: as publicações do nicho mais próximas da descrição livre (D-040), se houver; senão, as que mais casam o nicho
             (SELECT json_agg(json_build_object('titulo', x.title, 'ano', x.year, 'doi', x.doi) ORDER BY x.ord) FROM (
-               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, n.v DESC, w.year DESC) AS ord
+               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, n.v DESC, w.year DESC, w.id) AS ord
                  FROM (SELECT DISTINCT a.work_id FROM work_authorships a WHERE a.researcher_id = r.rid) aw JOIN nicho n ON n.work_id = aw.work_id
                  JOIN works w ON w.id = aw.work_id LEFT JOIN work_embeddings we ON we.work_id = w.id AND $6::halfvec IS NOT NULL
                 WHERE NOT $5 OR EXISTS (SELECT 1 FROM mv_work_qualis mq WHERE mq.work_id = w.id)

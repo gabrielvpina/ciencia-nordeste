@@ -177,7 +177,20 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
         </div>
       </div>
       <div className="filtro">
-        <span className="lbl">Período <small>{de === ate ? de : `${de}–${ate}`}</small></span>
+        <span className="lbl">Período <small>{de === ate ? de : `${de}–${ate}`} · publicações por ano</small></span>
+        <div className="fa-hist" role="group" aria-label="Publicações por ano: clique num ano para filtrar">
+          {ANOS.map((a, k) => {
+            const v = dados.anos?.find((x) => x.ano === a)?.works ?? 0;
+            return (
+              <button key={a} type="button" className={`fa-hist-col${a >= de && a <= ate ? " dentro" : ""}`} aria-pressed={de === a && ate === a}
+                style={{ left: `calc(10px + (100% - 20px) * ${ANOS.length > 1 ? k / (ANOS.length - 1) : 0.5})` }}
+                onClick={() => { setDe(a); setAte(a); }} title={`${a}: ${fmt(v)} publicações. Clique para filtrar por este ano.`}>
+                <span className="fa-hist-val">{v >= 1000 ? `${(v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : fmt(v)}</span>
+                <i style={{ height: `${(100 * v) / maxAno}%` }} />
+              </button>
+            );
+          })}
+        </div>
         <div className={`faixa-anos${de === ANOS[ANOS.length - 1] ? " inicio-no-fim" : ""}`}>
           <div className="fa-trilho" aria-hidden>
             <i style={{ left: `${(100 * (de - ANOS[0])) / (ANOS.length - 1)}%`, right: `${(100 * (ANOS[ANOS.length - 1] - ate)) / (ANOS.length - 1)}%` }} />
@@ -199,24 +212,25 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
     </section>
   );
 
-  const cardAnos = (
-    <section className="painel-card pn-anos">
-      <h2>Produção por ano</h2>
-      <p className="linha-cap">Publicações{area ? ` em ${rotuloArea(area).toLowerCase()}` : ""}{uf ? ` (${uf})` : ""}. Clique num ano para filtrar.</p>
-      <div className="anos-colunas" role="group" aria-label="Publicações por ano">
-        {ANOS.map((a) => {
-          const v = dados.anos?.find((x) => x.ano === a)?.works ?? 0;
-          const dentro = a >= de && a <= ate;
-          return (
-            <button key={a} type="button" className={`ano-col${dentro ? " dentro" : ""}`} onClick={() => { setDe(a); setAte(a); }}
-              title={`${a}: ${fmt(v)} publicações. Clique para filtrar por este ano.`} aria-pressed={de === a && ate === a}>
-              <span className="ano-val">{v >= 1000 ? `${(v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : fmt(v)}</span>
-              <span className="ano-barra"><i style={{ height: `${(100 * v) / maxAno}%` }} /></span>
-              <span className="ano-rot">{a}</span>
+  // Instituições no filtro: o ranking que o mapa desenha, em lista; clicar seleciona no mapa.
+  const maxInst = Math.max(1, ranking[0]?.works ?? 1);
+  const cardInstituicoes = (
+    <section className="painel-card pn-inst">
+      <h2>Instituições com mais publicações <small>{fmt(total)} no filtro</small></h2>
+      <p className="linha-cap">{[area && rotuloArea(area), uf, de === ate ? de : `${de}–${ate}`].filter(Boolean).join(", ")}. Clique para ver no mapa.</p>
+      <ol className="pn-ranking">
+        {ranking.slice(0, 40).map((p, k) => (
+          <li key={p.id} className={selecionado === p.id ? "sel" : ""}>
+            <button type="button" onClick={() => setSelecionado(selecionado === p.id ? null : p.id)} aria-pressed={selecionado === p.id}
+              onPointerEnter={() => setDestaque(p.id)} onPointerLeave={() => setDestaque(null)} title={`${p.nome} (${p.uf})`}>
+              <span className="pos">{k + 1}</span>
+              <span className="nome">{p.sigla ?? p.nome}<small>{p.uf}</small></span>
+              <span className="val">{fmt(p.works)}</span>
+              <span className="barra"><i style={{ width: `${(100 * p.works) / maxInst}%` }} /></span>
             </button>
-          );
-        })}
-      </div>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 
@@ -235,8 +249,9 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
           </div>
         ) : (
           <div className="pn-cards">
-            <div className="pn-coluna">{cardAreas}</div>
-            <div className="pn-coluna">{cardSeletores}{cardAnos}</div>
+            {cardAreas}
+            {cardSeletores}
+            {cardInstituicoes}
           </div>
         )}
       </div>
@@ -249,6 +264,12 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
           </div>
         </div>
         <div className="mapa-palco">
+          {uf && (
+            <button type="button" className="mapa-voltar" onClick={() => setUf("")}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" /></svg>
+              Ver todo o Nordeste
+            </button>
+          )}
           <MapaNordeste modo={modo} dados={dados} ufAtiva={uf || undefined} areaAtiva={area || undefined}
             selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} forma={forma}
             onSelecionarUf={(x) => setUf(uf === x ? "" : x)} />

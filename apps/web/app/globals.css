@@ -1053,3 +1053,48 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
   .pn .pn-anos .ano-barra { width: min(70%, 120px); }
 }
 @media (min-width: 1280px) and (min-height: 620px) and (max-height: 720px) { .pn-anos .linha-cap { display: none; } .pn-anos h2 { margin-bottom: 4px; } }
+
+/* ===== Painel: produção por ano como histograma do período; card de instituições no filtro ===== */
+.fa-hist { position: relative; height: 58px; margin: 2px 0 2px; }
+.fa-hist-col { position: absolute; bottom: 0; top: 0; transform: translateX(-50%); width: clamp(18px, 7%, 30px); padding: 0; overflow: visible; border: 0; background: none; cursor: pointer;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; gap: 2px; font: inherit; }
+.fa-hist-col i { display: block; min-height: 3px; border: 1.5px solid var(--stroke); border-bottom: 0; border-radius: 5px 5px 0 0; background: var(--sand-2); }
+.fa-hist-col.dentro i { background: var(--accent-vivo); }
+.fa-hist-col:hover i, .fa-hist-col:focus-visible i { box-shadow: var(--hard-s); }
+.fa-hist-col:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.fa-hist-val { font: 600 .64rem var(--font-display); color: var(--muted); text-align: center; margin: 0 -14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.fa-hist-col.dentro .fa-hist-val { color: var(--fg); }
+.fa-hist + .faixa-anos .fa-trilho { border-top: 1.5px solid var(--stroke); }
+
+.pn-inst { display: flex; flex-direction: column; min-height: 0; }
+.pn-inst h2 small { font: 400 .74rem var(--font-body); color: var(--muted); }
+.pn-ranking { list-style: none; margin: 0; padding: 0; columns: 2 230px; column-gap: 22px; overflow-y: auto; min-height: 0; flex: 1; }
+.pn-ranking li { break-inside: avoid; }
+.pn-ranking button { width: 100%; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; grid-template-rows: auto 5px; gap: 1px 8px; align-items: center;
+  padding: 3px 6px; border: 0; border-radius: 8px; background: transparent; color: var(--fg); font: inherit; font-size: .82rem; text-align: left; cursor: pointer; }
+.pn-ranking button:hover, .pn-ranking li.sel button { background: var(--accent-soft); }
+.pn-ranking li.sel .nome { font-weight: 700; }
+.pn-ranking .pos { font: 600 .7rem var(--font-display); color: var(--muted); text-align: right; }
+.pn-ranking .nome { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pn-ranking .nome small { margin-left: 6px; color: var(--muted); font-size: .7rem; }
+.pn-ranking .val { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .78rem; }
+.pn-ranking .barra { grid-column: 2 / 4; height: 5px; border-radius: 3px; background: var(--bg); overflow: hidden; }
+.pn-ranking .barra i { display: block; height: 100%; background: var(--accent-vivo); border-radius: 3px; }
+.pn-ranking li:nth-child(-n+3) .barra i { background: var(--flow); }
+
+/* voltar ao mapa geral quando um estado está em destaque */
+.mapa-voltar { position: absolute; z-index: 7; top: 8px; right: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border: var(--b) solid var(--stroke); border-radius: 999px; background: var(--panel); color: var(--fg); font: 600 .82rem var(--font-body); cursor: pointer; box-shadow: var(--hard-s); }
+.mapa-voltar svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.mapa-voltar:hover { background: var(--accent-soft); }
+.mapa-voltar:focus-visible { outline: 3px solid var(--accent-vivo); outline-offset: 2px; }
+
+/* grade dos cards: áreas | filtros (com o histograma) em cima; instituições na largura toda, ocupando o que sobra */
+@media (min-width: 1280px) and (min-height: 620px) {
+  .pn-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "areas filtros" "inst inst"; }
+  .pn-cards .pn-inst { grid-area: inst; }
+  .pn-areas .barras-area { flex: 1; align-content: space-evenly; }
+  .pn-cards .pn-areas { display: flex; flex-direction: column; }
+}
+@media (max-width: 1279px) { .pn-ranking { max-height: 360px; } }
+@media (min-width: 1280px) and (max-height: 720px) { .fa-hist { height: 44px; } .fa-hist-val { display: none; } }

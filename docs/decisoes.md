@@ -554,3 +554,7 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Os cards seguem uma nova grade: áreas (uma linha por área) ao lado dos filtros, com alturas parecidas, e a produção por ano na largura toda, embaixo, ocupando a altura que sobra.
   - O layout "numa tela" vale a partir de 1280 px de largura; entre 1100 e 1279 px, a página empilha e rola.
   - Conferido sem rolagem em 1310 × 665, 1440 × 780, 1536 × 730 e 1920 × 946. Em 1280 × 620, a página não rola, mas a área dos cards rola 30 px por dentro.
+- **Produção por ano e instituições (mesmo dia):**
+  - A produção por ano deixa de ser um card e vira um histograma pequeno, só com as barras preenchidas, sobre o controle de período. Cada barra fica acima do seu ano; clicar filtra o ano.
+  - O espaço vai para o card **Instituições com mais publicações**: o ranking que o mapa desenha, em duas colunas, reagindo a estado, área e período. Clicar seleciona a instituição no mapa, e passar o mouse destaca a bolha.
+  - Com um estado em destaque, o mapa mostra o botão **Ver todo o Nordeste**.

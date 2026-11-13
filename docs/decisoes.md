@@ -611,3 +611,24 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Grupos recolhíveis: abertos só os 3 primeiros no desktop e o 1º no celular; com qualquer filtro, todos abrem.
   - A tabela "área × conceito" cabe na largura do celular, com colunas de 34 px e bolhas menores.
   - Altura no celular: de 33.900 para 7.100 px.
+
+## D-048 — Programas e Instituições: visão geral e lista ordenável lado a lado
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `ui`).
+- **Layout comum (`.lp`):**
+  - No topo: título, totais, busca e filtros (estado, nível ou tipo).
+  - Abaixo, duas colunas: a visão geral à esquerda e a lista à direita.
+  - No desktop (a partir de 900 px de largura), a página tem a altura da janela e cada coluna rola por dentro.
+  - No celular, a visão geral fica recolhida num botão. A lista vem em partes de 25 ou 30 linhas, e os filtros deslizam de lado.
+- **Programas:**
+  - A tabela "área de avaliação × conceito" ficou compacta e filtra a lista.
+  - Os cartões viraram linhas: conceito, nome, sigla, UF, área, níveis e docentes.
+  - A lista ordena por conceito, nome, docentes ou instituição, e agrupa (cabeçalhos fixos) por área, instituição ou estado.
+  - Altura no celular: de 7.100 para 2.300 px.
+- **Instituições:**
+  - O treemap preenche a coluna esquerda.
+  - A lista mostra posição, sigla e nome, UF, publicações com barra, pesquisadores, programas e uma mini-barra de áreas.
+  - A métrica escolhida para o tamanho dos retângulos também ordena a lista.
+  - Destaque cruzado: passar o mouse numa linha realça o retângulo, e vice-versa.
+  - No celular, cada instituição ocupa duas linhas (nome e publicações; áreas).
+- Conferido sem rolagem da página em 1920 × 946, 1310 × 665 e 1024 × 700, e sem rolagem lateral em 390 px.

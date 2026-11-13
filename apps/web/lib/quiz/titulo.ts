@@ -22,8 +22,10 @@ export function montarTitulo({ nicho, perfil }: Respostas): Titulo {
   const arquetipo = (habitat && estilo && T.arquetipos[habitat.id]?.[estilo.id]) || T.padrao;
 
   // o ambiente só entra no título e no nicho quando a pessoa disse que um lugar é essencial na pesquisa (pergunta 9)
-  const metodo = nicho.get("metodo"), sub = nicho.get("sub_objeto"), objeto = nicho.get("objeto");
-  const ambiente = nicho.get("ambiente")?.id === AMBIENTE_GERAL ? undefined : nicho.get("ambiente");
+  // o tema (D-051), quando respondido, é o recorte mais específico: vale para o título e para o nicho escrito
+  const metodo = nicho.get("metodo"), sub = nicho.get("tema") ?? nicho.get("sub_objeto"), objeto = nicho.get("objeto");
+  // o estrato (D-054, "Onde, exatamente?") é o recorte mais fino do ambiente: vale para o título e para o nicho escrito
+  const ambiente = nicho.get("ambiente")?.id === AMBIENTE_GERAL ? undefined : nicho.get("estrato") ?? nicho.get("ambiente");
 
   let doVinculo: string | null = null;
   const v = vinculo ? T.vinculos[vinculo.id] : undefined;
@@ -34,7 +36,8 @@ export function montarTitulo({ nicho, perfil }: Respostas): Titulo {
     if (frase) doVinculo = v.modelo.replace("{de}", frase);
   }
 
-  const partes = [metodo?.nicho ?? "Ciência", sub?.nicho ?? (objeto ? `de ${objeto.rotulo.toLowerCase()}` : ""), ambiente?.nicho ?? ""];
+  // a técnica (D-053), quando respondida, substitui o método no nicho escrito: "Metagenômica dos arbovírus"
+  const partes = [nicho.get("tecnica")?.nicho ?? metodo?.nicho ?? "Ciência", sub?.nicho ?? (objeto ? `de ${objeto.rotulo.toLowerCase()}` : ""), ambiente?.nicho ?? ""];
   const nichoEscrito = partes.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
 
   return {

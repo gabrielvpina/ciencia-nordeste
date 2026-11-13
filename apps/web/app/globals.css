@@ -1412,3 +1412,20 @@ main:has(.lp) { max-width: none; padding: 14px 16px 16px; }
   .lp-linha.inst .li-pub { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: baseline; column-gap: 3px; row-gap: 3px; }
   .lp-linha.inst .li-pub .li-barra { flex-basis: 100%; }
 }
+
+/* ===== Resultado do quiz no celular (D-049): cartões num carrossel, lista curta ===== */
+.qr-deslize { display: none; }
+.qr-pessoas li.recolhivel-li { display: block; padding: 0; border: 0; box-shadow: none; background: none; }
+.qr-pessoas .recolhivel > .lista { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.qr-pessoas .recolhivel > .lista > li { padding: 12px; border: var(--b) solid var(--stroke); }
+@media (max-width: 759px) {
+  .qr-cabeca h1 { font-size: clamp(2rem, 10vw, 2.6rem); }
+  .qr-cabeca .qr-sec { font-size: 1rem; }
+  .qr-cabeca .qr-nicho { font-size: 1rem; }
+  .qr-deslize { display: block; margin: -4px 0 -8px; font-size: .8rem; }
+  .qr-banners { display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 80%; gap: 14px; overflow-x: auto;
+    scroll-snap-type: x mandatory; margin: 0 -16px; padding: 4px 16px 14px; scrollbar-width: none; }
+  .qr-banners::-webkit-scrollbar { display: none; }
+  .qr-banner { scroll-snap-align: center; min-width: 0; }
+  .qr-pessoas li .qr-ex + .qr-ex { display: none; }
+}

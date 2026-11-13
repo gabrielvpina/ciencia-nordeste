@@ -27,7 +27,8 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
   const total = telas.length + 2;   // cadastro + perguntas + descrição
   // a descrição vem logo depois do sub-objeto ("especificamente?"): no experimento de 20 casos, um texto sobre o objeto
   // rendeu mais que textos sobre técnica ou objetivo (ingest/carga/experimento_quiz_textos.py)
-  const iSub = telas.findIndex((t) => t.id === "sub_objeto");
+  // com a pergunta de tema (D-051), a descrição vem depois dela: o tema refina o sub-objeto
+  const iSub = Math.max(telas.findIndex((t) => t.id === "sub_objeto"), telas.findIndex((t) => t.id === "tema"));
 
   // cada tela é um passo na URL (?passo=cadastro | 0…9 | texto), pelo roteador do Next: o "voltar" do navegador/celular funciona.
   // As respostas ficam só na memória; recarregar no meio do quiz volta para o começo (o cadastro não fica guardado).
@@ -44,7 +45,7 @@ export default function QuizApp({ estrutura, contato }: { estrutura: Estrutura; 
   useEffect(() => { setEscolhida(null); setProcessando(false); }, [p]);
 
   const opcoesDe = useCallback((t: Tela, r: Record<string, string | null>) =>
-    filtrarOpcoes(t, r.metodo ?? undefined, r.objeto ?? undefined), []);
+    filtrarOpcoes(t, r.metodo ?? undefined, r.objeto ?? undefined, t.depende_de ? r[t.depende_de] ?? undefined : undefined), []);
 
   /** resultado: a descrição (se houver) vira um código no servidor; o link leva só o código, nunca o texto */
   const concluir = async (r: Record<string, string | null>, descricao: string) => {

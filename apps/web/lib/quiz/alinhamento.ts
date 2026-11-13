@@ -110,15 +110,67 @@ async function rankear<T>(sql: string, params: unknown[], amplo: boolean): Promi
   }
 }
 
-/** O núcleo: método e sub-objeto (ou objeto, se o sub-objeto foi pulado). Se faltar um, o outro sozinho. */
-function nucleo(nicho: Map<string, Opcao>): Opcao[] {
-  const alvo = nicho.get("sub_objeto") ?? nicho.get("objeto");
+/** O núcleo: método e o recorte mais específico respondido (tema, D-051; senão sub-objeto; senão objeto).
+ *  Se faltar um, o outro sozinho. `semTema`: o mesmo, ignorando o tema (usado se o tema deixar gente de menos). */
+function nucleo(nicho: Map<string, Opcao>, semTema = false): Opcao[] {
+  const alvo = (semTema ? undefined : nicho.get("tema")) ?? nicho.get("sub_objeto") ?? nicho.get("objeto");
   return [nicho.get("metodo"), alvo].filter((o): o is Opcao => !!o?.sinais && Object.keys(o.sinais).length > 0);
 }
 
-export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: string | null; soQualis: boolean; filtro?: Filtro; texto?: string | null }): Promise<Resultado> {
+type OpcoesAlinhar = { instituicao: string | null; soQualis: boolean; filtro?: Filtro; texto?: string | null };
+
+/** Âncoras (percentis 90 e 99,9) da similaridade entre um vetor e os ~36 mil perfis: a varredura mais cara do match
+ *  (~200 ms). Dependem só do vetor e dos dados, então ficam em memória por chave ("f:" + frase do nicho, que é finita;
+ *  "t:" + código da descrição livre). Os dados mudam só em publicação, que reinicia o processo (D-052). */
+const ANCORAS = new Map<string, Promise<{ p90: number; p999: number }>>();
+function ancoras(chave: string, vetor: string): Promise<{ p90: number; p999: number }> {
+  let a = ANCORAS.get(chave);
+  if (!a) {
+    if (ANCORAS.size >= 4000) ANCORAS.clear();
+    a = q<{ p90: number; p999: number }>(
+      `SELECT percentile_cont(0.9) WITHIN GROUP (ORDER BY s) AS p90, percentile_cont(0.999) WITHIN GROUP (ORDER BY s) AS p999
+         FROM (SELECT 1 - (embedding <=> $1::halfvec) AS s FROM researcher_embeddings) x`, [vetor]).then(([r]) => r);
+    ANCORAS.set(chave, a);
+    a.catch(() => ANCORAS.delete(chave));   // erro não fica guardado
+  }
+  return a;
+}
+
+/** Resultado completo em memória (D-052): o mesmo resultado é pedido pela gravação do alinhamento, pela página e pelos
+ *  banners, e de novo por quem abre um link compartilhado. A chave é tudo o que muda o match: facetas de nicho, instituição,
+ *  filtro Qualis, filtro de distância e código da descrição. LRU com validade; erro não fica guardado. */
+const RESULTADOS = new Map<string, { em: number; r: Promise<Resultado> }>();
+const RES_MAX = 500, RES_MS = 6 * 60 * 60 * 1000;
+function chaveResultado(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): string {
+  return JSON.stringify([[...nicho.entries()].map(([f, o]) => `${f}=${o.id}`).sort(), opts.instituicao ?? null, opts.soQualis, opts.filtro ?? { tipo: "ne" }, opts.texto ?? null]);
+}
+
+/** O tema (D-051) entra no núcleo: só fica quem publica naquele tema. Se isso deixar menos de 5 pessoas para o banner,
+ *  refaz com o sub-objeto no núcleo; o tema continua pesando na cobertura e na frase da busca por significado. */
+export function alinhar(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): Promise<Resultado> {
+  const k = chaveResultado(nicho, opts);
+  const achado = RESULTADOS.get(k);
+  if (achado && Date.now() - achado.em < RES_MS) {
+    RESULTADOS.delete(k); RESULTADOS.set(k, achado);   // mais recente no fim (LRU)
+    return achado.r;
+  }
+  const r = calcular(nicho, opts);
+  RESULTADOS.set(k, { em: Date.now(), r });
+  r.catch(() => RESULTADOS.delete(k));
+  while (RESULTADOS.size > RES_MAX) RESULTADOS.delete(RESULTADOS.keys().next().value!);
+  return r;
+}
+
+async function calcular(nicho: Map<string, Opcao>, opts: OpcoesAlinhar): Promise<Resultado> {
+  const r = await alinharCom(nicho, opts, false);
+  if (!nicho.has("tema") || r.banner.length >= 5) return r;
+  const r2 = await alinharCom(nicho, opts, true);
+  return r2.banner.length > r.banner.length ? r2 : r;
+}
+
+async function alinharCom(nicho: Map<string, Opcao>, opts: OpcoesAlinhar, semTema: boolean): Promise<Resultado> {
   const facetas = [...nicho.entries()].filter(([, o]) => o.sinais && (o.sinais.topics || o.sinais.subfields || o.sinais.fields || o.sinais.termos));
-  const nuc = nucleo(nicho);
+  const nuc = nucleo(nicho, semTema);
   const vazio: Resultado = { versao: ARVORE.versao, tempos: {}, nucleo: nuc.map((o) => o.id), vetorial: false, texto: false, candidatos: 0, banner: [], lista: [], instituicoes: [], programas: [], origem: null };
   if (!nuc.length) return vazio;
 
@@ -134,13 +186,12 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
   const soma = PESO_INDICE.cobertura + PESO_INDICE.concentracao + PESO_INDICE.volume + pA + pT;   // o que faltar, os outros se renormalizam
   const filtro = opts.filtro ?? { tipo: "ne" };
   const excluidas = await instituicoesExcluidas(opts.instituicao);
-  // âncoras da afinidade: percentis 90 e 99,9 da similaridade entre a frase e TODOS os perfis (uma vez por consulta)
-  // (o mesmo para o texto, numa só passada)
-  const [anc] = vetor || vTexto ? await q<{ p90: number; p999: number; t90: number; t999: number }>(
-    `SELECT percentile_cont(0.9) WITHIN GROUP (ORDER BY s) AS p90, percentile_cont(0.999) WITHIN GROUP (ORDER BY s) AS p999,
-            percentile_cont(0.9) WITHIN GROUP (ORDER BY t) AS t90, percentile_cont(0.999) WITHIN GROUP (ORDER BY t) AS t999
-       FROM (SELECT 1 - (embedding <=> $1::halfvec) AS s, 1 - (embedding <=> $2::halfvec) AS t FROM researcher_embeddings) x`, [vetor, vTexto])
-    : [{ p90: 0, p999: 1, t90: 0, t999: 1 }];
+  // âncoras da afinidade: percentis 90 e 99,9 da similaridade entre o vetor e TODOS os perfis; guardadas por vetor (D-052)
+  const [aF, aT] = await Promise.all([
+    vetor ? ancoras(`f:${frase}`, vetor) : Promise.resolve({ p90: 0, p999: 1 }),
+    vTexto && opts.texto ? ancoras(`t:${opts.texto}`, vTexto) : Promise.resolve({ p90: 0, p999: 1 }),
+  ]);
+  const anc = { p90: aF.p90, p999: aF.p999, t90: aT.p90, t999: aT.p999 };
   // filtro Qualis (D-035): JOIN direto, para o plano não testar publicação a publicação
   const juntaQualis = opts.soQualis ? "JOIN mv_work_qualis mq ON mq.work_id = qw.work_id" : "";
 
@@ -223,15 +274,16 @@ export async function alinhar(nicho: Map<string, Opcao>, opts: { instituicao: st
                 HAVING count(*) FILTER (WHERE qw.opcao_id = ANY($4::text[])) = cardinality($4::text[]))
      SELECT r.rid,
             -- exemplos: as publicações do nicho mais próximas da descrição livre (D-040), se houver; senão, as que mais casam o nicho
+            -- (pontuação arredondada e desempate por id: a soma em ponto flutuante varia na última casa conforme o plano, D-052)
             (SELECT json_agg(json_build_object('titulo', x.title, 'ano', x.year, 'doi', x.doi) ORDER BY x.ord) FROM (
-               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, n.v DESC, w.year DESC) AS ord
+               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, round(n.v::numeric, 4) DESC, w.year DESC, w.id) AS ord
                  FROM (SELECT DISTINCT a.work_id FROM work_authorships a WHERE a.researcher_id = r.rid) aw JOIN nicho n ON n.work_id = aw.work_id
                  JOIN works w ON w.id = aw.work_id LEFT JOIN work_embeddings we ON we.work_id = w.id AND $6::halfvec IS NOT NULL
                 WHERE NOT $5 OR EXISTS (SELECT 1 FROM mv_work_qualis mq WHERE mq.work_id = w.id)
                 ORDER BY ord LIMIT 2) x) AS exemplos,
             (SELECT min(w.year) FROM work_authorships a JOIN nicho n ON n.work_id = a.work_id JOIN works w ON w.id = a.work_id WHERE a.researcher_id = r.rid) AS desde,
-            (SELECT g.name FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC LIMIT 1) AS programa,
-            (SELECT g.id::text FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC LIMIT 1) AS programa_id
+            (SELECT g.name FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC, g.grade DESC, g.id LIMIT 1) AS programa,
+            (SELECT g.id::text FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC, g.grade DESC, g.id LIMIT 1) AS programa_id
        FROM unnest($1::uuid[]) AS r(rid)`,
     [ids_mostrar, ids, pesos, nuc.map((o) => o.id), opts.soQualis, vTexto]) : [];
   const t3 = Date.now();

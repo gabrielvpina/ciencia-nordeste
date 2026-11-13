@@ -632,3 +632,147 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Destaque cruzado: passar o mouse numa linha realça o retângulo, e vice-versa.
   - No celular, cada instituição ocupa duas linhas (nome e publicações; áreas).
 - Conferido sem rolagem da página em 1920 × 946, 1310 × 665 e 1024 × 700, e sem rolagem lateral em 390 px.
+
+## D-049 — Arte final dos banners do quiz ("Registro de campo") e resultado no celular
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Método:** seguindo a skill pública *canvas-design*, primeiro uma filosofia visual (`docs/arte-banners.md`), depois a arte e uma segunda passada só de refinamento.
+- **Restrições mantidas:** só cores e formas simples, sem ilustração; títulos neutros; nicho sempre inteiro; paleta do site.
+- **Banner de perfil:**
+  - É uma ficha de catálogo: cabeçalho e rodapé com réguas, o título como único gesto grande e uma ficha com um código de barras gerado pelas respostas.
+  - O código é determinístico: as mesmas respostas desenham sempre as mesmas barras e o mesmo número `CN-xxxx·xxxx`, que aparece também no banner de afinidades.
+  - Abaixo, o nicho e o registro numerado (01–06) das escolhas.
+  - Saem os círculos decorativos, as pílulas inclinadas e os rótulos em caixa alta.
+- **Banner de afinidades:**
+  - Nicho e mapa de localização no alto, com marcadores proporcionais ao mapa.
+  - Uma única ficha com as 5 pessoas em linhas separadas por réguas: número na cor da paisagem, nome inteiro (quebra linha em vez de cortar), instituição e cidade, índice "/100" e medidor de 10 blocos.
+  - Saem os cartões inclinados, os selos e as iniciais.
+- **Os dois formatos** (story e feed) distribuem os blocos com espaços iguais; nada sai da borda.
+- **Resultado no celular:**
+  - Os dois cartões ficam num carrossel de deslizar, com o próximo aparecendo pela borda.
+  - Cabeçalho mais compacto.
+  - A lista "Quem pesquisa como você" mostra 5 pessoas, e as outras ficam em "Mostrar mais"; cada pessoa tem um título de exemplo.
+  - Altura: de 8.400 para 3.200 px. O cadastro e as perguntas já estavam alinhados.
+
+## D-050 — Banners do quiz revistos com a skill ui-ux-pro-max (banner-design) e pontos do mapa corrigidos
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Regras da skill aplicadas:**
+  - Zonas seguras do story: nada essencial nos ~230 px do topo nem nos ~210 px de baixo, que o Instagram cobre.
+  - Uma única chamada para ação: barra escura com o logo e "faça o seu · ciencianordeste.com.br/quiz" em verde-limão.
+  - Hierarquia em três zonas (gancho, conteúdo, chamada), no máximo 2 fontes e só a paleta do site.
+- **Contraste medido:**
+  - Texto escuro e cinza sobre os 6 fundos: de 12,1 a 13,6 e de 4,7 a 5,3.
+  - Cor de destaque como texto: de 1,8 a 3,8, reprovada.
+  - Texto escuro sobre a cor de destaque: de 4,2 a 6,9.
+  - Regra: a cor de destaque só preenche (quadrados dos números, marcadores, barras, a primeira etiqueta) e nunca é cor de texto. Os números 1–5, antes na cor de destaque, viraram texto escuro em quadrados coloridos.
+- **Estética do site e descontração:**
+  - Um selo verde-limão inclinado com o gancho ("Que cientista é você?" / "Quem pesquisa como eu").
+  - O contorno do logo, grande e na cor da paisagem, no canto (na zona coberta pela interface).
+  - Sombras duras, bordas arredondadas e as escolhas como etiquetas.
+  - O código das respostas virou "meu DNA científico". Os textos estão em primeira pessoa ("meu título", "meu nicho"), para quem compartilha.
+- **O que muda de um cartão para outro:**
+  - O fundo segue o habitat (5 cores) e o acento segue a paisagem (6 cores).
+  - O tamanho do título depende do comprimento total e agora também da maior palavra, para "comunidade" não encostar na borda.
+  - O nicho (até cerca de 95 caracteres) muda de tamanho em 4 faixas.
+  - De 3 a 6 escolhas (o feed mostra 4); de 0 a 5 pessoas; nomes longos quebram linha.
+- **Pontos do mapa:**
+  - O desalinhamento vinha do anel que espalhava pontos da mesma cidade (raio de 130 a 165 unidades), empurrando os do litoral para o mar.
+  - Agora cada ponto fica na posição exata, e quem está a menos de 0,8 marcador de distância vira um só marcador ("3·4·5"), mantido dentro da imagem.
+  - O tamanho do marcador é proporcional ao mapa.
+- **Ajustes (mesmo dia, pedido do responsável):**
+  - O logo grande deixa de ser cortado na borda. No perfil, fica inteiro, como figurinha no canto (na faixa coberta pela interface). No de afinidades, sai, porque repetia o mapa.
+  - O de afinidades ganha uma manchete grande ("Quem pesquisa como eu", com traço verde-limão) no lugar do selo pequeno.
+  - O selo do perfil fica maior.
+
+## D-051 — Quiz guiado pelos dados: auditoria, palavras-chave corrigidas, pergunta de tema e novos nichos
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Auditoria** (`python -m ingest.carga.auditar_quiz` → `ingest/relatorios/quiz_auditoria.md` e `.json`):
+  - Mede, para cada opção, o tamanho, os pesquisadores e a pureza (parcela das publicações nos tópicos OpenAlex mais comuns).
+  - Lista os temas reais por sub-objeto e as lacunas (tópicos com muitos pesquisadores e pouca cobertura).
+- **Achado 1, palavras-chave ambíguas:**
+  - Termos curtos casavam como início de outras palavras: "ant" → "antimicrobial", "mel" → "mellitus", "kid" → "kidney", "farm" → "farmácia". Outros casavam com sentidos diferentes: "recife" (a cidade), "polpa" (dentária), "restoration" (dentária), "irrigation" (de canal), "community" (saúde).
+  - Correção: termos de até 4 letras viram palavra inteira, aceitando o plural (`quiz_preparar` e o validador), e 22 termos ambíguos foram trocados por expressões específicas.
+  - Efeito: "Besouros, borboletas…" foi de 18 mil para 3,2 mil publicações (pureza nos 5 tópicos principais de 13% para 42%); "Abelhas", de 20% para 66%; "Caprinos", de 38% para 57%. O ambiente "mar" ganhou tópicos marinhos reais.
+- **Achado 2, especificidade:** cada sub-objeto reúne de 4 a 8 temas reais bem distintos.
+  - Nova pergunta **tema** ("Qual destes temas é mais o seu?"), logo depois do sub-objeto: 204 temas em 45 sub-objetos (`ingest/carga/quiz_expandir.py`).
+  - Cada tema usa como sinal os tópicos OpenAlex reais mais comuns entre os pesquisadores do Nordeste naquele sub-objeto, com rótulo em português, sintagma para o título ("Detetive da leishmaniose") e trecho do nicho ("Epidemiologia da leishmaniose da caatinga").
+  - O tema entra no núcleo do match no lugar do sub-objeto (peso 2,5). Se deixar menos de 5 pessoas para o banner, o match é refeito com o sub-objeto.
+  - A descrição livre passa a vir depois do tema.
+- **Achado 3, lacunas:**
+  - Novo objeto **Cuidado, serviços e formação em saúde**, com quatro sub-objetos: enfermagem e segurança do paciente, envelhecimento, formação em saúde e saúde do trabalhador. Também tem temas.
+  - "Álcool e outras drogas" entrou como tema de "Cérebro e mente".
+- **Estrutura:**
+  - Versão 6 da árvore: 11 perguntas (12 telas com a instituição). Os limites do validador sobem para 20 telas e 10 opções por pergunta.
+  - Títulos principais possíveis: de 157 para 781.
+  - Nada foi removido: links antigos (sem tema) continuam abrindo.
+- **Lacunas na auditoria seguinte:** de 16 para 2. Os relatórios ficam em `ingest/relatorios/` (fora do git, como os outros).
+- **Avaliação:**
+  - Caminhos antigos (`avaliar_quiz`): coerência temática igual (média de 88%), exclusão e diversidade ok; latência mediana de 537 para 379 ms.
+  - Pergunta de tema (`avaliar_quiz_temas`, 40 temas): a aderência do banner ao tema escolhido foi de 26% para 60% em média (lista de 15: de 25% para 57%); 39 de 40 banners com 5 pessoas.
+  - Os casos sem ganho combinam o tema com um método que o avaliador fixa por objeto e que quase ninguém usa naquele tema; nesses casos vale a regra de reserva.
+
+## D-052 — Quiz: cache das âncoras vetoriais e do resultado completo
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Âncoras:** os percentis 90 e 99,9 da similaridade com os ~36 mil perfis (a varredura vetorial mais cara, ~200 ms) ficam em memória por vetor: "f:" + frase do nicho e "t:" + código da descrição.
+- **Resultado completo:** fica num cache LRU em memória (500 entradas, 6 h). A chave são as facetas de nicho, a instituição, o filtro Qualis, o filtro de distância e o código da descrição. A gravação do alinhamento, a página e os banners reaproveitam o mesmo cálculo; a mesma página de novo caiu de ~1 s para ~0,02 s. Erros não ficam guardados.
+- **Verificação:** banners, ordem e índices são idênticos aos de antes do cache nos 15 caminhos de `avaliar_quiz`.
+- **Resultado estável:** a "coerência" (títulos de exemplo) variava entre execuções, já antes do cache. A pontuação dos exemplos é uma soma em ponto flutuante que muda na última casa conforme o plano da consulta, e o programa de pós exibido não tinha desempate. Agora a pontuação é arredondada e há desempate por id (e por conceito no programa). Duas execuções seguidas, com reinício no meio, dão resultados idênticos.
+- **PNGs dos banners em cache no servidor:** gerar a imagem custa de 2 a 5 s de CPU, mais que o próprio match (~0,5 s). Os bytes ficam num LRU de até 64 MB. A chave usa as respostas em ordem normalizada e só o que muda a imagem: instituição, Qualis e texto valem só para o de afinidades. Um banner repetido sai em ~0,015 s. O cache HTTP passa a `max-age` de 1 dia, com `stale-while-revalidate` de 7 dias. Os caches reiniciam a cada publicação, quando os dados mudam.
+
+## D-053 — Quiz: reavaliação dos temas, pergunta de técnica e novos nichos
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Reavaliação** (seção 4 de `auditar_quiz`, cobertura dos temas):
+  - Antes, 85% dos 35.724 pesquisadores ativos tinham pelo menos 2 publicações em algum tema.
+  - O que ficava de fora era sobretudo clínica médica por especialidade e veterinária de pequenos animais.
+- **Novos nichos:**
+  - Em Saúde humana (agora com 10 sub-objetos):
+    - "Rins, pulmões e digestão": rins e diálise; transplantes; asma, respiração e sono; fígado e intestino.
+    - "Imunidade e doenças autoimunes": lúpus, artrite reumatoide, esclerose múltipla, esclerose sistêmica.
+  - Objeto novo "Cães, gatos e animais de companhia", com três sub-objetos:
+    - clínica e cirurgia;
+    - zoonoses e doenças;
+    - anatomia e reprodução.
+  - Temas novos em sub-objetos existentes:
+    - linfomas, mieloma e transplante de medula; cuidados paliativos;
+    - assoalho pélvico e saúde ginecológica; prematuridade;
+    - depressão; dor e anestesia;
+    - processo de enfermagem; bioética; envelhecimento e incapacidade.
+  - Temas ampliados: feridas e estomias, pré-eclâmpsia, telessaúde.
+  - No total, 228 temas em 50 sub-objetos.
+  - Cobertura dos temas: de 85% para 92% dos pesquisadores ativos; sub-objetos, 98%.
+- **Pergunta nova: técnica** ("E qual técnica você mais usa?"), logo depois do método (`ingest/carga/quiz_tecnicas.py`).
+  - Foram 46 técnicas candidatas, medidas nas publicações de cada método. Entraram as 38 com pelo menos 40 pesquisadores do Nordeste, em 8 métodos (relatório `quiz_tecnicas.md`).
+  - Exemplos: genômica, metagenômica e filogenia; marcadores moleculares e citogenética; cultura de células e nanotecnologia; docking (em Química, com 1.016 pesquisadores); aprendizado de máquina e estatística espacial; transversais, coortes e revisões sistemáticas; ensaios clínicos e relatos de caso; inventários e monitoramento.
+  - Ficaram de fora por falta de gente: docking em bioinformática, geoprocessamento em dados, pesquisa qualitativa e quatro técnicas de campo.
+  - A técnica pesa 1,5 na cobertura, não entra no núcleo, e substitui o método no nicho escrito ("Metagenômica dos arbovírus da caatinga").
+- **Estrutura:** versão 7 da árvore, com 12 perguntas (13 telas com a instituição), 10 objetos e 868 títulos principais possíveis.
+- **Avaliação:**
+  - Caminhos antigos: sem regressão (coerência média de 87%, exclusão e diversidade ok).
+  - Temas (60 casos): aderência do banner de 33% para 67%; lista de 29% para 65%; 58 de 60 banners com 5 pessoas.
+  - Técnicas (38 casos, `avaliar_quiz_tecnicas`): ganho médio de +13 pontos no banner e +15 na lista; os 38 banners com 5 pessoas.
+  - As técnicas sem ganho são combinações raras no caminho fixo de teste (ex.: ensaios clínicos em "boca e dentes").
+
+## D-054 — Ambientes estratificados e novos lugares de trabalho no quiz
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`; `ingest/carga/quiz_ambientes.py`).
+- **Ambiente vira grupo:**
+  - Grupos: caatinga e semiárido; matas úmidas, restingas e brejos; litoral, mangues e mar; cidades, hospitais, escolas e serviços; lavouras e fazendas.
+  - Dois grupos novos: "Rios, açudes e lagoas" e "Comunidades tradicionais e rurais".
+  - Os ids antigos continuam.
+- **Pergunta nova "Onde, exatamente?"** (estrato, depende do ambiente):
+  - Foram 30 candidatos medidos nas publicações; entraram os 25 com pelo menos 40 pesquisadores (relatório `quiz_ambientes.md`).
+  - Exemplos: caatinga, cerrado, serras e chapadas, sertão irrigado; mata atlântica, restingas, Amazônia maranhense, fragmentos florestais; manguezais, praias e recifes, mar aberto; rios, açudes; agricultura familiar, agronegócio, pastagens, estufas; hospitais e UTIs, atenção primária, escolas, periferias, prisões; povos indígenas, quilombolas, comunidades rurais.
+  - Ficaram de fora por falta de gente: cavernas, ilhas oceânicas, lagoas, água subterrânea e pescadores artesanais.
+  - O estrato vale para o título ("Sentinela dos manguezais") e para o nicho escrito. Peso 2,0 no match.
+- **Lugares de trabalho (habitat, só perfil):** de 5 para 9, com "No hospital ou no consultório", "Em sala de aula", "Na água" e "Na estufa ou no biotério", cada um com 5 títulos neutros por estilo e duas cores novas de fundo.
+- **Estrutura:** versão 8 da árvore, com 13 perguntas (14 telas com a instituição) e 915 títulos principais possíveis.
+- **Avaliação:**
+  - Estratos (`avaliar_quiz_estratos`, 25 casos): ganho médio de +7 pontos no banner e +6 na lista; os 25 banners com 5 pessoas.
+  - O efeito é pequeno porque a maioria dos artigos não cita o lugar no título nem nas palavras-chave. Hoje o estrato serve mais ao título e ao nicho.
+  - Caminhos antigos: coerência igual (87%).
+  - A latência subiu nesta rodada (mediana de ~2 s), medida com a máquina sobrecarregada (carga 9 em 6 núcleos, com um processo externo de análise de disco). Uma consulta fixa de referência rodou em 98 ms. É preciso medir de novo com a máquina livre.
+- **Próximo passo para o ambiente pesar no match:** dar ao ambiente sinais além do texto, com dados abertos (ver a proposta na conversa: biomas do IBGE por município, unidades de conservação, CNES).

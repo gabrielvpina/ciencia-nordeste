@@ -1,6 +1,7 @@
 // Resultado do quiz (etapa 13): os dois banners, a lista estendida, o filtro de distância e as instituições e programas
 // mais alinhados. Tudo recalculado no servidor a partir dos ids na URL; esta página não grava nada (quem grava o
 // alinhamento é o quiz, ao concluir: /api/quiz/alinhamento, D-042).
+import Recolhivel from "@/components/Recolhivel";
 import type { Metadata } from "next";
 import Avatar from "@/components/Avatar";
 import { CompartilharBanner, CopiarLink, Refazer } from "@/components/quiz/Compartilhar";
@@ -60,6 +61,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
         <p className="qr-nicho">{t.nicho}</p>
       </section>
 
+      <p className="qr-deslize meta" aria-hidden>Deslize para ver os dois cartões</p>
       <div className="qr-banners">
         <figure className="qr-banner">
           <div className="qr-img" data-espera="gerando o cartão…">{/* eslint-disable-next-line @next/next/no-img-element */}
@@ -89,7 +91,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
         )}
         {!r.lista.length && <p className="meta">Ninguém no Nordeste combina com todas as suas respostas{filtro.tipo !== "ne" ? " nesse filtro de distância" : ""}. Tente pular uma das perguntas mais específicas, como escala ou ambiente.</p>}
         <ol className="qr-pessoas">
-          {r.lista.map((x, k) => (
+          <Recolhivel visiveis={5} rotulo="Mostrar mais" lista>{r.lista.map((x, k) => (
             <li key={x.id}>
               <span className="qr-pos">{k + 1}</span>
               <Avatar id={x.id} nome={x.nome} tamanho={52} />
@@ -104,7 +106,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
               </div>
               <span className="qr-indice" title="índice de compatibilidade (0–100)">{x.indice}</span>
             </li>
-          ))}
+          ))}</Recolhivel>
         </ol>
       </section>
 

@@ -1,15 +1,18 @@
 {
- "versao": 5,
+ "versao": 8,
  "estrutura": "facetas (v2 do desenho, docs/etapas/13-quiz-alinhamento.md)",
  "telas": [
   "habitat",
   "metodo",
+  "tecnica",
   "objeto",
   "sub_objeto",
+  "tema",
   "estilo",
   "foco",
   "escala",
   "ambiente",
+  "estrato",
   "vinculo",
   "impacto"
  ],
@@ -24,7 +27,10 @@
   "foco": 1.2,
   "escala": 0.6,
   "ambiente": 0.8,
-  "impacto": 0.5
+  "impacto": 0.5,
+  "tema": 2.5,
+  "tecnica": 1.5,
+  "estrato": 2.0
  },
  "perguntas": {
   "habitat": {
@@ -70,6 +76,38 @@
      "descricao": "acervos, herbários, bibliotecas",
      "visual": {
       "cor": "colecoes"
+     }
+    },
+    {
+     "id": "habitat.clinica",
+     "rotulo": "No hospital ou no consultório",
+     "descricao": "pacientes, exames e plantões",
+     "visual": {
+      "cor": "pessoas"
+     }
+    },
+    {
+     "id": "habitat.aula",
+     "rotulo": "Em sala de aula",
+     "descricao": "turmas, oficinas e extensão",
+     "visual": {
+      "cor": "colecoes"
+     }
+    },
+    {
+     "id": "habitat.agua",
+     "rotulo": "Na água",
+     "descricao": "barco, mergulho, rio ou açude",
+     "visual": {
+      "cor": "agua"
+     }
+    },
+    {
+     "id": "habitat.estufa",
+     "rotulo": "Na estufa ou no biotério",
+     "descricao": "plantas, animais e experimentos controlados",
+     "visual": {
+      "cor": "estufa"
      }
     }
    ]
@@ -546,6 +584,70 @@
       "metodo.dados",
       "metodo.quimica"
      ]
+    },
+    {
+     "id": "objeto.servicos",
+     "rotulo": "Cuidado, serviços e formação em saúde",
+     "sinais": {
+      "topics": [
+       "T10508",
+       "T10186",
+       "T10312",
+       "T12413",
+       "T12869"
+      ],
+      "termos": [
+       "nursing",
+       "enfermagem",
+       "patient safety",
+       "segurança do paciente",
+       "health services",
+       "serviços de saúde",
+       "occupational health",
+       "saúde do trabalhador"
+      ],
+      "frase": "enfermagem, serviços de saúde, formação e saúde do trabalhador"
+     },
+     "metodos": [
+      "metodo.epidemio",
+      "metodo.clinica",
+      "metodo.dados",
+      "metodo.campo"
+     ]
+    },
+    {
+     "id": "objeto.pets",
+     "rotulo": "Cães, gatos e animais de companhia",
+     "sinais": {
+      "topics": [
+       "T11580",
+       "T11905",
+       "T13100"
+      ],
+      "termos": [
+       "dog",
+       "cão",
+       "cães",
+       "canine",
+       "canin",
+       "cat",
+       "gato",
+       "feline",
+       "felin",
+       "companion animal",
+       "animais de companhia"
+      ],
+      "frase": "cães, gatos e animais de companhia"
+     },
+     "metodos": [
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.clinica",
+      "metodo.epidemio"
+     ]
     }
    ],
    "filtra_por": "metodo"
@@ -931,7 +1033,8 @@
         "caprin",
         "sheep",
         "ovelha",
-        "ovin",
+        "ovine",
+        "ovino",
         "lamb",
         "cordeiro",
         "kid",
@@ -966,7 +1069,8 @@
         "codorna",
         "pig",
         "swine",
-        "suín",
+        "suíno",
+        "suína",
         "egg",
         "ovo"
        ],
@@ -1180,10 +1284,12 @@
        "termos": [
         "conservation",
         "conservação",
-        "community",
-        "comunidade",
-        "restoration",
-        "restauração",
+        "plant community",
+        "species richness",
+        "comunidades vegetais",
+        "riqueza de espécies",
+        "ecological restoration",
+        "restauração ecológica",
         "landscape",
         "paisagem",
         "ecosystem",
@@ -1584,8 +1690,10 @@
         "reabilitação",
         "physiotherap",
         "fisioterap",
-        "balance",
-        "equilíbrio",
+        "postural balance",
+        "postural control",
+        "equilíbrio postural",
+        "controle postural",
         "gait",
         "marcha",
         "exercise",
@@ -1616,14 +1724,16 @@
        "termos": [
         "obesity",
         "obesidade",
-        "nutrition",
-        "nutrição",
-        "nutritional",
-        "nutricional",
+        "human nutrition",
+        "nutritional status",
+        "nutrição humana",
+        "estado nutricional",
+        "eating behavior",
+        "comportamento alimentar",
         "body composition",
         "composição corporal",
-        "diet",
-        "dieta"
+        "food intake",
+        "consumo alimentar"
        ],
        "frase": "nutrição humana, obesidade e composição corporal"
       },
@@ -1632,6 +1742,78 @@
        "nome": "nutrição"
       },
       "nicho": "da nutrição humana"
+     },
+     {
+      "id": "sub.orgaos",
+      "rotulo": "Rins, pulmões e digestão",
+      "sinais": {
+       "topics": [
+        "T10684",
+        "T10291",
+        "T10408",
+        "T10641",
+        "T11163",
+        "T10373",
+        "T10999",
+        "T10051",
+        "T10322",
+        "T10234",
+        "T10134",
+        "T10151"
+       ],
+       "termos": [
+        "kidney",
+        "renal",
+        "dialysis",
+        "diálise",
+        "transplant",
+        "transplante",
+        "asthma",
+        "asma",
+        "respiratory",
+        "respiratóri",
+        "liver",
+        "fígado",
+        "hepatitis",
+        "hepatite"
+       ],
+       "frase": "rins, pulmões, transplantes, fígado e intestino"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "órgãos"
+      },
+      "nicho": "dos rins, dos pulmões e da digestão"
+     },
+     {
+      "id": "sub.imunidade",
+      "rotulo": "Imunidade e doenças autoimunes",
+      "sinais": {
+       "topics": [
+        "T10308",
+        "T10200",
+        "T10137",
+        "T11330"
+       ],
+       "termos": [
+        "lupus",
+        "lúpus",
+        "rheumatoid",
+        "reumatoide",
+        "autoimmune",
+        "autoimun",
+        "multiple sclerosis",
+        "esclerose múltipla",
+        "rheumatolog",
+        "reumatolog"
+       ],
+       "frase": "doenças autoimunes e reumatológicas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "imunidade"
+      },
+      "nicho": "das doenças autoimunes"
      }
     ],
     "objeto.alimentos": [
@@ -1676,8 +1858,9 @@
        "termos": [
         "fruit",
         "fruta",
-        "pulp",
-        "polpa",
+        "fruit pulp",
+        "polpa de fruta",
+        "polpas de frutas",
         "juice",
         "suco",
         "jam",
@@ -1838,8 +2021,12 @@
         "T13391"
        ],
        "termos": [
-        "irrigation",
-        "irrigação",
+        "irrigation management",
+        "drip irrigation",
+        "irrigated",
+        "manejo da irrigação",
+        "lâmina de irrigação",
+        "irrigação por gotejamento",
         "evapotranspiration",
         "evapotranspiração",
         "water use",
@@ -1917,6 +2104,205 @@
       },
       "nicho": "da poluição e dos contaminantes"
      }
+    ],
+    "objeto.servicos": [
+     {
+      "id": "sub.cuidado",
+      "rotulo": "Enfermagem e segurança do paciente",
+      "sinais": {
+       "topics": [
+        "T10508",
+        "T10186",
+        "T14316",
+        "T11816",
+        "T11670",
+        "T12871",
+        "T10350"
+       ],
+       "termos": [
+        "nursing",
+        "enfermagem",
+        "nurse",
+        "enfermeir",
+        "patient safety",
+        "segurança do paciente",
+        "pressure ulcer",
+        "lesão por pressão"
+       ],
+       "frase": "enfermagem, cuidado e segurança do paciente"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "enfermagem"
+      },
+      "nicho": "da enfermagem e da segurança do paciente"
+     },
+     {
+      "id": "sub.envelhecimento",
+      "rotulo": "Envelhecimento e idosos",
+      "sinais": {
+       "topics": [
+        "T10312",
+        "T12462",
+        "T10397"
+       ],
+       "termos": [
+        "elderly",
+        "idoso",
+        "aging",
+        "envelhecimento",
+        "older adults",
+        "long-term care",
+        "longa permanência"
+       ],
+       "frase": "envelhecimento e saúde do idoso"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "idosos"
+      },
+      "nicho": "do envelhecimento"
+     },
+     {
+      "id": "sub.formacao",
+      "rotulo": "Formação e educação em saúde",
+      "sinais": {
+       "topics": [
+        "T12413",
+        "T11497",
+        "T13117",
+        "T11636"
+       ],
+       "termos": [
+        "medical education",
+        "educação em saúde",
+        "health education",
+        "nursing students",
+        "estudantes de",
+        "curriculum",
+        "currículo",
+        "simulação clínica",
+        "clinical simulation"
+       ],
+       "frase": "formação de profissionais e educação em saúde"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "formação em saúde"
+      },
+      "nicho": "da formação em saúde"
+     },
+     {
+      "id": "sub.trabalho",
+      "rotulo": "Trabalho e saúde do trabalhador",
+      "sinais": {
+       "topics": [
+        "T12869",
+        "T10795",
+        "T12704",
+        "T13315",
+        "T13233"
+       ],
+       "termos": [
+        "burnout",
+        "occupational health",
+        "saúde do trabalhador",
+        "occupational",
+        "ocupacional",
+        "workers",
+        "trabalhadores"
+       ],
+       "frase": "saúde do trabalhador, estresse e burnout"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "trabalho"
+      },
+      "nicho": "da saúde do trabalhador"
+     }
+    ],
+    "objeto.pets": [
+     {
+      "id": "sub.pets_clinica",
+      "rotulo": "Clínica e cirurgia de pequenos animais",
+      "sinais": {
+       "topics": [
+        "T11580",
+        "T11905",
+        "T11149"
+       ],
+       "termos": [
+        "small animal",
+        "pequenos animais",
+        "canine",
+        "canin",
+        "feline",
+        "felin",
+        "veterinary surgery",
+        "cirurgia veterinária"
+       ],
+       "frase": "clínica e cirurgia de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "clínica veterinária"
+      },
+      "nicho": "da clínica de cães e gatos"
+     },
+     {
+      "id": "sub.pets_doencas",
+      "rotulo": "Zoonoses e doenças de cães e gatos",
+      "sinais": {
+       "topics": [
+        "T10823",
+        "T10815",
+        "T10695"
+       ],
+       "termos": [
+        "canine leishmaniasis",
+        "leishmaniose canina",
+        "zoonos",
+        "zoonót",
+        "zoonot",
+        "dogs",
+        "cães",
+        "cats",
+        "gatos"
+       ],
+       "frase": "zoonoses e doenças infecciosas e parasitárias de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "zoonoses"
+      },
+      "nicho": "das doenças de cães e gatos"
+     },
+     {
+      "id": "sub.pets_anatomia",
+      "rotulo": "Anatomia e reprodução animal",
+      "sinais": {
+       "topics": [
+        "T13100",
+        "T10364"
+       ],
+       "termos": [
+        "anatomy",
+        "anatomia",
+        "morpholog",
+        "morfolog",
+        "canine",
+        "canin",
+        "feline",
+        "felin"
+       ],
+       "frase": "anatomia e reprodução de cães, gatos e outros animais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anatomia animal"
+      },
+      "nicho": "da anatomia e da reprodução de cães e gatos"
+     }
     ]
    },
    "filtra_por": "metodo"
@@ -1979,7 +2365,8 @@
      "objetos": [
       "objeto.plantas",
       "objeto.producao",
-      "objeto.insetos"
+      "objeto.insetos",
+      "objeto.pets"
      ]
     },
     {
@@ -2012,7 +2399,8 @@
       "objeto.producao",
       "objeto.insetos",
       "objeto.micro",
-      "objeto.fauna"
+      "objeto.fauna",
+      "objeto.pets"
      ]
     },
     {
@@ -2047,7 +2435,8 @@
      "objetos": [
       "objeto.plantas",
       "objeto.producao",
-      "objeto.ambiente"
+      "objeto.ambiente",
+      "objeto.pets"
      ]
     },
     {
@@ -2113,7 +2502,8 @@
       "objeto.alimentos",
       "objeto.micro",
       "objeto.producao",
-      "objeto.fauna"
+      "objeto.fauna",
+      "objeto.pets"
      ]
     },
     {
@@ -2169,7 +2559,9 @@
      "objetos": [
       "objeto.humanos",
       "objeto.micro",
-      "objeto.producao"
+      "objeto.producao",
+      "objeto.servicos",
+      "objeto.pets"
      ]
     },
     {
@@ -2196,7 +2588,8 @@
       "objeto.humanos",
       "objeto.micro",
       "objeto.insetos",
-      "objeto.alimentos"
+      "objeto.alimentos",
+      "objeto.servicos"
      ]
     },
     {
@@ -2224,7 +2617,9 @@
       "objeto.plantas",
       "objeto.producao",
       "objeto.micro",
-      "objeto.fauna"
+      "objeto.fauna",
+      "objeto.servicos",
+      "objeto.pets"
      ]
     }
    ]
@@ -2356,7 +2751,7 @@
     },
     {
      "id": "ambiente.mata",
-     "rotulo": "Mata atlântica e brejos",
+     "rotulo": "Matas úmidas, restingas e brejos",
      "sinais": {
       "termos": [
        "atlantic forest",
@@ -2379,7 +2774,7 @@
     },
     {
      "id": "ambiente.mar",
-     "rotulo": "Mar, mangues e estuários",
+     "rotulo": "Litoral, mangues e mar",
      "sinais": {
       "termos": [
        "marine",
@@ -2389,12 +2784,20 @@
        "estuar",
        "coastal",
        "costeir",
-       "reef",
-       "recife",
+       "coral reef",
+       "recifes de coral",
+       "ambientes recifais",
        "sea",
        "oceano"
       ],
-      "frase": "mar, manguezais e estuários"
+      "frase": "mar, manguezais e estuários",
+      "topics": [
+       "T10230",
+       "T12319",
+       "T11390",
+       "T11088",
+       "T11505"
+      ]
      },
      "sintagma": {
       "artigo": "os",
@@ -2434,7 +2837,7 @@
     },
     {
      "id": "ambiente.cidades",
-     "rotulo": "Cidades, hospitais e serviços",
+     "rotulo": "Cidades, hospitais, escolas e serviços",
      "sinais": {
       "termos": [
        "urban",
@@ -2459,6 +2862,62 @@
      "visual": {
       "cor": "cidade"
      }
+    },
+    {
+     "id": "ambiente.aguas",
+     "rotulo": "Rios, açudes e lagoas",
+     "visual": {
+      "cor": "mar"
+     },
+     "sinais": {
+      "termos": [
+       "river",
+       "reservoir",
+       "reservatório",
+       "açude",
+       "freshwater",
+       "água doce",
+       "lagoon",
+       "lagoa",
+       "wetland",
+       "groundwater",
+       "água subterrânea"
+      ],
+      "frase": "rios, açudes, lagoas e água doce"
+     },
+     "sintagma": {
+      "artigo": "as",
+      "nome": "águas doces"
+     },
+     "nicho": "das águas doces"
+    },
+    {
+     "id": "ambiente.comunidades",
+     "rotulo": "Comunidades tradicionais e rurais",
+     "visual": {
+      "cor": "lavoura"
+     },
+     "sinais": {
+      "termos": [
+       "indigenous",
+       "indígena",
+       "quilombola",
+       "artisanal fish",
+       "pesca artesanal",
+       "ribeirinh",
+       "rural communit",
+       "comunidade rural",
+       "comunidades rurais",
+       "traditional communit",
+       "comunidades tradicionais"
+      ],
+      "frase": "povos indígenas, quilombolas, pescadores artesanais e comunidades rurais"
+     },
+     "sintagma": {
+      "artigo": "as",
+      "nome": "comunidades tradicionais"
+     },
+     "nicho": "das comunidades tradicionais"
     },
     {
      "id": "ambiente.qualquer",
@@ -2542,8 +3001,8 @@
        "biodiversidade",
        "threatened",
        "ameaçad",
-       "restoration",
-       "restauração"
+       "ecological restoration",
+       "restauração ecológica"
       ],
       "frase": "conservação da natureza"
      }
@@ -2587,6 +3046,4820 @@
      }
     }
    ]
+  },
+  "tema": {
+   "bloco": "nicho",
+   "faceta": "tema",
+   "texto": "Qual destes temas é mais o seu?",
+   "depende_de": "sub_objeto",
+   "opcoes_por": {
+    "sub.abelhas": [
+     {
+      "id": "tema.mel",
+      "rotulo": "Mel, própolis e produtos das abelhas",
+      "sinais": {
+       "topics": [
+        "T11386"
+       ],
+       "frase": "mel, própolis e produtos apícolas"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "mel"
+      },
+      "nicho": "do mel e da própolis"
+     },
+     {
+      "id": "tema.polinizacao",
+      "rotulo": "Polinização e ecologia das abelhas",
+      "sinais": {
+       "topics": [
+        "T10487",
+        "T10702"
+       ],
+       "frase": "polinização e ecologia de abelhas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "polinização"
+      },
+      "nicho": "da polinização"
+     },
+     {
+      "id": "tema.vespas",
+      "rotulo": "Taxonomia de abelhas e vespas",
+      "sinais": {
+       "topics": [
+        "T12132"
+       ],
+       "frase": "taxonomia de abelhas e vespas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "vespas e abelhas"
+      },
+      "nicho": "da taxonomia de abelhas e vespas"
+     },
+     {
+      "id": "tema.abelhas_agrotox",
+      "rotulo": "Abelhas e agrotóxicos",
+      "sinais": {
+       "topics": [
+        "T11641"
+       ],
+       "frase": "efeitos de agrotóxicos em abelhas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "abelhas"
+      },
+      "nicho": "dos efeitos de agrotóxicos em abelhas"
+     }
+    ],
+    "sub.agua": [
+     {
+      "id": "tema.irrigacao",
+      "rotulo": "Manejo da irrigação",
+      "sinais": {
+       "topics": [
+        "T11404"
+       ],
+       "frase": "manejo da irrigação e uso da água na agricultura"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "irrigação"
+      },
+      "nicho": "da irrigação"
+     },
+     {
+      "id": "tema.estresse_hidrico",
+      "rotulo": "Plantas sob seca e sal",
+      "sinais": {
+       "topics": [
+        "T10014"
+       ],
+       "frase": "estresse hídrico e salino em plantas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "tolerância à seca"
+      },
+      "nicho": "da tolerância das plantas à seca e ao sal"
+     },
+     {
+      "id": "tema.hidroponia",
+      "rotulo": "Hidroponia e aquaponia",
+      "sinais": {
+       "topics": [
+        "T13391"
+       ],
+       "frase": "hidroponia e aquaponia"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "hidroponia"
+      },
+      "nicho": "da hidroponia e da aquaponia"
+     },
+     {
+      "id": "tema.bioestimulantes",
+      "rotulo": "Silício e bioestimulantes",
+      "sinais": {
+       "topics": [
+        "T12344",
+        "T12407"
+       ],
+       "frase": "bioestimulantes e silício na agricultura"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "bioestimulantes"
+      },
+      "nicho": "de bioestimulantes e silício na agricultura"
+     }
+    ],
+    "sub.aquicultura": [
+     {
+      "id": "tema.nutricao_peixes",
+      "rotulo": "Nutrição de peixes e camarões",
+      "sinais": {
+       "topics": [
+        "T10450"
+       ],
+       "frase": "nutrição e crescimento na aquicultura"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "peixes de cultivo"
+      },
+      "nicho": "da nutrição de peixes e camarões"
+     },
+     {
+      "id": "tema.sanidade_aquicola",
+      "rotulo": "Doenças e sanidade na aquicultura",
+      "sinais": {
+       "topics": [
+        "T10506"
+       ],
+       "frase": "doenças e microbiota na aquicultura"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "sanidade aquícola"
+      },
+      "nicho": "da sanidade na aquicultura"
+     },
+     {
+      "id": "tema.reproducao_aquatica",
+      "rotulo": "Reprodução de espécies aquáticas",
+      "sinais": {
+       "topics": [
+        "T11505"
+       ],
+       "frase": "reprodução de peixes e espécies aquáticas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "reprodução de peixes"
+      },
+      "nicho": "da reprodução de espécies aquáticas"
+     },
+     {
+      "id": "tema.bivalves",
+      "rotulo": "Ostras, mexilhões e bivalves",
+      "sinais": {
+       "topics": [
+        "T11088"
+       ],
+       "frase": "cultivo de ostras, mexilhões e bivalves"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "ostras"
+      },
+      "nicho": "do cultivo de ostras e bivalves"
+     }
+    ],
+    "sub.aranhas": [
+     {
+      "id": "tema.aranhas",
+      "rotulo": "Aranhas",
+      "sinais": {
+       "topics": [
+        "T12447"
+       ],
+       "frase": "taxonomia e comportamento de aranhas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "aranhas"
+      },
+      "nicho": "de aranhas"
+     },
+     {
+      "id": "tema.acaros",
+      "rotulo": "Ácaros",
+      "sinais": {
+       "topics": [
+        "T12361"
+       ],
+       "frase": "espécies de ácaros"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "ácaros"
+      },
+      "nicho": "de ácaros"
+     },
+     {
+      "id": "tema.escorpioes",
+      "rotulo": "Escorpiões e animais peçonhentos",
+      "sinais": {
+       "topics": [
+        "T11353"
+       ],
+       "frase": "escorpiões, venenos e acidentes com animais peçonhentos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "escorpiões"
+      },
+      "nicho": "de escorpiões e animais peçonhentos"
+     },
+     {
+      "id": "tema.carrapatos",
+      "rotulo": "Carrapatos e doenças que transmitem",
+      "sinais": {
+       "topics": [
+        "T10296"
+       ],
+       "frase": "carrapatos e doenças transmitidas por vetores"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "carrapatos"
+      },
+      "nicho": "de carrapatos e das doenças que transmitem"
+     }
+    ],
+    "sub.aves": [
+     {
+      "id": "tema.nutricao_aves",
+      "rotulo": "Nutrição de aves e suínos",
+      "sinais": {
+       "topics": [
+        "T10098",
+        "T10152"
+       ],
+       "frase": "nutrição e alimentação de aves e suínos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "rações"
+      },
+      "nicho": "da nutrição de aves e suínos"
+     },
+     {
+      "id": "tema.bem_estar_aves",
+      "rotulo": "Bem-estar e estresse térmico",
+      "sinais": {
+       "topics": [
+        "T12365"
+       ],
+       "frase": "bem-estar e estresse térmico de aves e suínos"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "bem-estar animal"
+      },
+      "nicho": "do bem-estar de aves e suínos"
+     },
+     {
+      "id": "tema.aditivos",
+      "rotulo": "Enzimas e aditivos na ração",
+      "sinais": {
+       "topics": [
+        "T12991"
+       ],
+       "frase": "fitase, enzimas e aditivos na ração"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "aditivos de ração"
+      },
+      "nicho": "de aditivos e enzimas na ração"
+     },
+     {
+      "id": "tema.sanidade_aves",
+      "rotulo": "Parasitos e sanidade",
+      "sinais": {
+       "topics": [
+        "T11074",
+        "T10695"
+       ],
+       "frase": "parasitos e sanidade de aves e suínos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "sanidade das granjas"
+      },
+      "nicho": "da sanidade de aves e suínos"
+     }
+    ],
+    "sub.bacterias": [
+     {
+      "id": "tema.resistencia",
+      "rotulo": "Resistência a antibióticos",
+      "sinais": {
+       "topics": [
+        "T10147",
+        "T10195"
+       ],
+       "frase": "resistência bacteriana a antibióticos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "superbactérias"
+      },
+      "nicho": "da resistência bacteriana"
+     },
+     {
+      "id": "tema.antimicrob_naturais",
+      "rotulo": "Antimicrobianos naturais",
+      "sinais": {
+       "topics": [
+        "T10225"
+       ],
+       "frase": "óleos essenciais e compostos naturais contra bactérias"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "antimicrobianos naturais"
+      },
+      "nicho": "de antimicrobianos naturais"
+     },
+     {
+      "id": "tema.biofilmes",
+      "rotulo": "Biofilmes",
+      "sinais": {
+       "topics": [
+        "T10593"
+       ],
+       "frase": "biofilmes bacterianos e quorum sensing"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "biofilmes"
+      },
+      "nicho": "de biofilmes bacterianos"
+     },
+     {
+      "id": "tema.bact_plantas",
+      "rotulo": "Bactérias e plantas",
+      "sinais": {
+       "topics": [
+        "T10076"
+       ],
+       "frase": "interação entre bactérias e plantas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "bactérias das plantas"
+      },
+      "nicho": "da interação entre bactérias e plantas"
+     }
+    ],
+    "sub.boca": [
+     {
+      "id": "tema.restauracoes",
+      "rotulo": "Materiais e restaurações",
+      "sinais": {
+       "topics": [
+        "T10113"
+       ],
+       "frase": "materiais dentários e restaurações"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "restaurações"
+      },
+      "nicho": "de materiais e restaurações dentárias"
+     },
+     {
+      "id": "tema.saude_bucal",
+      "rotulo": "Saúde bucal coletiva",
+      "sinais": {
+       "topics": [
+        "T10368"
+       ],
+       "frase": "saúde bucal coletiva e acesso ao dentista"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "saúde bucal"
+      },
+      "nicho": "da saúde bucal coletiva"
+     },
+     {
+      "id": "tema.endodontia",
+      "rotulo": "Endodontia (tratamento de canal)",
+      "sinais": {
+       "topics": [
+        "T10536"
+       ],
+       "frase": "endodontia e tratamento de canal"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "endodontia"
+      },
+      "nicho": "da endodontia"
+     },
+     {
+      "id": "tema.periodontia",
+      "rotulo": "Gengiva e periodontia",
+      "sinais": {
+       "topics": [
+        "T10257"
+       ],
+       "frase": "doença periodontal e microbiologia oral"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "gengiva"
+      },
+      "nicho": "da periodontia"
+     },
+     {
+      "id": "tema.atm",
+      "rotulo": "ATM e dor orofacial",
+      "sinais": {
+       "topics": [
+        "T10852"
+       ],
+       "frase": "disfunção temporomandibular e dor orofacial"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "ATM"
+      },
+      "nicho": "da ATM e da dor orofacial"
+     },
+     {
+      "id": "tema.ortodontia",
+      "rotulo": "Ortodontia",
+      "sinais": {
+       "topics": [
+        "T10356"
+       ],
+       "frase": "ortodontia e ortopedia facial"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "ortodontia"
+      },
+      "nicho": "da ortodontia"
+     },
+     {
+      "id": "tema.patologia_oral",
+      "rotulo": "Patologia oral",
+      "sinais": {
+       "topics": [
+        "T11787",
+        "T11452"
+       ],
+       "frase": "patologia oral e maxilofacial"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "patologia oral"
+      },
+      "nicho": "da patologia oral"
+     }
+    ],
+    "sub.bovinos": [
+     {
+      "id": "tema.nutricao_bovinos",
+      "rotulo": "Nutrição de bovinos",
+      "sinais": {
+       "topics": [
+        "T10098"
+       ],
+       "frase": "nutrição de ruminantes e bovinos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição de bovinos"
+      },
+      "nicho": "da nutrição de bovinos"
+     },
+     {
+      "id": "tema.carne_bovina",
+      "rotulo": "Carne e qualidade",
+      "sinais": {
+       "topics": [
+        "T10333"
+       ],
+       "frase": "qualidade da carne bovina"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "carne bovina"
+      },
+      "nicho": "da qualidade da carne bovina"
+     },
+     {
+      "id": "tema.leite",
+      "rotulo": "Leite e mastite",
+      "sinais": {
+       "topics": [
+        "T11226"
+       ],
+       "frase": "qualidade do leite e mastite em vacas"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "leite"
+      },
+      "nicho": "da qualidade do leite e da mastite"
+     },
+     {
+      "id": "tema.reproducao_bovina",
+      "rotulo": "Reprodução bovina",
+      "sinais": {
+       "topics": [
+        "T10364"
+       ],
+       "frase": "reprodução e fertilidade de bovinos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "reprodução bovina"
+      },
+      "nicho": "da reprodução bovina"
+     },
+     {
+      "id": "tema.calor_bovinos",
+      "rotulo": "Bem-estar e calor",
+      "sinais": {
+       "topics": [
+        "T12365"
+       ],
+       "frase": "estresse térmico e bem-estar de bovinos"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "bem-estar do rebanho"
+      },
+      "nicho": "do bem-estar e do estresse térmico de bovinos"
+     }
+    ],
+    "sub.cancer": [
+     {
+      "id": "tema.leucemias",
+      "rotulo": "Leucemias",
+      "sinais": {
+       "topics": [
+        "T10309"
+       ],
+       "frase": "leucemias e cânceres do sangue"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "leucemias"
+      },
+      "nicho": "das leucemias"
+     },
+     {
+      "id": "tema.falciforme",
+      "rotulo": "Anemia falciforme",
+      "sinais": {
+       "topics": [
+        "T10554"
+       ],
+       "frase": "anemia falciforme e hemoglobinopatias"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anemia falciforme"
+      },
+      "nicho": "da anemia falciforme e das hemoglobinopatias"
+     },
+     {
+      "id": "tema.cancer_mulher",
+      "rotulo": "Câncer de mama e do colo do útero",
+      "sinais": {
+       "topics": [
+        "T10146",
+        "T13544"
+       ],
+       "frase": "câncer do colo do útero, HPV e câncer de mama"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "câncer da mulher"
+      },
+      "nicho": "dos cânceres da mulher"
+     },
+     {
+      "id": "tema.cabeca_pescoco",
+      "rotulo": "Câncer de boca e de cabeça e pescoço",
+      "sinais": {
+       "topics": [
+        "T10307",
+        "T12198"
+       ],
+       "frase": "câncer de boca, cabeça e pescoço"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "câncer de boca"
+      },
+      "nicho": "do câncer de cabeça e pescoço"
+     },
+     {
+      "id": "tema.rastreamento",
+      "rotulo": "Incidência e rastreamento",
+      "sinais": {
+       "topics": [
+        "T10556"
+       ],
+       "frase": "incidência e rastreamento do câncer"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "rastreamento do câncer"
+      },
+      "nicho": "da epidemiologia e do rastreamento do câncer"
+     },
+     {
+      "id": "tema.onco_vet",
+      "rotulo": "Câncer em animais",
+      "sinais": {
+       "topics": [
+        "T11149"
+       ],
+       "frase": "oncologia veterinária"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "oncologia veterinária"
+      },
+      "nicho": "da oncologia veterinária"
+     },
+     {
+      "id": "tema.linfomas",
+      "rotulo": "Linfomas, mieloma e transplante de medula",
+      "sinais": {
+       "topics": [
+        "T10649",
+        "T10185",
+        "T10345"
+       ],
+       "frase": "linfomas, mieloma múltiplo e transplante de medula"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "linfomas"
+      },
+      "nicho": "dos linfomas, do mieloma e do transplante de medula"
+     },
+     {
+      "id": "tema.paliativos",
+      "rotulo": "Cuidados paliativos",
+      "sinais": {
+       "topics": [
+        "T13340",
+        "T10177"
+       ],
+       "frase": "cuidados paliativos e oncológicos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "cuidados paliativos"
+      },
+      "nicho": "dos cuidados paliativos"
+     }
+    ],
+    "sub.caprinos": [
+     {
+      "id": "tema.nutricao_caprinos",
+      "rotulo": "Nutrição de cabras e ovelhas",
+      "sinais": {
+       "topics": [
+        "T10098",
+        "T10152"
+       ],
+       "frase": "nutrição de caprinos e ovinos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição de caprinos"
+      },
+      "nicho": "da nutrição de caprinos e ovinos"
+     },
+     {
+      "id": "tema.calor_caprinos",
+      "rotulo": "Calor e adaptação ao semiárido",
+      "sinais": {
+       "topics": [
+        "T12365"
+       ],
+       "frase": "estresse térmico de caprinos e ovinos no semiárido"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "adaptação ao calor"
+      },
+      "nicho": "da adaptação de caprinos e ovinos ao calor"
+     },
+     {
+      "id": "tema.verminoses",
+      "rotulo": "Verminoses",
+      "sinais": {
+       "topics": [
+        "T11074"
+       ],
+       "frase": "verminoses e controle de helmintos em pequenos ruminantes"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "verminoses"
+      },
+      "nicho": "das verminoses de caprinos e ovinos"
+     },
+     {
+      "id": "tema.reproducao_caprinos",
+      "rotulo": "Reprodução",
+      "sinais": {
+       "topics": [
+        "T10584",
+        "T10364"
+       ],
+       "frase": "reprodução de caprinos e ovinos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "reprodução de caprinos"
+      },
+      "nicho": "da reprodução de caprinos e ovinos"
+     },
+     {
+      "id": "tema.racas",
+      "rotulo": "Genética e raças nativas",
+      "sinais": {
+       "topics": [
+        "T10594"
+       ],
+       "frase": "genética e raças de caprinos e ovinos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "raças nativas"
+      },
+      "nicho": "da genética de caprinos e ovinos"
+     },
+     {
+      "id": "tema.carne_caprina",
+      "rotulo": "Carne e leite de cabra",
+      "sinais": {
+       "topics": [
+        "T10333"
+       ],
+       "frase": "carne e leite de caprinos e ovinos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "carne de bode"
+      },
+      "nicho": "da carne e do leite de caprinos"
+     }
+    ],
+    "sub.cardio": [
+     {
+      "id": "tema.hipertensao",
+      "rotulo": "Hipertensão",
+      "sinais": {
+       "topics": [
+        "T10144"
+       ],
+       "frase": "hipertensão arterial"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "pressão alta"
+      },
+      "nicho": "da hipertensão"
+     },
+     {
+      "id": "tema.diabetes",
+      "rotulo": "Diabetes",
+      "sinais": {
+       "topics": [
+        "T10793",
+        "T10560",
+        "T10027"
+       ],
+       "frase": "diabetes e risco cardiovascular"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "diabetes"
+      },
+      "nicho": "do diabetes"
+     },
+     {
+      "id": "tema.pe_diabetico",
+      "rotulo": "Pé diabético e feridas",
+      "sinais": {
+       "topics": [
+        "T11227"
+       ],
+       "frase": "pé diabético e úlceras"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "pé diabético"
+      },
+      "nicho": "do pé diabético"
+     },
+     {
+      "id": "tema.insuf_cardiaca",
+      "rotulo": "Insuficiência cardíaca",
+      "sinais": {
+       "topics": [
+        "T10198"
+       ],
+       "frase": "insuficiência cardíaca"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "insuficiência cardíaca"
+      },
+      "nicho": "da insuficiência cardíaca"
+     },
+     {
+      "id": "tema.exercicio_coracao",
+      "rotulo": "Coração e exercício",
+      "sinais": {
+       "topics": [
+        "T11209",
+        "T10745"
+       ],
+       "frase": "fisiologia cardiovascular do exercício e variabilidade da frequência cardíaca"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "coração em movimento"
+      },
+      "nicho": "da fisiologia cardiovascular do exercício"
+     }
+    ],
+    "sub.carnes": [
+     {
+      "id": "tema.qualidade_carne",
+      "rotulo": "Qualidade da carne",
+      "sinais": {
+       "topics": [
+        "T10333"
+       ],
+       "frase": "qualidade de carnes"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "carne"
+      },
+      "nicho": "da qualidade da carne"
+     },
+     {
+      "id": "tema.higiene_alimentos",
+      "rotulo": "Higiene e segurança",
+      "sinais": {
+       "topics": [
+        "T11957"
+       ],
+       "frase": "segurança e higiene de carnes e pescados"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "higiene dos alimentos"
+      },
+      "nicho": "da segurança microbiológica de carnes e pescados"
+     },
+     {
+      "id": "tema.pescado",
+      "rotulo": "Pescado",
+      "sinais": {
+       "topics": [
+        "T10230",
+        "T10450"
+       ],
+       "frase": "qualidade e processamento do pescado"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "pescado"
+      },
+      "nicho": "do pescado"
+     }
+    ],
+    "sub.clima": [
+     {
+      "id": "tema.seca_plantas",
+      "rotulo": "Plantas e seca",
+      "sinais": {
+       "topics": [
+        "T10014"
+       ],
+       "frase": "respostas das plantas à seca"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "seca"
+      },
+      "nicho": "das plantas diante da seca"
+     },
+     {
+      "id": "tema.erosao",
+      "rotulo": "Erosão e sedimentos",
+      "sinais": {
+       "topics": [
+        "T10889"
+       ],
+       "frase": "erosão do solo e sedimentos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "erosão"
+      },
+      "nicho": "da erosão do solo"
+     },
+     {
+      "id": "tema.geoestatistica",
+      "rotulo": "Mapeamento e geoestatística",
+      "sinais": {
+       "topics": [
+        "T10770"
+       ],
+       "frase": "geoestatística e mapeamento de solos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "mapas de solo"
+      },
+      "nicho": "do mapeamento do solo e do clima"
+     },
+     {
+      "id": "tema.florestas_secas",
+      "rotulo": "Florestas e mudança do clima",
+      "sinais": {
+       "topics": [
+        "T11880"
+       ],
+       "frase": "ecologia e manejo florestal"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "florestas"
+      },
+      "nicho": "das florestas e do clima"
+     },
+     {
+      "id": "tema.calor_rebanhos",
+      "rotulo": "Calor e rebanhos",
+      "sinais": {
+       "topics": [
+        "T12365"
+       ],
+       "frase": "estresse térmico em animais de produção"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "calor"
+      },
+      "nicho": "do estresse térmico nos rebanhos"
+     }
+    ],
+    "sub.ecossistemas": [
+     {
+      "id": "tema.ecologia_vegetal",
+      "rotulo": "Ecologia da vegetação",
+      "sinais": {
+       "topics": [
+        "T12618"
+       ],
+       "frase": "ecologia vegetal e botânica"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "vegetação"
+      },
+      "nicho": "da ecologia vegetal"
+     },
+     {
+      "id": "tema.sementes",
+      "rotulo": "Sementes e germinação",
+      "sinais": {
+       "topics": [
+        "T11098"
+       ],
+       "frase": "germinação e fisiologia de sementes"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "sementes"
+      },
+      "nicho": "das sementes nativas"
+     },
+     {
+      "id": "tema.florestas",
+      "rotulo": "Florestas e restauração",
+      "sinais": {
+       "topics": [
+        "T11880"
+       ],
+       "frase": "florestas e restauração ecológica"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "florestas"
+      },
+      "nicho": "das florestas e da restauração ecológica"
+     },
+     {
+      "id": "tema.diversidade_genetica",
+      "rotulo": "Diversidade genética de populações",
+      "sinais": {
+       "topics": [
+        "T10012"
+       ],
+       "frase": "diversidade e estrutura genética de populações"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "diversidade genética"
+      },
+      "nicho": "da diversidade genética de populações"
+     },
+     {
+      "id": "tema.interacoes",
+      "rotulo": "Interações entre plantas e animais",
+      "sinais": {
+       "topics": [
+        "T10487",
+        "T10702"
+       ],
+       "frase": "interações ecológicas entre plantas e animais"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "interações ecológicas"
+      },
+      "nicho": "das interações entre plantas e animais"
+     }
+    ],
+    "sub.farinhas": [
+     {
+      "id": "tema.novos_alimentos",
+      "rotulo": "Novos produtos alimentícios",
+      "sinais": {
+       "topics": [
+        "T14127"
+       ],
+       "frase": "desenvolvimento de produtos alimentícios"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "novos alimentos"
+      },
+      "nicho": "do desenvolvimento de novos alimentos"
+     },
+     {
+      "id": "tema.proteinas",
+      "rotulo": "Proteínas e glúten",
+      "sinais": {
+       "topics": [
+        "T10411"
+       ],
+       "frase": "proteínas e glúten em alimentos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "proteínas dos alimentos"
+      },
+      "nicho": "das proteínas e do glúten"
+     },
+     {
+      "id": "tema.composicao",
+      "rotulo": "Composição de alimentos",
+      "sinais": {
+       "topics": [
+        "T10140"
+       ],
+       "frase": "composição e propriedades de alimentos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "composição dos alimentos"
+      },
+      "nicho": "da composição dos alimentos"
+     },
+     {
+      "id": "tema.secagem_farinhas",
+      "rotulo": "Secagem e farinhas",
+      "sinais": {
+       "topics": [
+        "T10650",
+        "T12048"
+       ],
+       "frase": "secagem e produção de farinhas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "farinhas"
+      },
+      "nicho": "da secagem e das farinhas"
+     }
+    ],
+    "sub.flora": [
+     {
+      "id": "tema.botanica",
+      "rotulo": "Botânica e vegetação",
+      "sinais": {
+       "topics": [
+        "T12618"
+       ],
+       "frase": "botânica e ecologia vegetal"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "botânica"
+      },
+      "nicho": "da botânica"
+     },
+     {
+      "id": "tema.taxonomia_plantas",
+      "rotulo": "Taxonomia e novas espécies",
+      "sinais": {
+       "topics": [
+        "T14049",
+        "T10385"
+       ],
+       "frase": "taxonomia, descrição de espécies e evolução de plantas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "espécies novas"
+      },
+      "nicho": "da taxonomia e da evolução de plantas"
+     },
+     {
+      "id": "tema.fungos_plantas",
+      "rotulo": "Fungos de plantas",
+      "sinais": {
+       "topics": [
+        "T10825"
+       ],
+       "frase": "fungos fitopatogênicos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "fungos de plantas"
+      },
+      "nicho": "dos fungos que atacam plantas"
+     },
+     {
+      "id": "tema.micorrizas",
+      "rotulo": "Micorrizas",
+      "sinais": {
+       "topics": [
+        "T10451"
+       ],
+       "frase": "fungos micorrízicos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "micorrizas"
+      },
+      "nicho": "das micorrizas"
+     }
+    ],
+    "sub.forrageiras": [
+     {
+      "id": "tema.silagem",
+      "rotulo": "Silagem e nutrição de ruminantes",
+      "sinais": {
+       "topics": [
+        "T10098"
+       ],
+       "frase": "silagem e nutrição de ruminantes"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "silagem"
+      },
+      "nicho": "da silagem e da nutrição de ruminantes"
+     },
+     {
+      "id": "tema.pastagens",
+      "rotulo": "Pastagens",
+      "sinais": {
+       "topics": [
+        "T13591"
+       ],
+       "frase": "pastagens e sistemas pastoris"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "pastagens"
+      },
+      "nicho": "das pastagens"
+     },
+     {
+      "id": "tema.consorcios",
+      "rotulo": "Consórcios e sistemas integrados",
+      "sinais": {
+       "topics": [
+        "T12436"
+       ],
+       "frase": "consórcios e sistemas integrados de produção"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "consórcios agrícolas"
+      },
+      "nicho": "dos sistemas integrados e consórcios"
+     },
+     {
+      "id": "tema.palma",
+      "rotulo": "Palma e plantas forrageiras",
+      "sinais": {
+       "topics": [
+        "T12330"
+       ],
+       "frase": "palma forrageira e plantas forrageiras da caatinga"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "palma"
+      },
+      "nicho": "da palma forrageira"
+     }
+    ],
+    "sub.frutas_alim": [
+     {
+      "id": "tema.secagem_frutas",
+      "rotulo": "Secagem de frutas",
+      "sinais": {
+       "topics": [
+        "T10650"
+       ],
+       "frase": "secagem e desidratação de frutas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "frutas secas"
+      },
+      "nicho": "da secagem de frutas"
+     },
+     {
+      "id": "tema.pos_colheita_frutas",
+      "rotulo": "Pós-colheita",
+      "sinais": {
+       "topics": [
+        "T10473"
+       ],
+       "frase": "pós-colheita e vida de prateleira de frutas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "pós-colheita"
+      },
+      "nicho": "da pós-colheita de frutas"
+     },
+     {
+      "id": "tema.microencapsulacao_frutas",
+      "rotulo": "Microencapsulação",
+      "sinais": {
+       "topics": [
+        "T12048"
+       ],
+       "frase": "microencapsulação e secagem por atomização"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "microencapsulação"
+      },
+      "nicho": "da microencapsulação de polpas"
+     },
+     {
+      "id": "tema.fermentados_frutas",
+      "rotulo": "Bebidas e fermentados de frutas",
+      "sinais": {
+       "topics": [
+        "T10141"
+       ],
+       "frase": "bebidas e fermentados de frutas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "fermentados de frutas"
+      },
+      "nicho": "de bebidas e fermentados de frutas"
+     }
+    ],
+    "sub.frutiferas": [
+     {
+      "id": "tema.pos_colheita",
+      "rotulo": "Pós-colheita",
+      "sinais": {
+       "topics": [
+        "T10473"
+       ],
+       "frase": "pós-colheita de frutas e hortaliças"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "pós-colheita"
+      },
+      "nicho": "da pós-colheita"
+     },
+     {
+      "id": "tema.adubacao_frutiferas",
+      "rotulo": "Nutrição e adubação",
+      "sinais": {
+       "topics": [
+        "T12113"
+       ],
+       "frase": "nutrição e adubação de plantas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "adubação"
+      },
+      "nicho": "da nutrição de frutíferas e hortaliças"
+     },
+     {
+      "id": "tema.estresse_frutiferas",
+      "rotulo": "Estresse e tolerância",
+      "sinais": {
+       "topics": [
+        "T10014"
+       ],
+       "frase": "estresse abiótico em frutíferas e hortaliças"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "tolerância à seca"
+      },
+      "nicho": "do estresse em frutíferas e hortaliças"
+     },
+     {
+      "id": "tema.irrigacao_frutiferas",
+      "rotulo": "Irrigação de pomares e hortas",
+      "sinais": {
+       "topics": [
+        "T11404"
+       ],
+       "frase": "irrigação de frutíferas e hortaliças"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "irrigação"
+      },
+      "nicho": "da irrigação de frutíferas e hortaliças"
+     },
+     {
+      "id": "tema.doencas_frutiferas",
+      "rotulo": "Doenças de plantas",
+      "sinais": {
+       "topics": [
+        "T10825"
+       ],
+       "frase": "doenças fúngicas de frutíferas e hortaliças"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "doenças de plantas"
+      },
+      "nicho": "das doenças de frutíferas e hortaliças"
+     }
+    ],
+    "sub.fungos": [
+     {
+      "id": "tema.infeccoes_fungicas",
+      "rotulo": "Infecções fúngicas",
+      "sinais": {
+       "topics": [
+        "T10150",
+        "T11037"
+       ],
+       "frase": "infecções fúngicas, Candida e antifúngicos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "infecções fúngicas"
+      },
+      "nicho": "das infecções fúngicas e dos antifúngicos"
+     },
+     {
+      "id": "tema.fungos_plantas2",
+      "rotulo": "Fungos de plantas",
+      "sinais": {
+       "topics": [
+        "T10825"
+       ],
+       "frase": "fungos fitopatogênicos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "fungos de plantas"
+      },
+      "nicho": "dos fungos que atacam plantas"
+     },
+     {
+      "id": "tema.micorrizas2",
+      "rotulo": "Micorrizas",
+      "sinais": {
+       "topics": [
+        "T10451"
+       ],
+       "frase": "fungos micorrízicos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "micorrizas"
+      },
+      "nicho": "das micorrizas"
+     },
+     {
+      "id": "tema.enzimas_fungos",
+      "rotulo": "Enzimas de fungos",
+      "sinais": {
+       "topics": [
+        "T11617",
+        "T10404"
+       ],
+       "frase": "produção e aplicação de enzimas de fungos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "enzimas"
+      },
+      "nicho": "das enzimas de fungos"
+     },
+     {
+      "id": "tema.produtos_microbianos",
+      "rotulo": "Produtos naturais de micróbios",
+      "sinais": {
+       "topics": [
+        "T10252"
+       ],
+       "frase": "produtos naturais e biossíntese microbiana"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "produtos de micróbios"
+      },
+      "nicho": "dos produtos naturais microbianos"
+     }
+    ],
+    "sub.graos": [
+     {
+      "id": "tema.cana",
+      "rotulo": "Cana-de-açúcar",
+      "sinais": {
+       "topics": [
+        "T12431"
+       ],
+       "frase": "cultivo e processamento da cana-de-açúcar"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "cana"
+      },
+      "nicho": "da cana-de-açúcar"
+     },
+     {
+      "id": "tema.melhoramento_graos",
+      "rotulo": "Melhoramento de cultivos",
+      "sinais": {
+       "topics": [
+        "T11229"
+       ],
+       "frase": "genética e melhoramento de plantas"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "melhoramento de plantas"
+      },
+      "nicho": "do melhoramento de grandes culturas"
+     },
+     {
+      "id": "tema.bact_promotoras",
+      "rotulo": "Bactérias promotoras de crescimento",
+      "sinais": {
+       "topics": [
+        "T10076"
+       ],
+       "frase": "bactérias promotoras de crescimento de plantas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "bactérias do solo"
+      },
+      "nicho": "das bactérias promotoras de crescimento"
+     },
+     {
+      "id": "tema.adubacao_graos",
+      "rotulo": "Adubação e manejo",
+      "sinais": {
+       "topics": [
+        "T12294",
+        "T12436"
+       ],
+       "frase": "adubação e manejo de grandes culturas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "adubação"
+      },
+      "nicho": "da adubação e do manejo de grandes culturas"
+     },
+     {
+      "id": "tema.seca_graos",
+      "rotulo": "Seca e salinidade",
+      "sinais": {
+       "topics": [
+        "T10014"
+       ],
+       "frase": "tolerância de grandes culturas à seca e ao sal"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "seca"
+      },
+      "nicho": "da tolerância de grãos à seca"
+     }
+    ],
+    "sub.herpeto": [
+     {
+      "id": "tema.herpeto_ecologia",
+      "rotulo": "Ecologia e diversidade",
+      "sinais": {
+       "topics": [
+        "T10332"
+       ],
+       "frase": "ecologia e diversidade de anfíbios e répteis"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "sapos e lagartos"
+      },
+      "nicho": "da ecologia de anfíbios e répteis"
+     },
+     {
+      "id": "tema.serpentes",
+      "rotulo": "Serpentes e venenos",
+      "sinais": {
+       "topics": [
+        "T11353"
+       ],
+       "frase": "serpentes, venenos e acidentes ofídicos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "serpentes"
+      },
+      "nicho": "das serpentes e seus venenos"
+     },
+     {
+      "id": "tema.canto_anuros",
+      "rotulo": "Canto e comunicação",
+      "sinais": {
+       "topics": [
+        "T11665"
+       ],
+       "frase": "comunicação acústica e vocalização de anfíbios"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "canto dos sapos"
+      },
+      "nicho": "da comunicação acústica de anfíbios"
+     }
+    ],
+    "sub.infeccoes": [
+     {
+      "id": "tema.arboviroses",
+      "rotulo": "Dengue, zika e chikungunya",
+      "sinais": {
+       "topics": [
+        "T10166"
+       ],
+       "frase": "dengue, zika, chikungunya e arboviroses"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "dengue"
+      },
+      "nicho": "das arboviroses"
+     },
+     {
+      "id": "tema.leishmaniose",
+      "rotulo": "Leishmaniose",
+      "sinais": {
+       "topics": [
+        "T10823"
+       ],
+       "frase": "leishmaniose visceral e tegumentar"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "leishmaniose"
+      },
+      "nicho": "da leishmaniose"
+     },
+     {
+      "id": "tema.covid",
+      "rotulo": "Covid-19",
+      "sinais": {
+       "topics": [
+        "T10041",
+        "T10118",
+        "T11368"
+       ],
+       "frase": "covid-19 e seus efeitos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "covid"
+      },
+      "nicho": "da covid-19"
+     },
+     {
+      "id": "tema.hiv",
+      "rotulo": "HIV e aids",
+      "sinais": {
+       "topics": [
+        "T10082"
+       ],
+       "frase": "HIV e aids"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "HIV"
+      },
+      "nicho": "do HIV e da aids"
+     },
+     {
+      "id": "tema.hanseniase",
+      "rotulo": "Hanseníase",
+      "sinais": {
+       "topics": [
+        "T12107"
+       ],
+       "frase": "hanseníase"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "hanseníase"
+      },
+      "nicho": "da hanseníase"
+     },
+     {
+      "id": "tema.tuberculose",
+      "rotulo": "Tuberculose",
+      "sinais": {
+       "topics": [
+        "T10038"
+       ],
+       "frase": "tuberculose"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "tuberculose"
+      },
+      "nicho": "da tuberculose"
+     },
+     {
+      "id": "tema.sifilis",
+      "rotulo": "Sífilis e outras ISTs",
+      "sinais": {
+       "topics": [
+        "T11934"
+       ],
+       "frase": "sífilis e infecções sexualmente transmissíveis"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "sífilis"
+      },
+      "nicho": "da sífilis e das ISTs"
+     }
+    ],
+    "sub.ingredientes": [
+     {
+      "id": "tema.fitoquimicos",
+      "rotulo": "Extratos e fitoquímicos",
+      "sinais": {
+       "topics": [
+        "T12657"
+       ],
+       "frase": "extratos vegetais e compostos fitoquímicos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "extratos vegetais"
+      },
+      "nicho": "de extratos e fitoquímicos"
+     },
+     {
+      "id": "tema.polissacarideos",
+      "rotulo": "Polissacarídeos e gomas",
+      "sinais": {
+       "topics": [
+        "T12192"
+       ],
+       "frase": "polissacarídeos e gomas naturais"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "polissacarídeos"
+      },
+      "nicho": "dos polissacarídeos e das gomas"
+     },
+     {
+      "id": "tema.antioxidantes",
+      "rotulo": "Antioxidantes",
+      "sinais": {
+       "topics": [
+        "T10035"
+       ],
+       "frase": "compostos antioxidantes"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "antioxidantes"
+      },
+      "nicho": "dos antioxidantes"
+     },
+     {
+      "id": "tema.microencapsulacao",
+      "rotulo": "Microencapsulação",
+      "sinais": {
+       "topics": [
+        "T12048"
+       ],
+       "frase": "microencapsulação de compostos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "microencapsulação"
+      },
+      "nicho": "da microencapsulação"
+     }
+    ],
+    "sub.insetos_div": [
+     {
+      "id": "tema.ecologia_insetos",
+      "rotulo": "Ecologia e comportamento",
+      "sinais": {
+       "topics": [
+        "T10702"
+       ],
+       "frase": "ecologia e comportamento de insetos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "insetos"
+      },
+      "nicho": "da ecologia de insetos"
+     },
+     {
+      "id": "tema.besouros",
+      "rotulo": "Besouros",
+      "sinais": {
+       "topics": [
+        "T11494",
+        "T13781"
+       ],
+       "frase": "taxonomia e distribuição de besouros"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "besouros"
+      },
+      "nicho": "dos besouros"
+     },
+     {
+      "id": "tema.moscas",
+      "rotulo": "Moscas e mosquitos (dípteros)",
+      "sinais": {
+       "topics": [
+        "T12606"
+       ],
+       "frase": "taxonomia e comportamento de dípteros"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "moscas"
+      },
+      "nicho": "das moscas e dos dípteros"
+     },
+     {
+      "id": "tema.formigas",
+      "rotulo": "Formigas e vespas",
+      "sinais": {
+       "topics": [
+        "T12132"
+       ],
+       "frase": "formigas, vespas e himenópteros"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "formigas"
+      },
+      "nicho": "de formigas e vespas"
+     },
+     {
+      "id": "tema.inseto_planta",
+      "rotulo": "Insetos e plantas",
+      "sinais": {
+       "topics": [
+        "T10135"
+       ],
+       "frase": "interações entre insetos e plantas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "interações inseto-planta"
+      },
+      "nicho": "das interações entre insetos e plantas"
+     }
+    ],
+    "sub.laticinios": [
+     {
+      "id": "tema.probioticos_lact",
+      "rotulo": "Queijos, iogurtes e probióticos",
+      "sinais": {
+       "topics": [
+        "T10141"
+       ],
+       "frase": "queijos, iogurtes, kefir e probióticos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "queijos"
+      },
+      "nicho": "de queijos, iogurtes e probióticos"
+     },
+     {
+      "id": "tema.sensorial",
+      "rotulo": "Fermentação e análise sensorial",
+      "sinais": {
+       "topics": [
+        "T10750"
+       ],
+       "frase": "fermentação e análise sensorial de laticínios"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "sabor"
+      },
+      "nicho": "da fermentação e da análise sensorial"
+     },
+     {
+      "id": "tema.qualidade_leite",
+      "rotulo": "Qualidade do leite",
+      "sinais": {
+       "topics": [
+        "T11226"
+       ],
+       "frase": "qualidade do leite"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "leite"
+      },
+      "nicho": "da qualidade do leite"
+     }
+    ],
+    "sub.mamiferos": [
+     {
+      "id": "tema.morcegos",
+      "rotulo": "Morcegos",
+      "sinais": {
+       "topics": [
+        "T11228"
+       ],
+       "frase": "biologia e ecologia de morcegos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "morcegos"
+      },
+      "nicho": "dos morcegos"
+     },
+     {
+      "id": "tema.primatas",
+      "rotulo": "Primatas",
+      "sinais": {
+       "topics": [
+        "T10699"
+       ],
+       "frase": "comportamento e ecologia de primatas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "macacos"
+      },
+      "nicho": "dos primatas"
+     },
+     {
+      "id": "tema.canto_aves",
+      "rotulo": "Canto e comunicação animal",
+      "sinais": {
+       "topics": [
+        "T11665"
+       ],
+       "frase": "comunicação acústica e canto de aves"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "canto das aves"
+      },
+      "nicho": "da comunicação e do canto das aves"
+     },
+     {
+      "id": "tema.comportamento_animal",
+      "rotulo": "Comportamento e reprodução",
+      "sinais": {
+       "topics": [
+        "T10174"
+       ],
+       "frase": "comportamento e reprodução de animais silvestres"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "comportamento animal"
+      },
+      "nicho": "do comportamento animal"
+     }
+    ],
+    "sub.marinha": [
+     {
+      "id": "tema.pesca",
+      "rotulo": "Pesca e recursos pesqueiros",
+      "sinais": {
+       "topics": [
+        "T10230"
+       ],
+       "frase": "pesca e recursos pesqueiros"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "pesca"
+      },
+      "nicho": "da pesca e dos recursos pesqueiros"
+     },
+     {
+      "id": "tema.algas",
+      "rotulo": "Algas marinhas",
+      "sinais": {
+       "topics": [
+        "T11390"
+       ],
+       "frase": "algas marinhas e seus compostos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "algas"
+      },
+      "nicho": "das algas marinhas"
+     },
+     {
+      "id": "tema.peixes_ecologia",
+      "rotulo": "Ecologia de peixes",
+      "sinais": {
+       "topics": [
+        "T12319"
+       ],
+       "frase": "biologia e ecologia de peixes"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "peixes"
+      },
+      "nicho": "da ecologia de peixes"
+     },
+     {
+      "id": "tema.reproducao_marinha",
+      "rotulo": "Reprodução de espécies aquáticas",
+      "sinais": {
+       "topics": [
+        "T11505"
+       ],
+       "frase": "reprodução de espécies aquáticas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "reprodução marinha"
+      },
+      "nicho": "da reprodução de espécies aquáticas"
+     }
+    ],
+    "sub.materno": [
+     {
+      "id": "tema.parto",
+      "rotulo": "Gestação, parto e recém-nascido",
+      "sinais": {
+       "topics": [
+        "T10453",
+        "T12741",
+        "T10290"
+       ],
+       "frase": "gestação, parto e cuidado neonatal"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "parto"
+      },
+      "nicho": "da gestação, do parto e do recém-nascido"
+     },
+     {
+      "id": "tema.amamentacao",
+      "rotulo": "Amamentação",
+      "sinais": {
+       "topics": [
+        "T10979"
+       ],
+       "frase": "aleitamento materno"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "amamentação"
+      },
+      "nicho": "do aleitamento materno"
+     },
+     {
+      "id": "tema.adolescentes",
+      "rotulo": "Saúde sexual de adolescentes",
+      "sinais": {
+       "topics": [
+        "T10327"
+       ],
+       "frase": "saúde sexual e reprodutiva de adolescentes"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "adolescentes"
+      },
+      "nicho": "da saúde sexual e reprodutiva de adolescentes"
+     },
+     {
+      "id": "tema.sifilis_gestacao",
+      "rotulo": "Sífilis na gestação",
+      "sinais": {
+       "topics": [
+        "T11934"
+       ],
+       "frase": "sífilis congênita e na gestação"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "sífilis"
+      },
+      "nicho": "da sífilis na gestação"
+     },
+     {
+      "id": "tema.autismo_infantil",
+      "rotulo": "Autismo e desenvolvimento infantil",
+      "sinais": {
+       "topics": [
+        "T10106"
+       ],
+       "frase": "autismo e desenvolvimento infantil"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "autismo"
+      },
+      "nicho": "do autismo e do desenvolvimento infantil"
+     },
+     {
+      "id": "tema.ginecologia",
+      "rotulo": "Assoalho pélvico e saúde ginecológica",
+      "sinais": {
+       "topics": [
+        "T10418",
+        "T10935",
+        "T10459"
+       ],
+       "frase": "assoalho pélvico, endometriose e saúde sexual"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "assoalho pélvico"
+      },
+      "nicho": "do assoalho pélvico e da saúde ginecológica"
+     },
+     {
+      "id": "tema.prematuros",
+      "rotulo": "Prematuridade e primeira infância",
+      "sinais": {
+       "topics": [
+        "T11060",
+        "T11629"
+       ],
+       "frase": "prematuridade e desenvolvimento na primeira infância"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "prematuros"
+      },
+      "nicho": "da prematuridade e da primeira infância"
+     }
+    ],
+    "sub.medicinais": [
+     {
+      "id": "tema.fitoquimica",
+      "rotulo": "Fitoquímica e farmacologia",
+      "sinais": {
+       "topics": [
+        "T12657",
+        "T14521",
+        "T13090"
+       ],
+       "frase": "fitoquímica e farmacologia de plantas medicinais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "fitoquímica"
+      },
+      "nicho": "da fitoquímica de plantas medicinais"
+     },
+     {
+      "id": "tema.oleos",
+      "rotulo": "Óleos essenciais",
+      "sinais": {
+       "topics": [
+        "T10225"
+       ],
+       "frase": "óleos essenciais e atividade biológica"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "óleos essenciais"
+      },
+      "nicho": "dos óleos essenciais"
+     },
+     {
+      "id": "tema.etnobotanica",
+      "rotulo": "Etnobotânica",
+      "sinais": {
+       "topics": [
+        "T10431"
+       ],
+       "frase": "etnobotânica e uso popular de plantas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "etnobotânica"
+      },
+      "nicho": "da etnobotânica"
+     },
+     {
+      "id": "tema.integrativas",
+      "rotulo": "Práticas integrativas",
+      "sinais": {
+       "topics": [
+        "T10902"
+       ],
+       "frase": "práticas integrativas e complementares em saúde"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "práticas integrativas"
+      },
+      "nicho": "das práticas integrativas e complementares"
+     },
+     {
+      "id": "tema.inseticidas_botanicos",
+      "rotulo": "Inseticidas naturais",
+      "sinais": {
+       "topics": [
+        "T11065"
+       ],
+       "frase": "inseticidas botânicos e controle natural de pragas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "inseticidas naturais"
+      },
+      "nicho": "de inseticidas botânicos"
+     }
+    ],
+    "sub.mente": [
+     {
+      "id": "tema.autismo",
+      "rotulo": "Autismo",
+      "sinais": {
+       "topics": [
+        "T10106"
+       ],
+       "frase": "transtorno do espectro autista"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "autismo"
+      },
+      "nicho": "do autismo"
+     },
+     {
+      "id": "tema.enxaqueca",
+      "rotulo": "Enxaqueca e dor de cabeça",
+      "sinais": {
+       "topics": [
+        "T10498"
+       ],
+       "frase": "enxaqueca e cefaleias"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "enxaqueca"
+      },
+      "nicho": "da enxaqueca"
+     },
+     {
+      "id": "tema.parkinson",
+      "rotulo": "Parkinson",
+      "sinais": {
+       "topics": [
+        "T10085"
+       ],
+       "frase": "doença de Parkinson"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "Parkinson"
+      },
+      "nicho": "da doença de Parkinson"
+     },
+     {
+      "id": "tema.demencia",
+      "rotulo": "Demência e memória",
+      "sinais": {
+       "topics": [
+        "T10009"
+       ],
+       "frase": "demência e declínio cognitivo"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "memória"
+      },
+      "nicho": "da demência e do declínio cognitivo"
+     },
+     {
+      "id": "tema.avc",
+      "rotulo": "AVC",
+      "sinais": {
+       "topics": [
+        "T10227",
+        "T10510"
+       ],
+       "frase": "acidente vascular cerebral e reabilitação"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "AVC"
+      },
+      "nicho": "do AVC"
+     },
+     {
+      "id": "tema.estimulacao",
+      "rotulo": "Estimulação cerebral",
+      "sinais": {
+       "topics": [
+        "T10614"
+       ],
+       "frase": "estimulação magnética e elétrica transcraniana"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "estimulação cerebral"
+      },
+      "nicho": "da estimulação cerebral não invasiva"
+     },
+     {
+      "id": "tema.drogas",
+      "rotulo": "Álcool e outras drogas",
+      "sinais": {
+       "topics": [
+        "T10043"
+       ],
+       "frase": "uso de álcool e outras drogas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "drogas"
+      },
+      "nicho": "do uso de álcool e outras drogas"
+     },
+     {
+      "id": "tema.depressao",
+      "rotulo": "Depressão e tratamento em saúde mental",
+      "sinais": {
+       "topics": [
+        "T11071",
+        "T10272"
+       ],
+       "frase": "depressão e tratamento em saúde mental"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "depressão"
+      },
+      "nicho": "da depressão e do tratamento em saúde mental"
+     }
+    ],
+    "sub.microbiota": [
+     {
+      "id": "tema.probioticos",
+      "rotulo": "Probióticos",
+      "sinais": {
+       "topics": [
+        "T10141"
+       ],
+       "frase": "probióticos e alimentos fermentados"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "probióticos"
+      },
+      "nicho": "dos probióticos"
+     },
+     {
+      "id": "tema.intestino",
+      "rotulo": "Microbiota intestinal",
+      "sinais": {
+       "topics": [
+        "T10066"
+       ],
+       "frase": "microbiota intestinal e saúde"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "intestino"
+      },
+      "nicho": "da microbiota intestinal"
+     },
+     {
+      "id": "tema.microbiota_oral",
+      "rotulo": "Microbiota oral",
+      "sinais": {
+       "topics": [
+        "T10257"
+       ],
+       "frase": "microbiota oral"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "microbiota oral"
+      },
+      "nicho": "da microbiota oral"
+     }
+    ],
+    "sub.movimento": [
+     {
+      "id": "tema.esporte",
+      "rotulo": "Esporte e treinamento",
+      "sinais": {
+       "topics": [
+        "T10157"
+       ],
+       "frase": "desempenho esportivo e treinamento"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "esporte"
+      },
+      "nicho": "do esporte e do treinamento"
+     },
+     {
+      "id": "tema.quedas",
+      "rotulo": "Equilíbrio e quedas",
+      "sinais": {
+       "topics": [
+        "T10114"
+       ],
+       "frase": "equilíbrio, marcha e prevenção de quedas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "quedas"
+      },
+      "nicho": "do equilíbrio e da prevenção de quedas"
+     },
+     {
+      "id": "tema.dor",
+      "rotulo": "Dor musculoesquelética",
+      "sinais": {
+       "topics": [
+        "T10084"
+       ],
+       "frase": "dor musculoesquelética e reabilitação"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "dor nas costas"
+      },
+      "nicho": "da dor musculoesquelética"
+     },
+     {
+      "id": "tema.voz",
+      "rotulo": "Voz e fala",
+      "sinais": {
+       "topics": [
+        "T10863"
+       ],
+       "frase": "distúrbios da voz e da fala"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "voz"
+      },
+      "nicho": "da voz e da fala"
+     },
+     {
+      "id": "tema.audicao",
+      "rotulo": "Audição",
+      "sinais": {
+       "topics": [
+        "T10283"
+       ],
+       "frase": "perda auditiva e reabilitação"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "audição"
+      },
+      "nicho": "da audição"
+     },
+     {
+      "id": "tema.atividade_fisica",
+      "rotulo": "Atividade física e saúde",
+      "sinais": {
+       "topics": [
+        "T10352"
+       ],
+       "frase": "atividade física e saúde"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "atividade física"
+      },
+      "nicho": "da atividade física"
+     },
+     {
+      "id": "tema.dor_anestesia",
+      "rotulo": "Dor e anestesia",
+      "sinais": {
+       "topics": [
+        "T10189",
+        "T10196"
+       ],
+       "frase": "mecanismos da dor e anestesia"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "dor"
+      },
+      "nicho": "da dor e da anestesia"
+     }
+    ],
+    "sub.nativas": [
+     {
+      "id": "tema.vegetacao_nativa",
+      "rotulo": "Ecologia da vegetação",
+      "sinais": {
+       "topics": [
+        "T12618"
+       ],
+       "frase": "ecologia da vegetação nativa"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "vegetação nativa"
+      },
+      "nicho": "da vegetação nativa"
+     },
+     {
+      "id": "tema.taxonomia_nativas",
+      "rotulo": "Taxonomia e evolução",
+      "sinais": {
+       "topics": [
+        "T14049",
+        "T10385"
+       ],
+       "frase": "taxonomia e evolução de plantas nativas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "espécies nativas"
+      },
+      "nicho": "da taxonomia de plantas nativas"
+     },
+     {
+      "id": "tema.sementes_nativas",
+      "rotulo": "Sementes e germinação",
+      "sinais": {
+       "topics": [
+        "T11098"
+       ],
+       "frase": "germinação de sementes nativas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "sementes"
+      },
+      "nicho": "das sementes nativas"
+     },
+     {
+      "id": "tema.florestas_nativas",
+      "rotulo": "Florestas",
+      "sinais": {
+       "topics": [
+        "T11880"
+       ],
+       "frase": "ecologia e manejo de florestas nativas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "florestas"
+      },
+      "nicho": "das florestas nativas"
+     }
+    ],
+    "sub.nutricao": [
+     {
+      "id": "tema.nutricao_idosos",
+      "rotulo": "Nutrição na velhice",
+      "sinais": {
+       "topics": [
+        "T10397"
+       ],
+       "frase": "nutrição e saúde no envelhecimento"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição na velhice"
+      },
+      "nicho": "da nutrição de idosos"
+     },
+     {
+      "id": "tema.obesidade",
+      "rotulo": "Obesidade",
+      "sinais": {
+       "topics": [
+        "T10010"
+       ],
+       "frase": "obesidade, atividade física e dieta"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "obesidade"
+      },
+      "nicho": "da obesidade"
+     },
+     {
+      "id": "tema.bariatrica",
+      "rotulo": "Cirurgia bariátrica",
+      "sinais": {
+       "topics": [
+        "T10569"
+       ],
+       "frase": "cirurgia bariátrica e seus resultados"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "cirurgia bariátrica"
+      },
+      "nicho": "da cirurgia bariátrica"
+     },
+     {
+      "id": "tema.comportamento_alimentar",
+      "rotulo": "Comportamento alimentar",
+      "sinais": {
+       "topics": [
+        "T12873",
+        "T12057"
+       ],
+       "frase": "comportamento alimentar e rotulagem"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "alimentação"
+      },
+      "nicho": "do comportamento alimentar"
+     },
+     {
+      "id": "tema.composicao_corporal",
+      "rotulo": "Composição corporal",
+      "sinais": {
+       "topics": [
+        "T12279"
+       ],
+       "frase": "avaliação da composição corporal"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "corpo"
+      },
+      "nicho": "da composição corporal"
+     },
+     {
+      "id": "tema.nutricao_clinica",
+      "rotulo": "Nutrição clínica",
+      "sinais": {
+       "topics": [
+        "T10858"
+       ],
+       "frase": "nutrição clínica e gastroenterologia"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição clínica"
+      },
+      "nicho": "da nutrição clínica"
+     }
+    ],
+    "sub.parasitos": [
+     {
+      "id": "tema.leishmaniose2",
+      "rotulo": "Leishmaniose",
+      "sinais": {
+       "topics": [
+        "T10823"
+       ],
+       "frase": "leishmaniose"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "leishmaniose"
+      },
+      "nicho": "da leishmaniose"
+     },
+     {
+      "id": "tema.chagas",
+      "rotulo": "Doença de Chagas",
+      "sinais": {
+       "topics": [
+        "T10890"
+       ],
+       "frase": "doença de Chagas e Trypanosoma cruzi"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "doença de Chagas"
+      },
+      "nicho": "da doença de Chagas"
+     },
+     {
+      "id": "tema.helmintos",
+      "rotulo": "Verminoses",
+      "sinais": {
+       "topics": [
+        "T11074"
+       ],
+       "frase": "helmintoses e controle de vermes"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "verminoses"
+      },
+      "nicho": "das helmintoses"
+     },
+     {
+      "id": "tema.toxoplasmose",
+      "rotulo": "Toxoplasmose",
+      "sinais": {
+       "topics": [
+        "T11155"
+       ],
+       "frase": "toxoplasmose"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "toxoplasmose"
+      },
+      "nicho": "da toxoplasmose"
+     },
+     {
+      "id": "tema.leptospirose",
+      "rotulo": "Leptospirose",
+      "sinais": {
+       "topics": [
+        "T12223"
+       ],
+       "frase": "leptospirose"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "leptospirose"
+      },
+      "nicho": "da leptospirose"
+     }
+    ],
+    "sub.poluicao": [
+     {
+      "id": "tema.agrotoxicos",
+      "rotulo": "Agrotóxicos",
+      "sinais": {
+       "topics": [
+        "T10875",
+        "T11423"
+       ],
+       "frase": "exposição a agrotóxicos e resíduos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "agrotóxicos"
+      },
+      "nicho": "dos agrotóxicos"
+     },
+     {
+      "id": "tema.solo_contaminado",
+      "rotulo": "Contaminação do solo",
+      "sinais": {
+       "topics": [
+        "T13102"
+       ],
+       "frase": "contaminação ambiental do solo"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "solo contaminado"
+      },
+      "nicho": "da contaminação do solo"
+     },
+     {
+      "id": "tema.contaminacao_alimentos",
+      "rotulo": "Contaminação de alimentos",
+      "sinais": {
+       "topics": [
+        "T11957"
+       ],
+       "frase": "contaminação e segurança de alimentos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "segurança dos alimentos"
+      },
+      "nicho": "da contaminação de alimentos"
+     }
+    ],
+    "sub.pragas": [
+     {
+      "id": "tema.controle_pragas",
+      "rotulo": "Controle de pragas",
+      "sinais": {
+       "topics": [
+        "T11065"
+       ],
+       "frase": "estratégias de controle de insetos-praga"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "pragas"
+      },
+      "nicho": "do controle de pragas"
+     },
+     {
+      "id": "tema.inseto_planta2",
+      "rotulo": "Interação inseto-planta",
+      "sinais": {
+       "topics": [
+        "T10135"
+       ],
+       "frase": "interações entre insetos-praga e plantas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "plantas atacadas"
+      },
+      "nicho": "das interações entre insetos-praga e plantas"
+     },
+     {
+      "id": "tema.controle_biologico",
+      "rotulo": "Controle biológico",
+      "sinais": {
+       "topics": [
+        "T11436"
+       ],
+       "frase": "controle biológico com fungos e bactérias entomopatogênicos"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "controle biológico"
+      },
+      "nicho": "do controle biológico"
+     },
+     {
+      "id": "tema.feromonios",
+      "rotulo": "Comportamento e feromônios",
+      "sinais": {
+       "topics": [
+        "T12043"
+       ],
+       "frase": "comportamento de insetos-praga e feromônios"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "feromônios"
+      },
+      "nicho": "do comportamento de insetos-praga"
+     },
+     {
+      "id": "tema.inseticidas",
+      "rotulo": "Inseticidas e resistência",
+      "sinais": {
+       "topics": [
+        "T11641"
+       ],
+       "frase": "inseticidas e resistência de insetos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "inseticidas"
+      },
+      "nicho": "dos inseticidas"
+     }
+    ],
+    "sub.solos": [
+     {
+      "id": "tema.carbono_solo",
+      "rotulo": "Carbono e nitrogênio",
+      "sinais": {
+       "topics": [
+        "T10004"
+       ],
+       "frase": "carbono e nitrogênio no solo"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "carbono do solo"
+      },
+      "nicho": "do carbono e do nitrogênio no solo"
+     },
+     {
+      "id": "tema.manejo_solo",
+      "rotulo": "Manejo e adubação",
+      "sinais": {
+       "topics": [
+        "T12792",
+        "T12294"
+       ],
+       "frase": "manejo do solo e adubação"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "adubação"
+      },
+      "nicho": "do manejo e da adubação do solo"
+     },
+     {
+      "id": "tema.microbios_solo",
+      "rotulo": "Micróbios do solo",
+      "sinais": {
+       "topics": [
+        "T10076"
+       ],
+       "frase": "microrganismos do solo e plantas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "micróbios do solo"
+      },
+      "nicho": "dos microrganismos do solo"
+     },
+     {
+      "id": "tema.nutricao_plantas",
+      "rotulo": "Nutrição de plantas",
+      "sinais": {
+       "topics": [
+        "T12113"
+       ],
+       "frase": "nutrição mineral de plantas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição de plantas"
+      },
+      "nicho": "da nutrição de plantas"
+     }
+    ],
+    "sub.vetores": [
+     {
+      "id": "tema.aedes",
+      "rotulo": "Aedes e arboviroses",
+      "sinais": {
+       "topics": [
+        "T10166",
+        "T14053"
+       ],
+       "frase": "Aedes aegypti e arboviroses"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "Aedes"
+      },
+      "nicho": "do Aedes e das arboviroses"
+     },
+     {
+      "id": "tema.barbeiros",
+      "rotulo": "Barbeiros e Chagas",
+      "sinais": {
+       "topics": [
+        "T10890"
+       ],
+       "frase": "barbeiros e doença de Chagas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "barbeiros"
+      },
+      "nicho": "dos barbeiros"
+     },
+     {
+      "id": "tema.flebotomineos",
+      "rotulo": "Flebotomíneos e leishmaniose",
+      "sinais": {
+       "topics": [
+        "T10823"
+       ],
+       "frase": "flebotomíneos e leishmaniose"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "flebotomíneos"
+      },
+      "nicho": "dos flebotomíneos"
+     },
+     {
+      "id": "tema.controle_vetores",
+      "rotulo": "Controle de vetores",
+      "sinais": {
+       "topics": [
+        "T11065"
+       ],
+       "frase": "controle de mosquitos e vetores"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "controle de vetores"
+      },
+      "nicho": "do controle de vetores"
+     }
+    ],
+    "sub.virus": [
+     {
+      "id": "tema.arbovirus",
+      "rotulo": "Arbovírus",
+      "sinais": {
+       "topics": [
+        "T10166"
+       ],
+       "frase": "dengue, zika e chikungunya"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "arbovírus"
+      },
+      "nicho": "dos arbovírus"
+     },
+     {
+      "id": "tema.coronavirus",
+      "rotulo": "Coronavírus",
+      "sinais": {
+       "topics": [
+        "T10118",
+        "T10041",
+        "T11754"
+       ],
+       "frase": "SARS-CoV-2 e covid-19"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "coronavírus"
+      },
+      "nicho": "do coronavírus"
+     },
+     {
+      "id": "tema.retrovirus",
+      "rotulo": "HTLV e retrovírus",
+      "sinais": {
+       "topics": [
+        "T12159"
+       ],
+       "frase": "HTLV e retrovírus"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "retrovírus"
+      },
+      "nicho": "do HTLV e dos retrovírus"
+     },
+     {
+      "id": "tema.raiva",
+      "rotulo": "Raiva",
+      "sinais": {
+       "topics": [
+        "T11780"
+       ],
+       "frase": "epidemiologia e controle da raiva"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "raiva"
+      },
+      "nicho": "da raiva"
+     },
+     {
+      "id": "tema.antivirais",
+      "rotulo": "Antivirais",
+      "sinais": {
+       "topics": [
+        "T10211"
+       ],
+       "frase": "descoberta de fármacos antivirais"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "antivirais"
+      },
+      "nicho": "de antivirais"
+     }
+    ],
+    "sub.cuidado": [
+     {
+      "id": "tema.seguranca_paciente",
+      "rotulo": "Segurança do paciente",
+      "sinais": {
+       "topics": [
+        "T10508"
+       ],
+       "frase": "segurança do paciente e erros de medicação"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "segurança do paciente"
+      },
+      "nicho": "da segurança do paciente"
+     },
+     {
+      "id": "tema.lesao_pressao",
+      "rotulo": "Lesões, feridas e estomias",
+      "sinais": {
+       "topics": [
+        "T11670",
+        "T10771",
+        "T12769"
+       ],
+       "frase": "prevenção de lesões por pressão e cuidado de feridas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "feridas"
+      },
+      "nicho": "das lesões por pressão e feridas"
+     },
+     {
+      "id": "tema.gestao_enfermagem",
+      "rotulo": "Gestão e prática de enfermagem",
+      "sinais": {
+       "topics": [
+        "T10186",
+        "T14316",
+        "T11816"
+       ],
+       "frase": "gestão e prática de enfermagem"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "enfermagem"
+      },
+      "nicho": "da gestão e da prática de enfermagem"
+     },
+     {
+      "id": "tema.informacao_saude",
+      "rotulo": "Prontuário e informação em saúde",
+      "sinais": {
+       "topics": [
+        "T10350",
+        "T12871"
+       ],
+       "frase": "prontuário eletrônico e qualidade em saúde"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "prontuários"
+      },
+      "nicho": "da informação e da qualidade em saúde"
+     },
+     {
+      "id": "tema.processo_enfermagem",
+      "rotulo": "Diagnóstico e processo de enfermagem",
+      "sinais": {
+       "topics": [
+        "T13111",
+        "T12790"
+       ],
+       "frase": "diagnóstico e processo de enfermagem"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "processo de enfermagem"
+      },
+      "nicho": "do processo de enfermagem"
+     },
+     {
+      "id": "tema.bioetica",
+      "rotulo": "Ética e bioética",
+      "sinais": {
+       "topics": [
+        "T13147"
+       ],
+       "frase": "ética e bioética na saúde"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "bioética"
+      },
+      "nicho": "da bioética"
+     }
+    ],
+    "sub.envelhecimento": [
+     {
+      "id": "tema.cuidado_idoso",
+      "rotulo": "Cuidado ao idoso",
+      "sinais": {
+       "topics": [
+        "T10312"
+       ],
+       "frase": "cuidado de enfermagem ao idoso"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "idosos"
+      },
+      "nicho": "do cuidado ao idoso"
+     },
+     {
+      "id": "tema.violencia_idoso",
+      "rotulo": "Violência contra idosos",
+      "sinais": {
+       "topics": [
+        "T12462"
+       ],
+       "frase": "violência e negligência contra idosos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "direitos dos idosos"
+      },
+      "nicho": "da violência contra idosos"
+     },
+     {
+      "id": "tema.nutricao_velhice",
+      "rotulo": "Nutrição na velhice",
+      "sinais": {
+       "topics": [
+        "T10397"
+       ],
+       "frase": "nutrição e saúde no envelhecimento"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "nutrição na velhice"
+      },
+      "nicho": "da nutrição no envelhecimento"
+     },
+     {
+      "id": "tema.demencia_idoso",
+      "rotulo": "Demência e memória",
+      "sinais": {
+       "topics": [
+        "T10009"
+       ],
+       "frase": "demência e declínio cognitivo em idosos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "memória"
+      },
+      "nicho": "da demência na velhice"
+     },
+     {
+      "id": "tema.incapacidade",
+      "rotulo": "Envelhecimento e incapacidade",
+      "sinais": {
+       "topics": [
+        "T12811"
+       ],
+       "frase": "envelhecimento, saúde e incapacidade"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "autonomia na velhice"
+      },
+      "nicho": "do envelhecimento e da incapacidade"
+     }
+    ],
+    "sub.formacao": [
+     {
+      "id": "tema.ensino_saude",
+      "rotulo": "Ensino de medicina e saúde",
+      "sinais": {
+       "topics": [
+        "T12413"
+       ],
+       "frase": "educação médica e ensino em saúde"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "ensino em saúde"
+      },
+      "nicho": "do ensino em saúde"
+     },
+     {
+      "id": "tema.interprofissional",
+      "rotulo": "Educação interprofissional",
+      "sinais": {
+       "topics": [
+        "T11497"
+       ],
+       "frase": "educação e colaboração interprofissional"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "trabalho em equipe"
+      },
+      "nicho": "da educação interprofissional"
+     },
+     {
+      "id": "tema.educacao_saude",
+      "rotulo": "Educação em saúde e materiais educativos",
+      "sinais": {
+       "topics": [
+        "T13117"
+       ],
+       "frase": "educação em saúde e validação de materiais educativos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "educação em saúde"
+      },
+      "nicho": "da educação em saúde"
+     },
+     {
+      "id": "tema.tecnologia_saude",
+      "rotulo": "Tecnologia e IA na saúde",
+      "sinais": {
+       "topics": [
+        "T11636",
+        "T10912",
+        "T11446",
+        "T11396"
+       ],
+       "frase": "inteligência artificial e tecnologia na saúde e no ensino"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "saúde digital"
+      },
+      "nicho": "da tecnologia e da IA na saúde"
+     }
+    ],
+    "sub.trabalho": [
+     {
+      "id": "tema.burnout",
+      "rotulo": "Estresse e burnout",
+      "sinais": {
+       "topics": [
+        "T12869",
+        "T12704"
+       ],
+       "frase": "estresse ocupacional e burnout"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "burnout"
+      },
+      "nicho": "do estresse e do burnout"
+     },
+     {
+      "id": "tema.profissionais_saude",
+      "rotulo": "Saúde dos profissionais de saúde",
+      "sinais": {
+       "topics": [
+        "T10795"
+       ],
+       "frase": "estresse e saúde de profissionais de saúde"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "profissionais de saúde"
+      },
+      "nicho": "da saúde dos profissionais de saúde"
+     },
+     {
+      "id": "tema.seguranca_trabalho",
+      "rotulo": "Segurança no trabalho",
+      "sinais": {
+       "topics": [
+        "T13315",
+        "T13233"
+       ],
+       "frase": "saúde e segurança no trabalho"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "segurança no trabalho"
+      },
+      "nicho": "da segurança no trabalho"
+     }
+    ],
+    "sub.orgaos": [
+     {
+      "id": "tema.rins",
+      "rotulo": "Rins e diálise",
+      "sinais": {
+       "topics": [
+        "T10684",
+        "T10291",
+        "T10408",
+        "T10641"
+       ],
+       "frase": "doença renal, lesão renal aguda e diálise"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "rins"
+      },
+      "nicho": "dos rins e da diálise"
+     },
+     {
+      "id": "tema.transplantes",
+      "rotulo": "Transplantes e doação de órgãos",
+      "sinais": {
+       "topics": [
+        "T11163",
+        "T10373",
+        "T10999"
+       ],
+       "frase": "transplante e doação de órgãos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "transplantes"
+      },
+      "nicho": "dos transplantes e da doação de órgãos"
+     },
+     {
+      "id": "tema.respiracao",
+      "rotulo": "Asma, respiração e sono",
+      "sinais": {
+       "topics": [
+        "T10051",
+        "T10322",
+        "T10234"
+       ],
+       "frase": "asma, ventilação e apneia do sono"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "respiração"
+      },
+      "nicho": "da asma, da respiração e do sono"
+     },
+     {
+      "id": "tema.figado_intestino",
+      "rotulo": "Fígado e intestino",
+      "sinais": {
+       "topics": [
+        "T10134",
+        "T10151"
+       ],
+       "frase": "doença inflamatória intestinal e hepatites"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "fígado"
+      },
+      "nicho": "do fígado e do intestino"
+     }
+    ],
+    "sub.imunidade": [
+     {
+      "id": "tema.lupus",
+      "rotulo": "Lúpus",
+      "sinais": {
+       "topics": [
+        "T10308"
+       ],
+       "frase": "lúpus eritematoso sistêmico"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "lúpus"
+      },
+      "nicho": "do lúpus"
+     },
+     {
+      "id": "tema.artrite",
+      "rotulo": "Artrite reumatoide",
+      "sinais": {
+       "topics": [
+        "T10200"
+       ],
+       "frase": "artrite reumatoide"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "artrite"
+      },
+      "nicho": "da artrite reumatoide"
+     },
+     {
+      "id": "tema.esclerose_multipla",
+      "rotulo": "Esclerose múltipla",
+      "sinais": {
+       "topics": [
+        "T10137"
+       ],
+       "frase": "esclerose múltipla"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "esclerose múltipla"
+      },
+      "nicho": "da esclerose múltipla"
+     },
+     {
+      "id": "tema.esclerose_sistemica",
+      "rotulo": "Esclerose sistêmica e outras",
+      "sinais": {
+       "topics": [
+        "T11330"
+       ],
+       "frase": "esclerose sistêmica e doenças do tecido conjuntivo"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "esclerose sistêmica"
+      },
+      "nicho": "da esclerose sistêmica"
+     }
+    ],
+    "sub.pets_clinica": [
+     {
+      "id": "tema.cirurgia_vet",
+      "rotulo": "Clínica e cirurgia",
+      "sinais": {
+       "topics": [
+        "T11580"
+       ],
+       "frase": "clínica e cirurgia de pequenos animais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "cirurgia veterinária"
+      },
+      "nicho": "da clínica e da cirurgia de cães e gatos"
+     },
+     {
+      "id": "tema.anestesia_vet",
+      "rotulo": "Farmacologia e anestesia veterinária",
+      "sinais": {
+       "topics": [
+        "T11905"
+       ],
+       "frase": "farmacologia e anestesia veterinária"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anestesia veterinária"
+      },
+      "nicho": "da farmacologia e da anestesia veterinária"
+     },
+     {
+      "id": "tema.cancer_pets",
+      "rotulo": "Câncer em cães e gatos",
+      "sinais": {
+       "topics": [
+        "T11149"
+       ],
+       "frase": "oncologia veterinária de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "oncologia veterinária"
+      },
+      "nicho": "do câncer em cães e gatos"
+     }
+    ],
+    "sub.pets_doencas": [
+     {
+      "id": "tema.leish_canina",
+      "rotulo": "Leishmaniose canina",
+      "sinais": {
+       "topics": [
+        "T10823"
+       ],
+       "frase": "leishmaniose canina"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "leishmaniose canina"
+      },
+      "nicho": "da leishmaniose canina"
+     },
+     {
+      "id": "tema.parasitos_pets",
+      "rotulo": "Parasitos de cães e gatos",
+      "sinais": {
+       "topics": [
+        "T10815",
+        "T10695"
+       ],
+       "frase": "parasitos de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "parasitos dos pets"
+      },
+      "nicho": "dos parasitos de cães e gatos"
+     }
+    ],
+    "sub.pets_anatomia": [
+     {
+      "id": "tema.anatomia_comparada",
+      "rotulo": "Anatomia comparada",
+      "sinais": {
+       "topics": [
+        "T13100"
+       ],
+       "frase": "anatomia comparada de animais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anatomia comparada"
+      },
+      "nicho": "da anatomia comparada"
+     },
+     {
+      "id": "tema.reproducao_pets",
+      "rotulo": "Reprodução",
+      "sinais": {
+       "topics": [
+        "T10364"
+       ],
+       "frase": "reprodução de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "reprodução animal"
+      },
+      "nicho": "da reprodução de cães e gatos"
+     }
+    ]
+   }
+  },
+  "tecnica": {
+   "bloco": "nicho",
+   "faceta": "tecnica",
+   "texto": "E qual técnica você mais usa?",
+   "depende_de": "metodo",
+   "opcoes_por": {
+    "metodo.bioinfo": [
+     {
+      "id": "tec.genomica",
+      "rotulo": "Genômica e sequenciamento",
+      "sinais": {
+       "termos": [
+        "genome",
+        "genoma",
+        "genomic",
+        "genômic",
+        "whole-genome",
+        "sequencing",
+        "sequenciamento"
+       ],
+       "frase": "genômica e sequenciamento de genomas"
+      },
+      "nicho": "Genômica"
+     },
+     {
+      "id": "tec.metagenomica",
+      "rotulo": "Metagenômica e microbiomas",
+      "sinais": {
+       "termos": [
+        "metagenom",
+        "16s rrna",
+        "16s rdna",
+        "microbiome",
+        "microbioma",
+        "amplicon"
+       ],
+       "frase": "metagenômica e microbiomas"
+      },
+      "nicho": "Metagenômica"
+     },
+     {
+      "id": "tec.filogenia",
+      "rotulo": "Filogenia e evolução",
+      "sinais": {
+       "termos": [
+        "phylogen",
+        "filogen",
+        "phylogeograph",
+        "filogeogr",
+        "molecular evolution"
+       ],
+       "frase": "filogenia e evolução molecular"
+      },
+      "nicho": "Filogenia"
+     },
+     {
+      "id": "tec.transcriptomica",
+      "rotulo": "Transcriptômica e expressão",
+      "sinais": {
+       "termos": [
+        "transcriptom",
+        "rna-seq",
+        "rnaseq",
+        "differential expression"
+       ],
+       "frase": "transcriptômica e RNA-seq"
+      },
+      "nicho": "Transcriptômica"
+     }
+    ],
+    "metodo.genetica": [
+     {
+      "id": "tec.marcadores",
+      "rotulo": "Marcadores moleculares",
+      "sinais": {
+       "termos": [
+        "microsatellite",
+        "microssatélite",
+        "ssr",
+        "snp",
+        "molecular marker",
+        "marcador molecular",
+        "issr"
+       ],
+       "frase": "marcadores moleculares e genotipagem"
+      },
+      "nicho": "Genética com marcadores moleculares"
+     },
+     {
+      "id": "tec.expressao",
+      "rotulo": "Expressão gênica",
+      "sinais": {
+       "termos": [
+        "gene expression",
+        "expressão gênica",
+        "expressão de genes",
+        "polymorphism",
+        "polimorfismo"
+       ],
+       "frase": "expressão gênica e polimorfismos"
+      },
+      "nicho": "Genética da expressão gênica"
+     },
+     {
+      "id": "tec.citogenetica",
+      "rotulo": "Citogenética",
+      "sinais": {
+       "termos": [
+        "cytogenetic",
+        "citogenét",
+        "karyotype",
+        "cariótipo",
+        "chromosome",
+        "cromossom"
+       ],
+       "frase": "citogenética e cromossomos"
+      },
+      "nicho": "Citogenética"
+     },
+     {
+      "id": "tec.populacoes",
+      "rotulo": "Genética de populações",
+      "sinais": {
+       "termos": [
+        "population structure",
+        "estrutura populacional",
+        "genetic diversity",
+        "diversidade genética",
+        "gene flow"
+       ],
+       "topics": [
+        "T10012"
+       ],
+       "frase": "genética de populações"
+      },
+      "nicho": "Genética de populações"
+     }
+    ],
+    "metodo.bancada": [
+     {
+      "id": "tec.celulas",
+      "rotulo": "Cultura de células",
+      "sinais": {
+       "termos": [
+        "cell culture",
+        "cultura de células",
+        "cell line",
+        "linhagem celular",
+        "cytotoxicity",
+        "citotoxicidade",
+        "in vitro"
+       ],
+       "frase": "cultura de células e ensaios in vitro"
+      },
+      "nicho": "Cultura de células"
+     },
+     {
+      "id": "tec.modelos_animais",
+      "rotulo": "Modelos animais",
+      "sinais": {
+       "termos": [
+        "rats",
+        "ratos",
+        "mice",
+        "camundongos",
+        "wistar",
+        "murine",
+        "murino",
+        "zebrafish"
+       ],
+       "frase": "experimentos com modelos animais"
+      },
+      "nicho": "Experimentação animal"
+     },
+     {
+      "id": "tec.microbiologia",
+      "rotulo": "Ensaios microbiológicos",
+      "sinais": {
+       "termos": [
+        "antimicrobial activity",
+        "atividade antimicrobiana",
+        "minimum inhibitory",
+        "concentração inibitória",
+        "antibacterial",
+        "antibacteriana",
+        "biofilm"
+       ],
+       "frase": "ensaios antimicrobianos e microbiológicos"
+      },
+      "nicho": "Microbiologia de bancada"
+     },
+     {
+      "id": "tec.histologia",
+      "rotulo": "Histologia e patologia",
+      "sinais": {
+       "termos": [
+        "histolog",
+        "histopatol",
+        "histopathol",
+        "immunohistochem",
+        "imuno-histoquím",
+        "morphometr"
+       ],
+       "frase": "histologia e histopatologia"
+      },
+      "nicho": "Histopatologia"
+     },
+     {
+      "id": "tec.bioquimica",
+      "rotulo": "Bioquímica e estresse oxidativo",
+      "sinais": {
+       "termos": [
+        "oxidative stress",
+        "estresse oxidativo",
+        "enzymatic",
+        "enzimátic",
+        "antioxidant",
+        "antioxidante",
+        "biochemical"
+       ],
+       "frase": "bioquímica e estresse oxidativo"
+      },
+      "nicho": "Bioquímica experimental"
+     },
+     {
+      "id": "tec.nano",
+      "rotulo": "Nanotecnologia",
+      "sinais": {
+       "termos": [
+        "nanopartic",
+        "nanoparticle",
+        "nanoemuls",
+        "nanostruct",
+        "nanocomposit",
+        "liposom",
+        "lipossom"
+       ],
+       "topics": [
+        "T10704",
+        "T10256"
+       ],
+       "frase": "nanotecnologia e sistemas de liberação"
+      },
+      "nicho": "Nanotecnologia"
+     }
+    ],
+    "metodo.quimica": [
+     {
+      "id": "tec.produtos_naturais",
+      "rotulo": "Extração e produtos naturais",
+      "sinais": {
+       "termos": [
+        "essential oil",
+        "óleo essencial",
+        "extract",
+        "extrato",
+        "flavonoid",
+        "flavonoide",
+        "phytochemical",
+        "fitoquímic"
+       ],
+       "frase": "extração e química de produtos naturais"
+      },
+      "nicho": "Química de produtos naturais"
+     },
+     {
+      "id": "tec.sintese",
+      "rotulo": "Síntese de compostos",
+      "sinais": {
+       "termos": [
+        "synthesis",
+        "síntese",
+        "synthetic",
+        "sintétic",
+        "derivatives",
+        "derivados"
+       ],
+       "frase": "síntese de compostos e derivados"
+      },
+      "nicho": "Síntese química"
+     },
+     {
+      "id": "tec.complexos",
+      "rotulo": "Complexos metálicos",
+      "sinais": {
+       "termos": [
+        "metal complex",
+        "complexos metálicos",
+        "ruthenium",
+        "rutênio",
+        "copper(ii)",
+        "cobre(ii)",
+        "coordination compound"
+       ],
+       "topics": [
+        "T10163"
+       ],
+       "frase": "complexos metálicos e química de coordenação"
+      },
+      "nicho": "Química de complexos metálicos"
+     },
+     {
+      "id": "tec.analitica",
+      "rotulo": "Cromatografia e análise química",
+      "sinais": {
+       "termos": [
+        "hplc",
+        "chromatograph",
+        "cromatograf",
+        "mass spectrometry",
+        "espectrometria",
+        "lc-ms",
+        "gc-ms",
+        "voltammetr"
+       ],
+       "frase": "cromatografia e química analítica"
+      },
+      "nicho": "Química analítica"
+     },
+     {
+      "id": "tec.nano_q",
+      "rotulo": "Nanomateriais",
+      "sinais": {
+       "termos": [
+        "nanopartic",
+        "nanoparticle",
+        "nanomaterial",
+        "nanocomposit",
+        "graphene",
+        "grafeno"
+       ],
+       "frase": "nanomateriais"
+      },
+      "nicho": "Química de nanomateriais"
+     },
+     {
+      "id": "tec.docking_q",
+      "rotulo": "Docking e modelagem molecular",
+      "sinais": {
+       "termos": [
+        "docking",
+        "molecular dynamics",
+        "dinâmica molecular",
+        "in silico",
+        "virtual screening",
+        "qsar",
+        "dft"
+       ],
+       "topics": [
+        "T10211"
+       ],
+       "frase": "docking, modelagem molecular e química computacional"
+      },
+      "nicho": "Química computacional"
+     },
+     {
+      "id": "tec.alimentos_q",
+      "rotulo": "Análise de alimentos",
+      "sinais": {
+       "termos": [
+        "physicochemical",
+        "físico-químic",
+        "proximate composition",
+        "composição centesimal",
+        "sensory",
+        "sensorial"
+       ],
+       "frase": "análise físico-química de alimentos"
+      },
+      "nicho": "Química de alimentos"
+     }
+    ],
+    "metodo.dados": [
+     {
+      "id": "tec.ml",
+      "rotulo": "Aprendizado de máquina e IA",
+      "sinais": {
+       "termos": [
+        "machine learning",
+        "aprendizado de máquina",
+        "deep learning",
+        "neural network",
+        "redes neurais",
+        "artificial intelligence",
+        "inteligência artificial",
+        "random forest"
+       ],
+       "topics": [
+        "T11396",
+        "T10616"
+       ],
+       "frase": "aprendizado de máquina e inteligência artificial"
+      },
+      "nicho": "Inteligência artificial"
+     },
+     {
+      "id": "tec.espacial",
+      "rotulo": "Estatística espacial",
+      "sinais": {
+       "termos": [
+        "spatial analysis",
+        "análise espacial",
+        "spatial distribution",
+        "distribuição espacial",
+        "scan statistic",
+        "spatiotemporal",
+        "espaço-temporal"
+       ],
+       "topics": [
+        "T11819"
+       ],
+       "frase": "análise espacial e espaço-temporal"
+      },
+      "nicho": "Estatística espacial"
+     },
+     {
+      "id": "tec.modelagem",
+      "rotulo": "Modelos matemáticos",
+      "sinais": {
+       "termos": [
+        "mathematical model",
+        "modelo matemático",
+        "modelagem",
+        "simulation model",
+        "compartmental model",
+        "nonlinear model"
+       ],
+       "frase": "modelagem matemática e simulação"
+      },
+      "nicho": "Modelagem matemática"
+     },
+     {
+      "id": "tec.series",
+      "rotulo": "Séries temporais e previsão",
+      "sinais": {
+       "termos": [
+        "time series",
+        "séries temporais",
+        "série temporal",
+        "forecast",
+        "previsão",
+        "joinpoint",
+        "trend analysis"
+       ],
+       "frase": "séries temporais e previsão"
+      },
+      "nicho": "Séries temporais"
+     }
+    ],
+    "metodo.epidemio": [
+     {
+      "id": "tec.transversal",
+      "rotulo": "Estudos transversais",
+      "sinais": {
+       "termos": [
+        "cross-sectional",
+        "transversal",
+        "prevalence",
+        "prevalência"
+       ],
+       "frase": "estudos transversais de prevalência"
+      },
+      "nicho": "Epidemiologia transversal"
+     },
+     {
+      "id": "tec.coorte",
+      "rotulo": "Coortes e acompanhamento",
+      "sinais": {
+       "termos": [
+        "cohort",
+        "coorte",
+        "longitudinal",
+        "follow-up",
+        "seguimento"
+       ],
+       "frase": "estudos de coorte e longitudinais"
+      },
+      "nicho": "Epidemiologia de coortes"
+     },
+     {
+      "id": "tec.revisao",
+      "rotulo": "Revisões sistemáticas e meta-análises",
+      "sinais": {
+       "termos": [
+        "systematic review",
+        "revisão sistemática",
+        "meta-analysis",
+        "metanálise",
+        "meta-análise",
+        "scoping review",
+        "revisão de escopo"
+       ],
+       "frase": "revisões sistemáticas e meta-análises"
+      },
+      "nicho": "Revisão sistemática"
+     },
+     {
+      "id": "tec.espacial_epi",
+      "rotulo": "Análise espacial e temporal",
+      "sinais": {
+       "termos": [
+        "spatial analysis",
+        "análise espacial",
+        "spatial distribution",
+        "distribuição espacial",
+        "temporal trend",
+        "tendência temporal",
+        "ecological study",
+        "estudo ecológico"
+       ],
+       "topics": [
+        "T11819"
+       ],
+       "frase": "epidemiologia espacial e tendências temporais"
+      },
+      "nicho": "Epidemiologia espacial"
+     },
+     {
+      "id": "tec.inqueritos",
+      "rotulo": "Inquéritos e sistemas de informação",
+      "sinais": {
+       "termos": [
+        "national health survey",
+        "pesquisa nacional de saúde",
+        "vigitel",
+        "datasus",
+        "sinan",
+        "sim",
+        "sinasc",
+        "information system",
+        "sistema de informação"
+       ],
+       "frase": "inquéritos nacionais e sistemas de informação em saúde"
+      },
+      "nicho": "Epidemiologia com bases nacionais"
+     }
+    ],
+    "metodo.clinica": [
+     {
+      "id": "tec.ensaio",
+      "rotulo": "Ensaios clínicos",
+      "sinais": {
+       "termos": [
+        "randomized",
+        "randomizado",
+        "randomised",
+        "clinical trial",
+        "ensaio clínico",
+        "placebo"
+       ],
+       "frase": "ensaios clínicos randomizados"
+      },
+      "nicho": "Ensaios clínicos"
+     },
+     {
+      "id": "tec.caso",
+      "rotulo": "Relatos e séries de casos",
+      "sinais": {
+       "termos": [
+        "case report",
+        "relato de caso",
+        "case series",
+        "série de casos"
+       ],
+       "frase": "relatos e séries de casos clínicos"
+      },
+      "nicho": "Relatos de caso"
+     },
+     {
+      "id": "tec.validacao",
+      "rotulo": "Validação de instrumentos",
+      "sinais": {
+       "termos": [
+        "validation",
+        "validação",
+        "psychometric",
+        "psicométric",
+        "reliability",
+        "confiabilidade",
+        "cross-cultural adaptation",
+        "adaptação transcultural"
+       ],
+       "topics": [
+        "T13117"
+       ],
+       "frase": "validação e adaptação de instrumentos"
+      },
+      "nicho": "Validação de instrumentos"
+     },
+     {
+      "id": "tec.imagem",
+      "rotulo": "Diagnóstico por imagem",
+      "sinais": {
+       "termos": [
+        "ultrasound",
+        "ultrassom",
+        "ultrassonograf",
+        "tomography",
+        "tomografia",
+        "magnetic resonance",
+        "ressonância magnética",
+        "radiograph"
+       ],
+       "frase": "diagnóstico por imagem"
+      },
+      "nicho": "Diagnóstico por imagem"
+     },
+     {
+      "id": "tec.intervencao",
+      "rotulo": "Intervenções educativas e de cuidado",
+      "sinais": {
+       "termos": [
+        "educational intervention",
+        "intervenção educativa",
+        "educational technology",
+        "tecnologia educacional",
+        "health education",
+        "educação em saúde"
+       ],
+       "frase": "intervenções educativas e de cuidado"
+      },
+      "nicho": "Intervenções em saúde"
+     },
+     {
+      "id": "tec.exercicio",
+      "rotulo": "Exercício e reabilitação",
+      "sinais": {
+       "termos": [
+        "therapeutic exercise",
+        "exercício terapêutico",
+        "training program",
+        "programa de treinamento",
+        "physical therapy",
+        "fisioterapia"
+       ],
+       "frase": "exercício terapêutico e reabilitação"
+      },
+      "nicho": "Reabilitação clínica"
+     }
+    ],
+    "metodo.campo": [
+     {
+      "id": "tec.inventario",
+      "rotulo": "Levantamentos e inventários",
+      "sinais": {
+       "termos": [
+        "inventory",
+        "inventário",
+        "checklist",
+        "species richness",
+        "riqueza de espécies",
+        "levantamento florístico",
+        "floristic survey",
+        "new records",
+        "novos registros"
+       ],
+       "frase": "levantamentos e inventários de espécies"
+      },
+      "nicho": "Inventário de campo"
+     },
+     {
+      "id": "tec.monitoramento",
+      "rotulo": "Monitoramento ambiental",
+      "sinais": {
+       "termos": [
+        "monitoring",
+        "monitoramento",
+        "seasonal variation",
+        "variação sazonal",
+        "long-term"
+       ],
+       "frase": "monitoramento ambiental"
+      },
+      "nicho": "Monitoramento ambiental"
+     }
+    ]
+   }
+  },
+  "estrato": {
+   "bloco": "nicho",
+   "faceta": "estrato",
+   "texto": "Onde, exatamente?",
+   "depende_de": "ambiente",
+   "opcoes_por": {
+    "ambiente.caatinga": [
+     {
+      "id": "amb.caatinga",
+      "rotulo": "Caatinga",
+      "sinais": {
+       "termos": [
+        "caatinga",
+        "seasonally dry tropical forest",
+        "floresta tropical sazonalmente seca"
+       ],
+       "frase": "caatinga e florestas secas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "caatinga"
+      },
+      "nicho": "da caatinga"
+     },
+     {
+      "id": "amb.cerrado",
+      "rotulo": "Cerrado e áreas de transição",
+      "sinais": {
+       "termos": [
+        "cerrado",
+        "savanna",
+        "savana",
+        "ecotone",
+        "ecótono"
+       ],
+       "frase": "cerrado e áreas de transição"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "cerrado"
+      },
+      "nicho": "do cerrado"
+     },
+     {
+      "id": "amb.serras",
+      "rotulo": "Serras, chapadas e brejos de altitude",
+      "sinais": {
+       "termos": [
+        "chapada",
+        "serra da",
+        "serra do",
+        "brejo de altitude",
+        "highland",
+        "montane",
+        "altitude"
+       ],
+       "frase": "serras, chapadas e brejos de altitude"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "serras"
+      },
+      "nicho": "das serras e chapadas"
+     },
+     {
+      "id": "amb.sertao_irrigado",
+      "rotulo": "Sertão irrigado e vale do São Francisco",
+      "sinais": {
+       "termos": [
+        "irrigated perimeter",
+        "perímetro irrigado",
+        "são francisco valley",
+        "vale do são francisco",
+        "petrolina",
+        "juazeiro"
+       ],
+       "frase": "agricultura irrigada no vale do São Francisco"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "sertão irrigado"
+      },
+      "nicho": "do sertão irrigado"
+     }
+    ],
+    "ambiente.mata": [
+     {
+      "id": "amb.mata_atlantica",
+      "rotulo": "Mata atlântica",
+      "sinais": {
+       "termos": [
+        "atlantic forest",
+        "mata atlântica",
+        "atlantic rainforest"
+       ],
+       "frase": "mata atlântica"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "mata atlântica"
+      },
+      "nicho": "da mata atlântica"
+     },
+     {
+      "id": "amb.restinga",
+      "rotulo": "Restingas e dunas",
+      "sinais": {
+       "termos": [
+        "restinga",
+        "dunes",
+        "dunas",
+        "sand dune",
+        "coastal sandy"
+       ],
+       "frase": "restingas e dunas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "restingas"
+      },
+      "nicho": "das restingas e dunas"
+     },
+     {
+      "id": "amb.amazonia",
+      "rotulo": "Amazônia maranhense e mata dos cocais",
+      "sinais": {
+       "termos": [
+        "amazon",
+        "amazôn",
+        "babassu",
+        "babaçu",
+        "mata dos cocais",
+        "pre-amazon",
+        "pré-amazôn"
+       ],
+       "frase": "Amazônia maranhense e mata dos cocais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "Amazônia"
+      },
+      "nicho": "da Amazônia maranhense"
+     },
+     {
+      "id": "amb.fragmentos",
+      "rotulo": "Fragmentos florestais e áreas urbanas verdes",
+      "sinais": {
+       "termos": [
+        "forest fragment",
+        "fragmento florestal",
+        "fragmentos florestais",
+        "urban forest",
+        "arborização urbana",
+        "urban green"
+       ],
+       "frase": "fragmentos florestais e verde urbano"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "fragmentos de mata"
+      },
+      "nicho": "dos fragmentos florestais"
+     }
+    ],
+    "ambiente.mar": [
+     {
+      "id": "amb.manguezais",
+      "rotulo": "Manguezais e estuários",
+      "sinais": {
+       "termos": [
+        "mangrove",
+        "manguezal",
+        "manguezais",
+        "estuar"
+       ],
+       "frase": "manguezais e estuários"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "manguezais"
+      },
+      "nicho": "dos manguezais e estuários"
+     },
+     {
+      "id": "amb.praias_recifes",
+      "rotulo": "Praias e recifes de coral",
+      "sinais": {
+       "termos": [
+        "coral reef",
+        "recifes de coral",
+        "beach",
+        "praia",
+        "reef fish",
+        "sandy beach",
+        "ambientes recifais"
+       ],
+       "frase": "praias e recifes de coral"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "recifes de coral"
+      },
+      "nicho": "das praias e recifes"
+     },
+     {
+      "id": "amb.mar_aberto",
+      "rotulo": "Mar aberto e plataforma continental",
+      "sinais": {
+       "termos": [
+        "oceanic",
+        "oceânic",
+        "continental shelf",
+        "plataforma continental",
+        "offshore",
+        "pelagic",
+        "pelágic",
+        "fisheries",
+        "pesca"
+       ],
+       "topics": [
+        "T10230"
+       ],
+       "frase": "oceano, plataforma continental e pesca"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "mar aberto"
+      },
+      "nicho": "do mar aberto"
+     }
+    ],
+    "ambiente.aguas": [
+     {
+      "id": "amb.rios",
+      "rotulo": "Rios e o São Francisco",
+      "sinais": {
+       "termos": [
+        "river",
+        "rio são francisco",
+        "são francisco river",
+        "riverine",
+        "riparian",
+        "ripári",
+        "fluvial",
+        "watershed",
+        "bacia hidrográfica"
+       ],
+       "frase": "rios e bacias hidrográficas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "rios"
+      },
+      "nicho": "dos rios"
+     },
+     {
+      "id": "amb.acudes",
+      "rotulo": "Açudes e reservatórios",
+      "sinais": {
+       "termos": [
+        "reservoir",
+        "reservatório",
+        "açude",
+        "dam",
+        "barragem",
+        "semiarid reservoir"
+       ],
+       "frase": "açudes e reservatórios do semiárido"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "açudes"
+      },
+      "nicho": "dos açudes e reservatórios"
+     }
+    ],
+    "ambiente.lavouras": [
+     {
+      "id": "amb.agricultura_familiar",
+      "rotulo": "Agricultura familiar e assentamentos",
+      "sinais": {
+       "termos": [
+        "smallholder",
+        "agricultura familiar",
+        "family farm",
+        "assentamento",
+        "settlement",
+        "agroecolog",
+        "agroecológ"
+       ],
+       "frase": "agricultura familiar e agroecologia"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "agricultura familiar"
+      },
+      "nicho": "da agricultura familiar"
+     },
+     {
+      "id": "amb.agronegocio",
+      "rotulo": "Grandes lavouras e agronegócio",
+      "sinais": {
+       "termos": [
+        "commercial farm",
+        "agronegócio",
+        "agribusiness",
+        "soybean",
+        "soja",
+        "sugarcane",
+        "cana-de-açúcar",
+        "monoculture",
+        "monocultura"
+       ],
+       "frase": "grandes lavouras e agronegócio"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "agronegócio"
+      },
+      "nicho": "das grandes lavouras"
+     },
+     {
+      "id": "amb.pastagens",
+      "rotulo": "Pastagens e criação a campo",
+      "sinais": {
+       "termos": [
+        "pasture",
+        "pastagem",
+        "grazing",
+        "pastejo",
+        "rangeland",
+        "extensive system",
+        "sistema extensivo"
+       ],
+       "topics": [
+        "T13591"
+       ],
+       "frase": "pastagens e criação extensiva"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "pastagens"
+      },
+      "nicho": "das pastagens e da criação a campo"
+     },
+     {
+      "id": "amb.estufas",
+      "rotulo": "Estufas, viveiros e hortas",
+      "sinais": {
+       "termos": [
+        "greenhouse",
+        "casa de vegetação",
+        "nursery",
+        "viveiro",
+        "vegetable garden",
+        "horta",
+        "hydroponic",
+        "hidropônic"
+       ],
+       "topics": [
+        "T13391"
+       ],
+       "frase": "estufas, viveiros e hortas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "estufas"
+      },
+      "nicho": "das estufas e viveiros"
+     }
+    ],
+    "ambiente.cidades": [
+     {
+      "id": "amb.hospitais",
+      "rotulo": "Hospitais e UTIs",
+      "sinais": {
+       "termos": [
+        "hospital",
+        "intensive care",
+        "terapia intensiva",
+        "uti",
+        "icu",
+        "emergency department",
+        "pronto-socorro",
+        "inpatient",
+        "internação"
+       ],
+       "frase": "hospitais, UTIs e emergências"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "hospitais"
+      },
+      "nicho": "dos hospitais"
+     },
+     {
+      "id": "amb.atencao_primaria",
+      "rotulo": "Atenção primária e saúde da família",
+      "sinais": {
+       "termos": [
+        "primary care",
+        "atenção primária",
+        "atenção básica",
+        "family health",
+        "saúde da família",
+        "community health worker",
+        "agente comunitário"
+       ],
+       "topics": [
+        "T11590"
+       ],
+       "frase": "atenção primária e estratégia saúde da família"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "atenção primária"
+      },
+      "nicho": "da atenção primária"
+     },
+     {
+      "id": "amb.escolas",
+      "rotulo": "Escolas e universidades",
+      "sinais": {
+       "termos": [
+        "school",
+        "escola",
+        "schoolchildren",
+        "escolares",
+        "students",
+        "estudantes",
+        "university",
+        "universitári"
+       ],
+       "frase": "escolas, estudantes e universidades"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "escolas"
+      },
+      "nicho": "das escolas e universidades"
+     },
+     {
+      "id": "amb.urbano",
+      "rotulo": "Bairros, periferias e ambiente urbano",
+      "sinais": {
+       "termos": [
+        "urban",
+        "urbano",
+        "urbana",
+        "city",
+        "cidade",
+        "neighborhood",
+        "bairro",
+        "slum",
+        "periferia"
+       ],
+       "frase": "ambiente urbano, bairros e periferias"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "bairros"
+      },
+      "nicho": "das cidades e periferias"
+     },
+     {
+      "id": "amb.prisoes",
+      "rotulo": "Prisões e instituições",
+      "sinais": {
+       "termos": [
+        "prison",
+        "prisional",
+        "presídio",
+        "incarcerated",
+        "privados de liberdade"
+       ],
+       "frase": "sistema prisional e instituições"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "prisões"
+      },
+      "nicho": "do sistema prisional"
+     }
+    ],
+    "ambiente.comunidades": [
+     {
+      "id": "amb.indigenas",
+      "rotulo": "Povos indígenas",
+      "sinais": {
+       "termos": [
+        "indigenous",
+        "indígena",
+        "indígenas",
+        "aldeia",
+        "etnia"
+       ],
+       "frase": "povos indígenas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "povos indígenas"
+      },
+      "nicho": "dos povos indígenas"
+     },
+     {
+      "id": "amb.quilombolas",
+      "rotulo": "Comunidades quilombolas",
+      "sinais": {
+       "termos": [
+        "quilombola",
+        "quilombo",
+        "maroon"
+       ],
+       "frase": "comunidades quilombolas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "quilombos"
+      },
+      "nicho": "das comunidades quilombolas"
+     },
+     {
+      "id": "amb.rurais",
+      "rotulo": "Comunidades rurais e sertanejas",
+      "sinais": {
+       "termos": [
+        "rural communit",
+        "comunidade rural",
+        "comunidades rurais",
+        "rural population",
+        "população rural",
+        "rural area",
+        "zona rural"
+       ],
+       "frase": "comunidades rurais e sertanejas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "comunidades rurais"
+      },
+      "nicho": "das comunidades rurais"
+     }
+    ]
+   }
   }
  },
  "titulos": {
@@ -2626,6 +7899,34 @@
     "estilo.modelo": "Mapa-múndi das espécies",
     "estilo.gente": "Biblioteca ambulante",
     "estilo.inedito": "Caça-raridades"
+   },
+   "habitat.clinica": {
+    "estilo.testa": "Plantão experimental",
+    "estilo.junta": "Prontuário vivo",
+    "estilo.modelo": "Estrategista de plantão",
+    "estilo.gente": "Cuidado em pessoa",
+    "estilo.inedito": "Pioneirismo de consultório"
+   },
+   "habitat.aula": {
+    "estilo.testa": "Laboratório de giz",
+    "estilo.junta": "Acervo de sala de aula",
+    "estilo.modelo": "Mapa da turma",
+    "estilo.gente": "Ponte com a escola",
+    "estilo.inedito": "Ideia fora da caixa"
+   },
+   "habitat.agua": {
+    "estilo.testa": "Teste de maré",
+    "estilo.junta": "Rede cheia de amostras",
+    "estilo.modelo": "Correnteza calculada",
+    "estilo.gente": "Conversa de beira de rio",
+    "estilo.inedito": "Mergulho no desconhecido"
+   },
+   "habitat.estufa": {
+    "estilo.testa": "Experimento sob controle",
+    "estilo.junta": "Viveiro de amostras",
+    "estilo.modelo": "Clima calculado",
+    "estilo.gente": "Mutirão de bancada verde",
+    "estilo.inedito": "Broto inédito"
    }
   },
   "padrao": "Ciência em movimento",

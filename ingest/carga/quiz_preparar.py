@@ -40,7 +40,8 @@ BEGIN;
 DELETE FROM quiz_sinal;
 INSERT INTO quiz_sinal (opcao_id, tipo, valor) VALUES {valores};
 CREATE TEMP TABLE termo ON COMMIT DROP AS
-  SELECT DISTINCT valor AS termo, '\\m' || lower(f_unaccent(valor)) AS re FROM quiz_sinal WHERE tipo = 'termo';
+  SELECT DISTINCT valor AS termo, '\\m' || lower(f_unaccent(valor)) || CASE WHEN char_length(valor) <= 4 THEN '(s|es)?\\M' ELSE '' END AS re
+    FROM quiz_sinal WHERE tipo = 'termo';   -- termo curto (≤ 4 letras) é palavra inteira: "mel" não casa "mellitus" (D-051)
 CREATE TEMP TABLE termo_work ON COMMIT DROP AS
   SELECT t.termo, w.id AS work_id FROM works w JOIN termo t ON lower(f_unaccent(w.title)) ~ t.re
   UNION

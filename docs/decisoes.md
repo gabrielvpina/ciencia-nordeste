@@ -653,3 +653,30 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Cabeçalho mais compacto.
   - A lista "Quem pesquisa como você" mostra 5 pessoas, e as outras ficam em "Mostrar mais"; cada pessoa tem um título de exemplo.
   - Altura: de 8.400 para 3.200 px. O cadastro e as perguntas já estavam alinhados.
+
+## D-050 — Banners do quiz revistos com a skill ui-ux-pro-max (banner-design) e pontos do mapa corrigidos
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Regras da skill aplicadas:**
+  - Zonas seguras do story: nada essencial nos ~230 px do topo nem nos ~210 px de baixo, que o Instagram cobre.
+  - Uma única chamada para ação: barra escura com o logo e "faça o seu · ciencianordeste.com.br/quiz" em verde-limão.
+  - Hierarquia em três zonas (gancho, conteúdo, chamada), no máximo 2 fontes e só a paleta do site.
+- **Contraste medido:**
+  - Texto escuro e cinza sobre os 6 fundos: de 12,1 a 13,6 e de 4,7 a 5,3.
+  - Cor de destaque como texto: de 1,8 a 3,8, reprovada.
+  - Texto escuro sobre a cor de destaque: de 4,2 a 6,9.
+  - Regra: a cor de destaque só preenche (quadrados dos números, marcadores, barras, a primeira etiqueta) e nunca é cor de texto. Os números 1–5, antes na cor de destaque, viraram texto escuro em quadrados coloridos.
+- **Estética do site e descontração:**
+  - Um selo verde-limão inclinado com o gancho ("Que cientista é você?" / "Quem pesquisa como eu").
+  - O contorno do logo, grande e na cor da paisagem, no canto (na zona coberta pela interface).
+  - Sombras duras, bordas arredondadas e as escolhas como etiquetas.
+  - O código das respostas virou "meu DNA científico". Os textos estão em primeira pessoa ("meu título", "meu nicho"), para quem compartilha.
+- **O que muda de um cartão para outro:**
+  - O fundo segue o habitat (5 cores) e o acento segue a paisagem (6 cores).
+  - O tamanho do título depende do comprimento total e agora também da maior palavra, para "comunidade" não encostar na borda.
+  - O nicho (até cerca de 95 caracteres) muda de tamanho em 4 faixas.
+  - De 3 a 6 escolhas (o feed mostra 4); de 0 a 5 pessoas; nomes longos quebram linha.
+- **Pontos do mapa:**
+  - O desalinhamento vinha do anel que espalhava pontos da mesma cidade (raio de 130 a 165 unidades), empurrando os do litoral para o mar.
+  - Agora cada ponto fica na posição exata, e quem está a menos de 0,8 marcador de distância vira um só marcador ("3·4·5"), mantido dentro da imagem.
+  - O tamanho do marcador é proporcional ao mapa.

@@ -12,6 +12,7 @@ export const LIMA = "#d4ef7a";          // --flow (marca-texto)
 /** fundo por habitat (tons claros) */
 export const FUNDO: Record<string, string> = {
   campo: "#e2eed4", bancada: "#dce6f6", computador: "#e5e0f5", pessoas: "#f6e2da", colecoes: "#f2e9d0", neutro: "#d9dde8",
+  agua: "#d5ecef", estufa: "#ecf3cf",   // D-054: novos lugares de trabalho (na água; estufa ou biotério)
 };
 /** acento por ambiente (tons fortes, para formas e barras) */
 export const ACENTO: Record<string, string> = {

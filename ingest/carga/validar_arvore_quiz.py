@@ -41,7 +41,7 @@ MAX_TELAS = 20                                   # contando a instituição (D-0
 RAROS = 5                                        # pares do núcleo com menos que isto vão para revisão (o banner mostra "até 5")
 MAX_JACCARD = 0.5                                # top 10 de sub-objetos irmãos (mesmo método e objeto)
 MAX_TITULO = 42                                  # caracteres
-FACETAS_NICHO = {"metodo", "tecnica", "objeto", "sub_objeto", "tema", "foco", "escala", "ambiente", "impacto"}
+FACETAS_NICHO = {"metodo", "tecnica", "objeto", "sub_objeto", "tema", "foco", "escala", "ambiente", "estrato", "impacto"}
 FACETAS_PERFIL = {"habitat", "estilo", "vinculo"}
 RE_TOPIC, RE_NUM = re.compile(r"^T\d+$"), re.compile(r"^\d+$")
 CONTRACAO = {"o": "do", "a": "da", "os": "dos", "as": "das"}
@@ -68,7 +68,7 @@ def titulos(arv: dict[str, Any]) -> list[str]:
     P = arv["perguntas"]
     saida = [t for linha in T["arquetipos"].values() for t in linha.values()] + [T["padrao"]]
     alvos = {"sub_objeto": [o["sintagma"] for q in ("sub_objeto", "tema") if q in P for o in opcoes(P[q]) if "sintagma" in o],
-             "ambiente": [o["sintagma"] for o in opcoes(P["ambiente"]) if "sintagma" in o]}
+             "ambiente": [o["sintagma"] for q in ("ambiente", "estrato") if q in P for o in opcoes(P[q]) if "sintagma" in o]}
     for v in T["vinculos"].values():
         if v["modelo"]:   # sem ambiente essencial, o vínculo "proteger" usa o sub-objeto (lib/quiz/titulo.ts)
             usa = alvos["sub_objeto"] + (alvos["ambiente"] if v["usa"] == "ambiente" else [])
@@ -122,7 +122,7 @@ def estatico(arv: dict[str, Any]) -> list[str]:
                     erros.append(f"{oid}: tem sinais mas não tem frase (texto da consulta vetorial)")
                 erros += [f"{oid}: topic inválido {t!r}" for t in s.get("topics", []) if not RE_TOPIC.match(str(t))]
                 erros += [f"{oid}: subfield/field inválido {t!r}" for t in s.get("subfields", []) + s.get("fields", []) if not RE_NUM.match(str(t))]
-            if faceta in ("sub_objeto", "tema", "ambiente") and s and "sintagma" not in o:
+            if faceta in ("sub_objeto", "tema", "ambiente", "estrato") and s and "sintagma" not in o:
                 erros.append(f"{oid}: sem sintagma (artigo + nome) para o título")
             if "sintagma" in o and o["sintagma"].get("artigo") not in CONTRACAO:
                 erros.append(f"{oid}: artigo do sintagma inválido")

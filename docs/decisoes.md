@@ -755,3 +755,24 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Temas (60 casos): aderência do banner de 33% para 67%; lista de 29% para 65%; 58 de 60 banners com 5 pessoas.
   - Técnicas (38 casos, `avaliar_quiz_tecnicas`): ganho médio de +13 pontos no banner e +15 na lista; os 38 banners com 5 pessoas.
   - As técnicas sem ganho são combinações raras no caminho fixo de teste (ex.: ensaios clínicos em "boca e dentes").
+
+## D-054 — Ambientes estratificados e novos lugares de trabalho no quiz
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`; `ingest/carga/quiz_ambientes.py`).
+- **Ambiente vira grupo:**
+  - Grupos: caatinga e semiárido; matas úmidas, restingas e brejos; litoral, mangues e mar; cidades, hospitais, escolas e serviços; lavouras e fazendas.
+  - Dois grupos novos: "Rios, açudes e lagoas" e "Comunidades tradicionais e rurais".
+  - Os ids antigos continuam.
+- **Pergunta nova "Onde, exatamente?"** (estrato, depende do ambiente):
+  - Foram 30 candidatos medidos nas publicações; entraram os 25 com pelo menos 40 pesquisadores (relatório `quiz_ambientes.md`).
+  - Exemplos: caatinga, cerrado, serras e chapadas, sertão irrigado; mata atlântica, restingas, Amazônia maranhense, fragmentos florestais; manguezais, praias e recifes, mar aberto; rios, açudes; agricultura familiar, agronegócio, pastagens, estufas; hospitais e UTIs, atenção primária, escolas, periferias, prisões; povos indígenas, quilombolas, comunidades rurais.
+  - Ficaram de fora por falta de gente: cavernas, ilhas oceânicas, lagoas, água subterrânea e pescadores artesanais.
+  - O estrato vale para o título ("Sentinela dos manguezais") e para o nicho escrito. Peso 2,0 no match.
+- **Lugares de trabalho (habitat, só perfil):** de 5 para 9, com "No hospital ou no consultório", "Em sala de aula", "Na água" e "Na estufa ou no biotério", cada um com 5 títulos neutros por estilo e duas cores novas de fundo.
+- **Estrutura:** versão 8 da árvore, com 13 perguntas (14 telas com a instituição) e 915 títulos principais possíveis.
+- **Avaliação:**
+  - Estratos (`avaliar_quiz_estratos`, 25 casos): ganho médio de +7 pontos no banner e +6 na lista; os 25 banners com 5 pessoas.
+  - O efeito é pequeno porque a maioria dos artigos não cita o lugar no título nem nas palavras-chave. Hoje o estrato serve mais ao título e ao nicho.
+  - Caminhos antigos: coerência igual (87%).
+  - A latência subiu nesta rodada (mediana de ~2 s), medida com a máquina sobrecarregada (carga 9 em 6 núcleos, com um processo externo de análise de disco). Uma consulta fixa de referência rodou em 98 ms. É preciso medir de novo com a máquina livre.
+- **Próximo passo para o ambiente pesar no match:** dar ao ambiente sinais além do texto, com dados abertos (ver a proposta na conversa: biomas do IBGE por município, unidades de conservação, CNES).

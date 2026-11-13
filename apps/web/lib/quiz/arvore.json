@@ -1,5 +1,5 @@
 {
- "versao": 7,
+ "versao": 8,
  "estrutura": "facetas (v2 do desenho, docs/etapas/13-quiz-alinhamento.md)",
  "telas": [
   "habitat",
@@ -12,6 +12,7 @@
   "foco",
   "escala",
   "ambiente",
+  "estrato",
   "vinculo",
   "impacto"
  ],
@@ -28,7 +29,8 @@
   "ambiente": 0.8,
   "impacto": 0.5,
   "tema": 2.5,
-  "tecnica": 1.5
+  "tecnica": 1.5,
+  "estrato": 2.0
  },
  "perguntas": {
   "habitat": {
@@ -74,6 +76,38 @@
      "descricao": "acervos, herbários, bibliotecas",
      "visual": {
       "cor": "colecoes"
+     }
+    },
+    {
+     "id": "habitat.clinica",
+     "rotulo": "No hospital ou no consultório",
+     "descricao": "pacientes, exames e plantões",
+     "visual": {
+      "cor": "pessoas"
+     }
+    },
+    {
+     "id": "habitat.aula",
+     "rotulo": "Em sala de aula",
+     "descricao": "turmas, oficinas e extensão",
+     "visual": {
+      "cor": "colecoes"
+     }
+    },
+    {
+     "id": "habitat.agua",
+     "rotulo": "Na água",
+     "descricao": "barco, mergulho, rio ou açude",
+     "visual": {
+      "cor": "agua"
+     }
+    },
+    {
+     "id": "habitat.estufa",
+     "rotulo": "Na estufa ou no biotério",
+     "descricao": "plantas, animais e experimentos controlados",
+     "visual": {
+      "cor": "estufa"
      }
     }
    ]
@@ -2717,7 +2751,7 @@
     },
     {
      "id": "ambiente.mata",
-     "rotulo": "Mata atlântica e brejos",
+     "rotulo": "Matas úmidas, restingas e brejos",
      "sinais": {
       "termos": [
        "atlantic forest",
@@ -2740,7 +2774,7 @@
     },
     {
      "id": "ambiente.mar",
-     "rotulo": "Mar, mangues e estuários",
+     "rotulo": "Litoral, mangues e mar",
      "sinais": {
       "termos": [
        "marine",
@@ -2803,7 +2837,7 @@
     },
     {
      "id": "ambiente.cidades",
-     "rotulo": "Cidades, hospitais e serviços",
+     "rotulo": "Cidades, hospitais, escolas e serviços",
      "sinais": {
       "termos": [
        "urban",
@@ -2828,6 +2862,62 @@
      "visual": {
       "cor": "cidade"
      }
+    },
+    {
+     "id": "ambiente.aguas",
+     "rotulo": "Rios, açudes e lagoas",
+     "visual": {
+      "cor": "mar"
+     },
+     "sinais": {
+      "termos": [
+       "river",
+       "reservoir",
+       "reservatório",
+       "açude",
+       "freshwater",
+       "água doce",
+       "lagoon",
+       "lagoa",
+       "wetland",
+       "groundwater",
+       "água subterrânea"
+      ],
+      "frase": "rios, açudes, lagoas e água doce"
+     },
+     "sintagma": {
+      "artigo": "as",
+      "nome": "águas doces"
+     },
+     "nicho": "das águas doces"
+    },
+    {
+     "id": "ambiente.comunidades",
+     "rotulo": "Comunidades tradicionais e rurais",
+     "visual": {
+      "cor": "lavoura"
+     },
+     "sinais": {
+      "termos": [
+       "indigenous",
+       "indígena",
+       "quilombola",
+       "artisanal fish",
+       "pesca artesanal",
+       "ribeirinh",
+       "rural communit",
+       "comunidade rural",
+       "comunidades rurais",
+       "traditional communit",
+       "comunidades tradicionais"
+      ],
+      "frase": "povos indígenas, quilombolas, pescadores artesanais e comunidades rurais"
+     },
+     "sintagma": {
+      "artigo": "as",
+      "nome": "comunidades tradicionais"
+     },
+     "nicho": "das comunidades tradicionais"
     },
     {
      "id": "ambiente.qualquer",
@@ -7225,6 +7315,551 @@
      }
     ]
    }
+  },
+  "estrato": {
+   "bloco": "nicho",
+   "faceta": "estrato",
+   "texto": "Onde, exatamente?",
+   "depende_de": "ambiente",
+   "opcoes_por": {
+    "ambiente.caatinga": [
+     {
+      "id": "amb.caatinga",
+      "rotulo": "Caatinga",
+      "sinais": {
+       "termos": [
+        "caatinga",
+        "seasonally dry tropical forest",
+        "floresta tropical sazonalmente seca"
+       ],
+       "frase": "caatinga e florestas secas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "caatinga"
+      },
+      "nicho": "da caatinga"
+     },
+     {
+      "id": "amb.cerrado",
+      "rotulo": "Cerrado e áreas de transição",
+      "sinais": {
+       "termos": [
+        "cerrado",
+        "savanna",
+        "savana",
+        "ecotone",
+        "ecótono"
+       ],
+       "frase": "cerrado e áreas de transição"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "cerrado"
+      },
+      "nicho": "do cerrado"
+     },
+     {
+      "id": "amb.serras",
+      "rotulo": "Serras, chapadas e brejos de altitude",
+      "sinais": {
+       "termos": [
+        "chapada",
+        "serra da",
+        "serra do",
+        "brejo de altitude",
+        "highland",
+        "montane",
+        "altitude"
+       ],
+       "frase": "serras, chapadas e brejos de altitude"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "serras"
+      },
+      "nicho": "das serras e chapadas"
+     },
+     {
+      "id": "amb.sertao_irrigado",
+      "rotulo": "Sertão irrigado e vale do São Francisco",
+      "sinais": {
+       "termos": [
+        "irrigated perimeter",
+        "perímetro irrigado",
+        "são francisco valley",
+        "vale do são francisco",
+        "petrolina",
+        "juazeiro"
+       ],
+       "frase": "agricultura irrigada no vale do São Francisco"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "sertão irrigado"
+      },
+      "nicho": "do sertão irrigado"
+     }
+    ],
+    "ambiente.mata": [
+     {
+      "id": "amb.mata_atlantica",
+      "rotulo": "Mata atlântica",
+      "sinais": {
+       "termos": [
+        "atlantic forest",
+        "mata atlântica",
+        "atlantic rainforest"
+       ],
+       "frase": "mata atlântica"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "mata atlântica"
+      },
+      "nicho": "da mata atlântica"
+     },
+     {
+      "id": "amb.restinga",
+      "rotulo": "Restingas e dunas",
+      "sinais": {
+       "termos": [
+        "restinga",
+        "dunes",
+        "dunas",
+        "sand dune",
+        "coastal sandy"
+       ],
+       "frase": "restingas e dunas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "restingas"
+      },
+      "nicho": "das restingas e dunas"
+     },
+     {
+      "id": "amb.amazonia",
+      "rotulo": "Amazônia maranhense e mata dos cocais",
+      "sinais": {
+       "termos": [
+        "amazon",
+        "amazôn",
+        "babassu",
+        "babaçu",
+        "mata dos cocais",
+        "pre-amazon",
+        "pré-amazôn"
+       ],
+       "frase": "Amazônia maranhense e mata dos cocais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "Amazônia"
+      },
+      "nicho": "da Amazônia maranhense"
+     },
+     {
+      "id": "amb.fragmentos",
+      "rotulo": "Fragmentos florestais e áreas urbanas verdes",
+      "sinais": {
+       "termos": [
+        "forest fragment",
+        "fragmento florestal",
+        "fragmentos florestais",
+        "urban forest",
+        "arborização urbana",
+        "urban green"
+       ],
+       "frase": "fragmentos florestais e verde urbano"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "fragmentos de mata"
+      },
+      "nicho": "dos fragmentos florestais"
+     }
+    ],
+    "ambiente.mar": [
+     {
+      "id": "amb.manguezais",
+      "rotulo": "Manguezais e estuários",
+      "sinais": {
+       "termos": [
+        "mangrove",
+        "manguezal",
+        "manguezais",
+        "estuar"
+       ],
+       "frase": "manguezais e estuários"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "manguezais"
+      },
+      "nicho": "dos manguezais e estuários"
+     },
+     {
+      "id": "amb.praias_recifes",
+      "rotulo": "Praias e recifes de coral",
+      "sinais": {
+       "termos": [
+        "coral reef",
+        "recifes de coral",
+        "beach",
+        "praia",
+        "reef fish",
+        "sandy beach",
+        "ambientes recifais"
+       ],
+       "frase": "praias e recifes de coral"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "recifes de coral"
+      },
+      "nicho": "das praias e recifes"
+     },
+     {
+      "id": "amb.mar_aberto",
+      "rotulo": "Mar aberto e plataforma continental",
+      "sinais": {
+       "termos": [
+        "oceanic",
+        "oceânic",
+        "continental shelf",
+        "plataforma continental",
+        "offshore",
+        "pelagic",
+        "pelágic",
+        "fisheries",
+        "pesca"
+       ],
+       "topics": [
+        "T10230"
+       ],
+       "frase": "oceano, plataforma continental e pesca"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "mar aberto"
+      },
+      "nicho": "do mar aberto"
+     }
+    ],
+    "ambiente.aguas": [
+     {
+      "id": "amb.rios",
+      "rotulo": "Rios e o São Francisco",
+      "sinais": {
+       "termos": [
+        "river",
+        "rio são francisco",
+        "são francisco river",
+        "riverine",
+        "riparian",
+        "ripári",
+        "fluvial",
+        "watershed",
+        "bacia hidrográfica"
+       ],
+       "frase": "rios e bacias hidrográficas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "rios"
+      },
+      "nicho": "dos rios"
+     },
+     {
+      "id": "amb.acudes",
+      "rotulo": "Açudes e reservatórios",
+      "sinais": {
+       "termos": [
+        "reservoir",
+        "reservatório",
+        "açude",
+        "dam",
+        "barragem",
+        "semiarid reservoir"
+       ],
+       "frase": "açudes e reservatórios do semiárido"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "açudes"
+      },
+      "nicho": "dos açudes e reservatórios"
+     }
+    ],
+    "ambiente.lavouras": [
+     {
+      "id": "amb.agricultura_familiar",
+      "rotulo": "Agricultura familiar e assentamentos",
+      "sinais": {
+       "termos": [
+        "smallholder",
+        "agricultura familiar",
+        "family farm",
+        "assentamento",
+        "settlement",
+        "agroecolog",
+        "agroecológ"
+       ],
+       "frase": "agricultura familiar e agroecologia"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "agricultura familiar"
+      },
+      "nicho": "da agricultura familiar"
+     },
+     {
+      "id": "amb.agronegocio",
+      "rotulo": "Grandes lavouras e agronegócio",
+      "sinais": {
+       "termos": [
+        "commercial farm",
+        "agronegócio",
+        "agribusiness",
+        "soybean",
+        "soja",
+        "sugarcane",
+        "cana-de-açúcar",
+        "monoculture",
+        "monocultura"
+       ],
+       "frase": "grandes lavouras e agronegócio"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "agronegócio"
+      },
+      "nicho": "das grandes lavouras"
+     },
+     {
+      "id": "amb.pastagens",
+      "rotulo": "Pastagens e criação a campo",
+      "sinais": {
+       "termos": [
+        "pasture",
+        "pastagem",
+        "grazing",
+        "pastejo",
+        "rangeland",
+        "extensive system",
+        "sistema extensivo"
+       ],
+       "topics": [
+        "T13591"
+       ],
+       "frase": "pastagens e criação extensiva"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "pastagens"
+      },
+      "nicho": "das pastagens e da criação a campo"
+     },
+     {
+      "id": "amb.estufas",
+      "rotulo": "Estufas, viveiros e hortas",
+      "sinais": {
+       "termos": [
+        "greenhouse",
+        "casa de vegetação",
+        "nursery",
+        "viveiro",
+        "vegetable garden",
+        "horta",
+        "hydroponic",
+        "hidropônic"
+       ],
+       "topics": [
+        "T13391"
+       ],
+       "frase": "estufas, viveiros e hortas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "estufas"
+      },
+      "nicho": "das estufas e viveiros"
+     }
+    ],
+    "ambiente.cidades": [
+     {
+      "id": "amb.hospitais",
+      "rotulo": "Hospitais e UTIs",
+      "sinais": {
+       "termos": [
+        "hospital",
+        "intensive care",
+        "terapia intensiva",
+        "uti",
+        "icu",
+        "emergency department",
+        "pronto-socorro",
+        "inpatient",
+        "internação"
+       ],
+       "frase": "hospitais, UTIs e emergências"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "hospitais"
+      },
+      "nicho": "dos hospitais"
+     },
+     {
+      "id": "amb.atencao_primaria",
+      "rotulo": "Atenção primária e saúde da família",
+      "sinais": {
+       "termos": [
+        "primary care",
+        "atenção primária",
+        "atenção básica",
+        "family health",
+        "saúde da família",
+        "community health worker",
+        "agente comunitário"
+       ],
+       "topics": [
+        "T11590"
+       ],
+       "frase": "atenção primária e estratégia saúde da família"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "atenção primária"
+      },
+      "nicho": "da atenção primária"
+     },
+     {
+      "id": "amb.escolas",
+      "rotulo": "Escolas e universidades",
+      "sinais": {
+       "termos": [
+        "school",
+        "escola",
+        "schoolchildren",
+        "escolares",
+        "students",
+        "estudantes",
+        "university",
+        "universitári"
+       ],
+       "frase": "escolas, estudantes e universidades"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "escolas"
+      },
+      "nicho": "das escolas e universidades"
+     },
+     {
+      "id": "amb.urbano",
+      "rotulo": "Bairros, periferias e ambiente urbano",
+      "sinais": {
+       "termos": [
+        "urban",
+        "urbano",
+        "urbana",
+        "city",
+        "cidade",
+        "neighborhood",
+        "bairro",
+        "slum",
+        "periferia"
+       ],
+       "frase": "ambiente urbano, bairros e periferias"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "bairros"
+      },
+      "nicho": "das cidades e periferias"
+     },
+     {
+      "id": "amb.prisoes",
+      "rotulo": "Prisões e instituições",
+      "sinais": {
+       "termos": [
+        "prison",
+        "prisional",
+        "presídio",
+        "incarcerated",
+        "privados de liberdade"
+       ],
+       "frase": "sistema prisional e instituições"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "prisões"
+      },
+      "nicho": "do sistema prisional"
+     }
+    ],
+    "ambiente.comunidades": [
+     {
+      "id": "amb.indigenas",
+      "rotulo": "Povos indígenas",
+      "sinais": {
+       "termos": [
+        "indigenous",
+        "indígena",
+        "indígenas",
+        "aldeia",
+        "etnia"
+       ],
+       "frase": "povos indígenas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "povos indígenas"
+      },
+      "nicho": "dos povos indígenas"
+     },
+     {
+      "id": "amb.quilombolas",
+      "rotulo": "Comunidades quilombolas",
+      "sinais": {
+       "termos": [
+        "quilombola",
+        "quilombo",
+        "maroon"
+       ],
+       "frase": "comunidades quilombolas"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "quilombos"
+      },
+      "nicho": "das comunidades quilombolas"
+     },
+     {
+      "id": "amb.rurais",
+      "rotulo": "Comunidades rurais e sertanejas",
+      "sinais": {
+       "termos": [
+        "rural communit",
+        "comunidade rural",
+        "comunidades rurais",
+        "rural population",
+        "população rural",
+        "rural area",
+        "zona rural"
+       ],
+       "frase": "comunidades rurais e sertanejas"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "comunidades rurais"
+      },
+      "nicho": "das comunidades rurais"
+     }
+    ]
+   }
   }
  },
  "titulos": {
@@ -7264,6 +7899,34 @@
     "estilo.modelo": "Mapa-múndi das espécies",
     "estilo.gente": "Biblioteca ambulante",
     "estilo.inedito": "Caça-raridades"
+   },
+   "habitat.clinica": {
+    "estilo.testa": "Plantão experimental",
+    "estilo.junta": "Prontuário vivo",
+    "estilo.modelo": "Estrategista de plantão",
+    "estilo.gente": "Cuidado em pessoa",
+    "estilo.inedito": "Pioneirismo de consultório"
+   },
+   "habitat.aula": {
+    "estilo.testa": "Laboratório de giz",
+    "estilo.junta": "Acervo de sala de aula",
+    "estilo.modelo": "Mapa da turma",
+    "estilo.gente": "Ponte com a escola",
+    "estilo.inedito": "Ideia fora da caixa"
+   },
+   "habitat.agua": {
+    "estilo.testa": "Teste de maré",
+    "estilo.junta": "Rede cheia de amostras",
+    "estilo.modelo": "Correnteza calculada",
+    "estilo.gente": "Conversa de beira de rio",
+    "estilo.inedito": "Mergulho no desconhecido"
+   },
+   "habitat.estufa": {
+    "estilo.testa": "Experimento sob controle",
+    "estilo.junta": "Viveiro de amostras",
+    "estilo.modelo": "Clima calculado",
+    "estilo.gente": "Mutirão de bancada verde",
+    "estilo.inedito": "Broto inédito"
    }
   },
   "padrao": "Ciência em movimento",

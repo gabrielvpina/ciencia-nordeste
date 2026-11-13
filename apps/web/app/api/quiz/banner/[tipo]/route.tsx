@@ -54,15 +54,27 @@ const ZONA = { story: { topo: 230, base: 210, lado: 80 }, feed: { topo: 72, base
 /** Selo de abertura: o gancho, em tom de conversa, como figurinha colada (a única inclinação da peça). */
 function Selo({ texto, story }: { texto: string; story: boolean }) {
   return (
-    <div style={{ display: "flex", alignSelf: "flex-start", fontSize: story ? 36 : 30, fontWeight: 700, fontFamily: TITULO, color: TINTA, background: LIMA,
-      border: `5px solid ${TINTA}`, borderRadius: 999, padding: story ? "12px 30px" : "8px 24px", boxShadow: SOMBRA(6), transform: "rotate(-3deg)" }}>{texto}</div>
+    <div style={{ display: "flex", alignSelf: "flex-start", fontSize: story ? 44 : 34, fontWeight: 700, fontFamily: TITULO, color: TINTA, background: LIMA,
+      border: `5px solid ${TINTA}`, borderRadius: 999, padding: story ? "14px 34px" : "10px 26px", boxShadow: SOMBRA(6), transform: "rotate(-3deg)" }}>{texto}</div>
   );
 }
 
-/** Logo grande como elemento gráfico, cortado no canto (fica na zona coberta pela interface do story). */
+/** Logo inteiro, como figurinha no canto (na faixa do topo que a interface do story cobre; nada essencial ali). */
 function LogoGrande({ acento, story }: { acento: string; story: boolean }) {
-  const w = story ? 360 : 210;
-  return <img src={logoForma(acento)} width={w} height={w * 59 / 47} alt="" style={{ position: "absolute", top: story ? -90 : -50, right: story ? -60 : -40, transform: "rotate(10deg)" }} />;
+  const w = story ? 150 : 104;
+  return <img src={logoForma(acento)} width={w} height={Math.round(w * 59 / 47)} alt="" style={{ position: "absolute", top: story ? 40 : 34, right: story ? 84 : 66, transform: "rotate(8deg)" }} />;
+}
+
+/** Manchete do card de afinidades: grande, em duas linhas, com um traço verde-limão por baixo. */
+function Manchete({ story }: { story: boolean }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: story ? 14 : 10 }}>
+      <div style={{ display: "flex", flexDirection: "column", fontSize: story ? 88 : 62, fontWeight: 700, fontFamily: TITULO, lineHeight: 0.98, letterSpacing: -2 }}>
+        <span>Quem pesquisa</span><span>como eu</span>
+      </div>
+      <div style={{ display: "flex", width: story ? 300 : 220, height: story ? 18 : 14, background: LIMA, border: `4px solid ${TINTA}`, borderRadius: 999, boxShadow: SOMBRA(4) }} />
+    </div>
+  );
 }
 
 /** Chamada única, embaixo: marca + endereço do quiz. Barra escura, endereço em verde-limão (contraste alto). */
@@ -158,15 +170,14 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
   const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: ql !== "0", texto: u.searchParams.get("t") });
   const lista = r.banner;
   const mapa = miniMapa(lista.map((x) => ({ lat: x.lat, lon: x.lon })));
-  const mapaW = story ? 330 : 230, mapaH = mapaW * PROPORCAO_MAPA, marca = Math.round(mapaW * 0.11);
+  const mapaW = story ? 300 : 210, mapaH = mapaW * PROPORCAO_MAPA, marca = Math.round(mapaW * 0.11);
   // marcadores na posição exata; quem fica a menos de um marcador de distância vira um só ("2·3·5")
   const grupos = agruparPontos(mapa.pos.map((p) => p && { x: p.x * mapaW, y: p.y * mapaH }), marca * 0.8);
   const nome = (s: string) => s.replace(/\u00ad/g, "");
   return new ImageResponse(
     (
       <div style={raiz}>
-        <LogoGrande acento={acento} story={story} />
-        <Selo texto="Quem pesquisa como eu" story={story} />
+        <Manchete story={story} />
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 28 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: story ? 12 : 8, flex: 1 }}>
@@ -196,7 +207,7 @@ export async function GET(req: Request, { params }: { params: { tipo: string } }
           {lista.map((x, i) => {
             const blocos = Math.round(x.indice / 10);
             return (
-              <div key={x.id} style={{ display: "flex", alignItems: "center", gap: story ? 24 : 18, padding: story ? "24px 0" : "13px 0", borderTop: i ? `2px solid ${TINTA}` : "none" }}>
+              <div key={x.id} style={{ display: "flex", alignItems: "center", gap: story ? 24 : 18, padding: story ? "19px 0" : "11px 0", borderTop: i ? `2px solid ${TINTA}` : "none" }}>
                 {/* número em tinta sobre o acento: o acento nunca é cor de texto (contraste) */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: story ? 58 : 46, height: story ? 58 : 46, flexShrink: 0, background: acento,
                   border: `4px solid ${TINTA}`, borderRadius: 14, boxShadow: SOMBRA(4), fontSize: story ? 32 : 26, fontWeight: 700, fontFamily: TITULO }}>{i + 1}</div>

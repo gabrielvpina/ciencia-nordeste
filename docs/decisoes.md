@@ -680,3 +680,7 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - O desalinhamento vinha do anel que espalhava pontos da mesma cidade (raio de 130 a 165 unidades), empurrando os do litoral para o mar.
   - Agora cada ponto fica na posição exata, e quem está a menos de 0,8 marcador de distância vira um só marcador ("3·4·5"), mantido dentro da imagem.
   - O tamanho do marcador é proporcional ao mapa.
+- **Ajustes (mesmo dia, pedido do responsável):**
+  - O logo grande deixa de ser cortado na borda. No perfil, fica inteiro, como figurinha no canto (na faixa coberta pela interface). No de afinidades, sai, porque repetia o mapa.
+  - O de afinidades ganha uma manchete grande ("Quem pesquisa como eu", com traço verde-limão) no lugar do selo pequeno.
+  - O selo do perfil fica maior.

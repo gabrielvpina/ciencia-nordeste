@@ -911,13 +911,13 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
 .pn .ano-barra { height: 72px; }
 .painel-card.mapa-card.pn-mapa { width: auto; }
 .pn-mapa .mapa-palco { height: 520px; }
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .pn { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
   .painel-card.mapa-card.pn-mapa { width: clamp(520px, calc((100dvh - 130px) * .8 + 40px), 56vw); }
   .pn-mapa .mapa-palco { height: calc(100dvh - 190px); min-height: 480px; }
 }
 /* janela de desktop com altura suficiente: página do tamanho da janela, sem rolagem; quem rola é cada coluna */
-@media (min-width: 1100px) and (min-height: 620px) {
+@media (min-width: 1280px) and (min-height: 620px) {
   body:has(.pn) { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
   body:has(.pn) > main { flex: 1; min-height: 0; width: 100%; }
   body:has(.pn) > footer { width: 100%; max-width: none; padding: 6px 16px; font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -963,10 +963,10 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
 .pn-sel-fechar { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border: 1.5px solid var(--stroke); border-radius: 8px; background: var(--panel); color: var(--fg); font-size: 1.1rem; line-height: 1; cursor: pointer; }
 .pn-sel-fechar:hover { background: var(--accent-soft); }
 .pn-sel-fechar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media (max-width: 1099px) { .pn-sel { position: static; width: auto; margin: 0 12px 12px; box-shadow: var(--hard-s); } }
+@media (max-width: 1279px) { .pn-sel { position: static; width: auto; margin: 0 12px 12px; box-shadow: var(--hard-s); } }
 
 /* colunas de cards terminando junto com o mapa: o último card de cada coluna ocupa a altura que sobra */
-@media (min-width: 1100px) and (min-height: 620px) {
+@media (min-width: 1280px) and (min-height: 620px) {
   .pn-cards { align-items: stretch; }
   .pn-coluna { display: flex; flex-direction: column; }
   .pn-coluna > :last-child { flex: 1; display: flex; flex-direction: column; }
@@ -984,7 +984,7 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
 .res3-col h3.h3-com-nota small { font: 400 .76rem var(--font-body); color: var(--muted); }
 .pagina-busca .res3-nada { margin: 0 auto; width: 100%; }
 /* janelas baixas (1366 × 768 e parecidas): cards mais compactos para caberem sem rolagem */
-@media (min-width: 1100px) and (max-height: 820px) {
+@media (min-width: 1280px) and (max-height: 820px) {
   .pn .painel-card { padding: 9px 12px; }
   .pn .painel-card h2 { margin-bottom: 2px; font-size: .95rem; }
   .pn .linha-cap { margin: 0 0 4px; padding-bottom: 4px; font-size: .72rem; }
@@ -1001,7 +1001,7 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
   .pn-esq, .pn-cards, .pn-coluna { gap: 8px; }
 }
 /* janelas baixas: "Produção por ano" desce para baixo das áreas, e os filtros ficam sozinhos na outra coluna */
-@media (min-width: 1100px) and (min-height: 620px) and (max-height: 820px) {
+@media (min-width: 1280px) and (min-height: 620px) and (max-height: 820px) {
   .pn-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "areas filtros" "anos filtros"; }
   .pn-coluna { display: contents; }
   .pn-cards .pn-areas { grid-area: areas; min-height: 0; }
@@ -1009,7 +1009,7 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
   .pn-cards .pn-anos { grid-area: anos; flex: none; }
   .pn-areas .barras-area { align-content: space-between; }
 }
-@media (min-width: 1100px) and (min-height: 620px) and (max-height: 820px) {
+@media (min-width: 1280px) and (min-height: 620px) and (max-height: 820px) {
   .pn-areas .barras-area button { grid-template-columns: minmax(0, 1fr) minmax(50px, 32%) 3.6em; align-items: center; padding: 2px 6px; }
   .pn-areas .barras-area .nome { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: block; }
   .pn-areas .barras-area .nome i { display: inline-block; margin-right: 6px; vertical-align: 1px; }
@@ -1017,3 +1017,39 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
   .pn-areas .barras-area .val { grid-column: 3; text-align: right; }
   .pn-anos .linha-cap { display: none; }
 }
+
+/* filtros do mapa enxutos: modo e forma na mesma linha, estados numa linha só, botões mais baixos */
+.pn .filtros-mapa { container-type: inline-size; }
+.filtro-linha { display: grid; gap: 6px; grid-template-columns: minmax(0, 1fr); }
+.filtro-linha.com-forma { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.grade-seg.cols-uf { grid-template-columns: minmax(0, 1.7fr) repeat(9, minmax(0, 1fr)); }
+.pn .grade-seg { padding: 3px; gap: 2px; border-radius: 10px; }
+.pn .grade-seg button { padding: 5px 2px; font-size: .82rem; border-radius: 7px; }
+.pn .faixa-anos { height: 46px; }
+@container (max-width: 420px) {
+  .filtro-linha.com-forma { grid-template-columns: minmax(0, 11fr) minmax(0, 6fr); gap: 4px; }
+  .filtro-linha .grade-seg button { font-size: .74rem; padding-inline: 1px; }
+  .pn .check-qualis small { display: none; }
+}
+@container (max-width: 320px) { .filtro-linha.com-forma { grid-template-columns: minmax(0, 1fr); } }
+@container (max-width: 320px) { .grade-seg.cols-uf { grid-template-columns: repeat(5, minmax(0, 1fr)); } }   /* "Todos" + 4 | 5 */
+
+/* grade final dos cards (desktop): áreas (uma linha por área) | filtros; produção por ano na largura toda, embaixo */
+@media (min-width: 1280px) and (min-height: 620px) {
+  .pn-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "areas filtros" "anos anos"; align-items: stretch; }
+  .pn-coluna { display: contents; }
+  .pn-cards .pn-areas { grid-area: areas; min-height: 0; flex: none; }
+  .pn-cards .filtros-mapa { grid-area: filtros; }
+  .pn-cards .pn-anos { grid-area: anos; flex: none; display: flex; flex-direction: column; min-height: 0; }
+  .pn-areas .barras-area { flex: none; align-content: start; gap: 1px; }
+  .pn-areas .barras-area button { grid-template-columns: minmax(0, 1fr) minmax(50px, 34%) 3.8em; align-items: center; padding: 3px 6px; font-size: .84rem; }
+  .pn-areas .barras-area .nome { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: block; }
+  .pn-areas .barras-area .nome i { display: inline-block; margin-right: 6px; vertical-align: 1px; }
+  .pn-areas .barras-area .barra { grid-column: 2; grid-row: 1; height: 8px; }
+  .pn-areas .barras-area .val { grid-column: 3; text-align: right; }
+  .pn-anos .linha-cap { display: block; }
+  .pn-anos .anos-colunas { flex: 1; min-height: 60px; gap: 14px; }
+  .pn .pn-anos .ano-col { grid-template-rows: auto minmax(30px, 1fr) auto; height: 100%; }
+  .pn .pn-anos .ano-barra { width: min(70%, 120px); }
+}
+@media (min-width: 1280px) and (min-height: 620px) and (max-height: 720px) { .pn-anos .linha-cap { display: none; } .pn-anos h2 { margin-bottom: 4px; } }

@@ -548,3 +548,9 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Saem as etiquetas "OpenAlex", "filtros", "mapa", "Nordeste" e a do modo do mapa.
   - Os rótulos "MODO", "ESTADO" e "PERÍODO" e os subtítulos dos resultados ficam em caixa normal.
   - As setas saem dos textos dos botões ("Ver perfil e rede", "Voltar aos filtros").
+- **Controles mais enxutos (mesmo dia, pedido do responsável: "muitos espaços vazios"):**
+  - Modo e forma do mapa ficam numa linha só; os estados também, com "Todos" e as 9 siglas.
+  - Os botões ficam mais baixos. Os seletores usam `aria-pressed` em vez de `role="tab"`.
+  - Os cards seguem uma nova grade: áreas (uma linha por área) ao lado dos filtros, com alturas parecidas, e a produção por ano na largura toda, embaixo, ocupando a altura que sobra.
+  - O layout "numa tela" vale a partir de 1280 px de largura; entre 1100 e 1279 px, a página empilha e rola.
+  - Conferido sem rolagem em 1310 × 665, 1440 × 780, 1536 × 730 e 1920 × 946. Em 1280 × 620, a página não rola, mas a área dos cards rola 30 px por dentro.

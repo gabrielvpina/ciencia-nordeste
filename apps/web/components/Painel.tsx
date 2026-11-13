@@ -101,7 +101,7 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
   const cardAreas = (
     <section className="painel-card pn-areas">
       <h2>Áreas</h2>
-      <p className="linha-cap">Publicações por área em {uf ? UFS.find(([s]) => s === uf)?.[1] : "todo o Nordeste"}. Clique numa área para filtrar.</p>
+      <p className="linha-cap">Publicações {uf ? `de ${uf}` : "do Nordeste"}. Clique numa área para filtrar.</p>
       <ul className="barras-area">
         {areasUf.map(({ f, i, n }) => (
           <li key={f}>
@@ -152,24 +152,26 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
     <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
       <h2>Filtros do mapa</h2>
       <div className="filtro">
-        <span className="lbl">Modo</span>
-        <div className="grade-seg cols-3" role="tablist" aria-label="Modo do mapa">
-          {MODOS.map((x) => (
-            <button key={x.id} role="tab" aria-selected={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)} title={x.legenda}>
-              {x.rotulo}
-            </button>
-          ))}
-        </div>
-        {modo === "densidade" && (
-          <div className="grade-seg cols-2 forma" role="group" aria-label="Forma dos marcadores">
-            <button className={forma === "colunas" ? "ativo" : ""} aria-pressed={forma === "colunas"} onClick={() => setForma("colunas")} title="Relevo: altura comprimida">Cilindros</button>
-            <button className={forma === "bolhas" ? "ativo" : ""} aria-pressed={forma === "bolhas"} onClick={() => setForma("bolhas")} title="Área proporcional; mais fácil de clicar">Bolhas</button>
+        <span className="lbl">Mapa</span>
+        <div className={`filtro-linha${modo === "densidade" ? " com-forma" : ""}`}>
+          <div className="grade-seg cols-3" role="group" aria-label="O que o mapa mostra">
+            {MODOS.map((x) => (
+              <button key={x.id} aria-pressed={modo === x.id} className={modo === x.id ? "ativo" : ""} onClick={() => setModo(x.id)} title={x.legenda}>
+                {x.rotulo}
+              </button>
+            ))}
           </div>
-        )}
+          {modo === "densidade" && (
+            <div className="grade-seg cols-2" role="group" aria-label="Forma dos marcadores">
+              <button className={forma === "colunas" ? "ativo" : ""} aria-pressed={forma === "colunas"} onClick={() => setForma("colunas")} title="Relevo: altura comprimida">Cilindros</button>
+              <button className={forma === "bolhas" ? "ativo" : ""} aria-pressed={forma === "bolhas"} onClick={() => setForma("bolhas")} title="Área proporcional; mais fácil de clicar">Bolhas</button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="filtro">
         <span className="lbl">Estado</span>
-        <div className="grade-seg cols-5" role="group" aria-label="Estado">
+        <div className="grade-seg cols-uf" role="group" aria-label="Estado">
           <button className={!uf ? "ativo" : ""} aria-pressed={!uf} onClick={() => setUf("")} title="Todos os estados do Nordeste">Todos</button>
           {UFS.map(([s, n]) => <button key={s} className={uf === s ? "ativo" : ""} aria-pressed={uf === s} onClick={() => setUf(uf === s ? "" : s)} title={n}>{s}</button>)}
         </div>
@@ -187,7 +189,7 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
           <div className="fa-marcas" aria-hidden>{ANOS.map((a) => <span key={a} className={a >= de && a <= ate ? "dentro" : ""}>{a}</span>)}</div>
         </div>
       </div>
-      <label className="check-qualis">
+      <label className="check-qualis" title="Vale para todo o site: contagens, mapa, buscas e quiz">
         <input type="checkbox" checked={soQualis} onChange={(e) => alternarQualis(e.target.checked)} />
         <span>Só publicações em revistas com Qualis <small>(vale para todo o site)</small></span>
       </label>
@@ -207,7 +209,7 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
           const dentro = a >= de && a <= ate;
           return (
             <button key={a} type="button" className={`ano-col${dentro ? " dentro" : ""}`} onClick={() => { setDe(a); setAte(a); }}
-              title={`${a}: ${fmt(v)} publicações`} aria-pressed={de === a && ate === a}>
+              title={`${a}: ${fmt(v)} publicações. Clique para filtrar por este ano.`} aria-pressed={de === a && ate === a}>
               <span className="ano-val">{v >= 1000 ? `${(v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : fmt(v)}</span>
               <span className="ano-barra"><i style={{ height: `${(100 * v) / maxAno}%` }} /></span>
               <span className="ano-rot">{a}</span>

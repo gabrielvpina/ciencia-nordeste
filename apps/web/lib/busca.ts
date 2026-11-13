@@ -8,7 +8,10 @@ import { colWorks } from "@/lib/qualis-filtro";
 import { buscaPorTema } from "@/lib/vetorial";
 import { TERMO_MAX, TERMO_MIN, type ItemNome, type ResultadoNomes, type ResultadoPesquisa, type Tese } from "@/lib/busca-tipos";
 
-const SIM_NOME = 0.6;       // similaridade (trigrama) a partir da qual a consulta é tratada como nome de pessoa
+const SIM_NOME = 0.6;
+// Abaixo desta afinidade (e5) no melhor vizinho, e sem nenhuma coincidência de texto, a consulta não tem sentido no acervo
+// ("xyzqwk", "carro azul": até 0,821; temas reais a partir de 0,835). Medido em 2026-11-13; "solo" (0,812) passa pelo texto.
+const SIM_MINIMA = 0.825;       // similaridade (trigrama) a partir da qual a consulta é tratada como nome de pessoa
 
 async function buscaPorNome(termo: string, sq: boolean): Promise<ResultadoNomes & { simPesquisador: number; siglaExata: boolean }> {
   const W = colWorks(sq);
@@ -36,7 +39,7 @@ async function buscaPorNome(termo: string, sq: boolean): Promise<ResultadoNomes 
   return {
     pesquisadores: pesquisadores.map(({ id, nome, detalhe }) => ({ id, nome, detalhe })),
     instituicoes: instituicoes.map(({ id, nome, detalhe }) => ({ id, nome, detalhe })),
-    programas,
+    programas: programas.map((p) => ({ ...p, nome: caixaNormal(p.nome) })),
     simPesquisador: pesquisadores[0]?.sim ?? 0,
     siglaExata: instituicoes.some((i) => i.sigla),
   };
@@ -77,6 +80,14 @@ export function pesquisar(termoBruto: string, sq: boolean, forcarTema = false): 
   return r;
 }
 
+/** Título todo em maiúsculas ("ARBOVIROSIS…") vira "Arbovirosis…": as listas ficam uniformes. Siglas curtas ficam como estão. */
+export function caixaNormal(t: string): string {
+  const letras = t.replace(/[^\p{L}]/gu, "");
+  if (letras.length < 8 || letras !== letras.toUpperCase()) return t;
+  const m = t.toLocaleLowerCase("pt-BR");
+  return m.charAt(0).toLocaleUpperCase("pt-BR") + m.slice(1);
+}
+
 async function calcular(termo: string, sq: boolean, forcarTema: boolean): Promise<ResultadoPesquisa> {
   const t0 = Date.now();
   const vazio = { pesquisadores: [], instituicoes: [], programas: [] };
@@ -90,5 +101,15 @@ async function calcular(termo: string, sq: boolean, forcarTema: boolean): Promis
     rodaTema ? buscaPorTema(termo, "hibrido", sq) : Promise.resolve(null),
     rodaTema ? buscaTeses(termo) : Promise.resolve([]),
   ]);
+  // A busca vetorial sempre devolve vizinhos; sem afinidade nem texto em comum, eles são ruído.
+  const sem = (x: string) => x.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  const palavras = sem(termo).split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4);
+  const temTexto = teses.length > 0 || !!tema?.publicacoes.some((w) => palavras.some((p) => sem(w.titulo).includes(p)));
+  const melhor = Math.max(0, ...(tema?.publicacoes ?? []).map((w) => w.afinidade ?? 0));
+  if (tema?.vetorial && !temTexto && melhor < SIM_MINIMA) return { termo, nomes, tema: null, pareceNome, teses: [], ms: Date.now() - t0 };
+  if (tema) {
+    tema.publicacoes = tema.publicacoes.map((w) => ({ ...w, titulo: caixaNormal(w.titulo) }));
+    tema.pesquisadores = tema.pesquisadores.map((p) => ({ ...p, exemplo: p.exemplo && caixaNormal(p.exemplo) }));
+  }
   return { termo, nomes, tema, pareceNome, teses, ms: Date.now() - t0 };
 }

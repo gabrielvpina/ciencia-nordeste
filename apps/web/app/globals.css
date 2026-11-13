@@ -930,3 +930,90 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
   .painel-card.mapa-card.pn-mapa { min-height: 0; }
   .pn-mapa .mapa-palco { flex: 1; height: auto; min-height: 0; }
 }
+
+/* ===== Revisão de design do painel e da busca (D-045) ===== */
+/* rótulos em caixa normal: a caixa alta não informava nada além de "isto é um rótulo" */
+.filtro .lbl { text-transform: none; letter-spacing: 0; font-size: .8rem; font-weight: 600; color: var(--fg); }
+.filtro .lbl small { font-weight: 400; color: var(--muted); }
+.res3-col h4 { text-transform: none; letter-spacing: 0; font: 600 .8rem var(--font-body); color: var(--fg); margin: 14px 0 2px; }
+.res3-col h3 + h4, .res3-blocos .res3-bloco:first-child h4 { margin-top: 6px; }
+
+/* resultados: só as colunas com conteúdo; as vazias viram uma linha de aviso */
+.res3 { display: flex; flex-direction: column; gap: 10px; }
+.res3-grade { display: grid; gap: 12px; align-items: start; }
+.res3-c1 { grid-template-columns: minmax(0, 1fr); }
+.res3-c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.res3-c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.res3-c1 .res3-blocos { display: grid; gap: 0 24px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.res3-aviso { margin: 0; padding: 8px 12px; border: 2px dashed var(--line); border-radius: var(--r-md, 12px); font-size: .85rem; color: var(--muted);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.res3-nada { display: grid; gap: 6px; padding: 18px 20px; background: var(--panel); border: var(--b) solid var(--stroke); border-radius: var(--r-lg); box-shadow: var(--hard-s); max-width: 640px; }
+.res3-nada b { font: 600 1.05rem var(--font-display); }
+.res3-nada span { color: var(--muted); font-size: .9rem; }
+/* título de exemplo de cada pesquisador: só ao passar o mouse ou focar (no toque, não aparece) */
+.res3-exemplo { display: none; }
+.res3-exemplo::before { content: "“"; } .res3-exemplo::after { content: "”"; }
+@media (hover: hover) { .res3-lista li:hover .res3-exemplo, .res3-lista li:focus-within .res3-exemplo { display: block; } }
+@media (max-width: 900px) { .res3-c2, .res3-c3 { grid-template-columns: minmax(0, 1fr); } }
+
+/* instituição selecionada: cartão sobre o mapa, só enquanto há seleção */
+.pn-mapa { position: relative; }
+.pn-sel { position: absolute; z-index: 8; left: 14px; bottom: 118px; width: min(290px, calc(100% - 28px)); box-shadow: var(--hard); }
+.pn-sel .detalhe-topo { padding-right: 26px; }
+.pn-sel-fechar { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border: 1.5px solid var(--stroke); border-radius: 8px; background: var(--panel); color: var(--fg); font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.pn-sel-fechar:hover { background: var(--accent-soft); }
+.pn-sel-fechar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 1099px) { .pn-sel { position: static; width: auto; margin: 0 12px 12px; box-shadow: var(--hard-s); } }
+
+/* colunas de cards terminando junto com o mapa: o último card de cada coluna ocupa a altura que sobra */
+@media (min-width: 1100px) and (min-height: 620px) {
+  .pn-cards { align-items: stretch; }
+  .pn-coluna { display: flex; flex-direction: column; }
+  .pn-coluna > :last-child { flex: 1; display: flex; flex-direction: column; }
+  .pn-areas .barras-area { flex: 1; align-content: space-evenly; }
+  .pn-areas .barras-area button { font-size: .86rem; padding: 4px 6px; gap: 4px 8px; }
+  .pn-areas .barras-area .barra { height: 9px; }
+  .pn-anos .anos-colunas { flex: 1; min-height: 110px; }
+  .pn .pn-anos .ano-col { grid-template-rows: auto minmax(60px, 1fr) auto; height: 100%; }
+  .pn .pn-anos .ano-barra { height: 100%; }
+  .pn-resultados .res3 { flex: 1; min-height: 0; }
+  .pn-resultados .res3-grade { flex: 1; min-height: 0; align-items: stretch; }
+  .pn-resultados .res3-col { overflow-y: auto; min-height: 0; }
+}
+.res3-col h3.h3-com-nota { display: grid; gap: 0; }
+.res3-col h3.h3-com-nota small { font: 400 .76rem var(--font-body); color: var(--muted); }
+.pagina-busca .res3-nada { margin: 0 auto; width: 100%; }
+/* janelas baixas (1366 × 768 e parecidas): cards mais compactos para caberem sem rolagem */
+@media (min-width: 1100px) and (max-height: 820px) {
+  .pn .painel-card { padding: 9px 12px; }
+  .pn .painel-card h2 { margin-bottom: 2px; font-size: .95rem; }
+  .pn .linha-cap { margin: 0 0 4px; padding-bottom: 4px; font-size: .72rem; }
+  .pn-areas .barras-area button { font-size: .78rem; padding: 2px 6px; gap: 2px 8px; }
+  .pn-areas .barras-area .barra { height: 6px; }
+  .pn .filtros-mapa { gap: 6px; }
+  .pn .filtro { gap: 3px; }
+  .pn .grade-seg button { padding: 4px 4px; font-size: .8rem; }
+  .pn .grade-seg.forma { margin-top: 3px; }
+  .pn .faixa-anos { height: 46px; }
+  .pn .check-qualis { font-size: .78rem; }
+  .pn-anos .anos-colunas { min-height: 70px; }
+  .pn .pn-anos .ano-col { grid-template-rows: auto minmax(36px, 1fr) auto; }
+  .pn-esq, .pn-cards, .pn-coluna { gap: 8px; }
+}
+/* janelas baixas: "Produção por ano" desce para baixo das áreas, e os filtros ficam sozinhos na outra coluna */
+@media (min-width: 1100px) and (min-height: 620px) and (max-height: 820px) {
+  .pn-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "areas filtros" "anos filtros"; }
+  .pn-coluna { display: contents; }
+  .pn-cards .pn-areas { grid-area: areas; min-height: 0; }
+  .pn-cards .filtros-mapa { grid-area: filtros; }
+  .pn-cards .pn-anos { grid-area: anos; flex: none; }
+  .pn-areas .barras-area { align-content: space-between; }
+}
+@media (min-width: 1100px) and (min-height: 620px) and (max-height: 820px) {
+  .pn-areas .barras-area button { grid-template-columns: minmax(0, 1fr) minmax(50px, 32%) 3.6em; align-items: center; padding: 2px 6px; }
+  .pn-areas .barras-area .nome { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: block; }
+  .pn-areas .barras-area .nome i { display: inline-block; margin-right: 6px; vertical-align: 1px; }
+  .pn-areas .barras-area .barra { grid-column: 2; grid-row: 1; }
+  .pn-areas .barras-area .val { grid-column: 3; text-align: right; }
+  .pn-anos .linha-cap { display: none; }
+}

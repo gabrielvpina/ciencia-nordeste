@@ -100,12 +100,12 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
 
   const cardAreas = (
     <section className="painel-card pn-areas">
-      <h2>Áreas <span className="tag">OpenAlex</span></h2>
-      <p className="linha-cap">{uf || "Nordeste"} · publicações por área · clique para filtrar</p>
+      <h2>Áreas</h2>
+      <p className="linha-cap">Publicações por área em {uf ? UFS.find(([s]) => s === uf)?.[1] : "todo o Nordeste"}. Clique numa área para filtrar.</p>
       <ul className="barras-area">
         {areasUf.map(({ f, i, n }) => (
           <li key={f}>
-            <button type="button" className={area === f ? "ativa" : area ? "apagada" : ""} aria-pressed={area === f} onClick={() => setArea(area === f ? "" : f)}>
+            <button type="button" className={area === f ? "ativa" : area ? "apagada" : ""} aria-pressed={area === f} title={`${rotuloArea(f)}: ${fmt(n)} publicações`} onClick={() => setArea(area === f ? "" : f)}>
               <span className="nome"><i style={{ background: `var(--area-${i})` }} />{rotuloArea(f)}</span>
               <span className="val">{fmt(n)}</span>
               <span className="barra"><i style={{ width: `${(100 * n) / maxArea}%`, background: `var(--area-${i})` }} /></span>
@@ -116,50 +116,41 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
     </section>
   );
 
-  const cardSelecionada = (
-    <section className="painel-card detalhe-sel" aria-live="polite">
-      <h2>Instituição selecionada <span className="tag">{sel ? `${ranking.indexOf(sel) + 1}ª` : "mapa"}</span></h2>
-      {!sel ? (
-        <p className="detalhe-vazio">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 1v4M12 19v4M1 12h4M19 12h4" /></svg>
-          Clique numa bolha do mapa para ver os números da instituição, suas áreas e subunidades.
-        </p>
-      ) : (
-        <>
-          <div className="detalhe-topo">
-            <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
-            <div><b>{sel.nome}</b><span>{[resumoSel?.municipio, sel.uf].filter(Boolean).join(" · ")}</span></div>
-          </div>
-          <dl className="detalhe-dl">
-            <div><dt>no filtro</dt><dd>{fmt(sel.works)}<small> publ.</small></dd></div>
-            <div><dt>total {faixaCurta}</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
-            <div><dt>pesquisadores</dt><dd>{resumoSel ? fmt(resumoSel.pesquisadores) : "…"}</dd></div>
-            <div><dt>programas de pós</dt><dd>{resumoSel ? fmt(resumoSel.programas) : "…"}</dd></div>
-          </dl>
-          {resumoSel && resumoSel.areas.length > 0 && (
-            <ul className="detalhe-areas">
-              {resumoSel.areas.map((a) => (
-                <li key={a.f}><i style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(a.f))})` }} />{rotuloArea(a.f)}<span>{fmt(a.n)}</span></li>
-              ))}
-            </ul>
-          )}
-          {subunidades.get(sel.id) && (
-            <p className="detalhe-subs">Subunidades: {subunidades.get(sel.id)!.map((x, k) => (
-              <a key={x.id} href={`/instituicao/${x.id}`}>{k ? ", " : ""}{x.sigla ?? x.nome}</a>
-            ))}</p>
-          )}
-          <div className="detalhe-acoes">
-            <a className="botao-primario" href={`/instituicao/${sel.id}`}>Perfil e rede →</a>
-            <button type="button" className="chip" onClick={() => setSelecionado(null)}>limpar</button>
-          </div>
-        </>
+  // Instituição selecionada: cartão sobre o mapa, só enquanto há seleção (o mapa já diz "clique numa bolha").
+  const cardSelecionada = sel && (
+    <section className="painel-card detalhe-sel pn-sel" aria-live="polite" aria-label="Instituição selecionada">
+      <button type="button" className="pn-sel-fechar" onClick={() => setSelecionado(null)} aria-label="Fechar">×</button>
+      <div className="detalhe-topo">
+        <span className="chip-sigla">{(sel.sigla ?? sel.nome).split(",")[0].slice(0, 9)}</span>
+        <div><b>{sel.nome}</b><span>{[resumoSel?.municipio, sel.uf].filter(Boolean).join(", ")} · {ranking.indexOf(sel) + 1}ª em publicações</span></div>
+      </div>
+      <dl className="detalhe-dl">
+        <div><dt>no filtro</dt><dd>{fmt(sel.works)}<small> publ.</small></dd></div>
+        <div><dt>total {faixaCurta}</dt><dd>{resumoSel ? fmt(resumoSel.works) : "…"}</dd></div>
+        <div><dt>pesquisadores</dt><dd>{resumoSel ? fmt(resumoSel.pesquisadores) : "…"}</dd></div>
+        <div><dt>programas de pós</dt><dd>{resumoSel ? fmt(resumoSel.programas) : "…"}</dd></div>
+      </dl>
+      {resumoSel && resumoSel.areas.length > 0 && (
+        <ul className="detalhe-areas">
+          {resumoSel.areas.slice(0, 4).map((a) => (
+            <li key={a.f}><i style={{ background: `var(--area-${Math.max(0, AREAS_ORDEM.indexOf(a.f))})` }} />{rotuloArea(a.f)}<span>{fmt(a.n)}</span></li>
+          ))}
+        </ul>
       )}
+      {subunidades.get(sel.id) && (
+        <p className="detalhe-subs">Subunidades: {subunidades.get(sel.id)!.map((x, k) => (
+          <a key={x.id} href={`/instituicao/${x.id}`}>{k ? ", " : ""}{x.sigla ?? x.nome}</a>
+        ))}</p>
+      )}
+      <div className="detalhe-acoes">
+        <a className="botao-primario" href={`/instituicao/${sel.id}`}>Ver perfil e rede</a>
+      </div>
     </section>
   );
 
   const cardSeletores = (
     <section className="painel-card filtros-mapa" aria-label="Seletores e filtros do mapa">
-      <h2>Seletores do mapa <span className="tag">filtros</span></h2>
+      <h2>Filtros do mapa</h2>
       <div className="filtro">
         <span className="lbl">Modo</span>
         <div className="grade-seg cols-3" role="tablist" aria-label="Modo do mapa">
@@ -198,7 +189,7 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
       </div>
       <label className="check-qualis">
         <input type="checkbox" checked={soQualis} onChange={(e) => alternarQualis(e.target.checked)} />
-        <span>Só publicações em revistas com <b>Qualis</b> <small>(vale para todo o site)</small></span>
+        <span>Só publicações em revistas com Qualis <small>(vale para todo o site)</small></span>
       </label>
       {(uf || area || !tudo) && (
         <button type="button" className="chip chip-limpar" onClick={() => { setUf(""); setArea(""); setDe(ANOS[0]); setAte(ANOS[ANOS.length - 1]); }}>limpar filtros</button>
@@ -208,8 +199,8 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
 
   const cardAnos = (
     <section className="painel-card pn-anos">
-      <h2>Produção por ano <span className="tag">{uf || "Nordeste"}</span></h2>
-      <p className="linha-cap">publicações únicas{area ? ` · ${rotuloArea(area).toLowerCase()}` : ""} · clique num ano para filtrar</p>
+      <h2>Produção por ano</h2>
+      <p className="linha-cap">Publicações{area ? ` em ${rotuloArea(area).toLowerCase()}` : ""}{uf ? ` (${uf})` : ""}. Clique num ano para filtrar.</p>
       <div className="anos-colunas" role="group" aria-label="Publicações por ano">
         {ANOS.map((a) => {
           const v = dados.anos?.find((x) => x.ano === a)?.works ?? 0;
@@ -235,14 +226,14 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
         {consulta ? (
           <div className="pn-resultados">
             <div className="pn-res-topo">
-              <button type="button" className="chip" onClick={() => setConsulta("")}>← voltar aos filtros</button>
-              <span className="meta">resultados para “{consulta}”{res ? ` · ${(res.ms / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} s` : ""}</span>
+              <button type="button" className="chip" onClick={() => setConsulta("")}>Voltar aos filtros</button>
+              <span className="meta">Resultados para “{consulta}”{res ? ` · ${(res.ms / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} s` : ""}</span>
             </div>
             <ResultadosBusca r={res} carregando={buscando} onFoco={setDestaque} onForcarTema={() => setForcarTema(true)} />
           </div>
         ) : (
           <div className="pn-cards">
-            <div className="pn-coluna">{cardAreas}{cardSelecionada}</div>
+            <div className="pn-coluna">{cardAreas}</div>
             <div className="pn-coluna">{cardSeletores}{cardAnos}</div>
           </div>
         )}
@@ -250,7 +241,6 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
 
       <section className="painel-card mapa-card pn-mapa" aria-busy={carregando}>
         <div className="mapa-topo">
-          <span className="tag tag-mapa">{m.rotulo}</span>
           <div className="mapa-titulo">
             {m.titulo}
             <small>{fmt(total)} instituições{area ? ` · ${rotuloArea(area)}` : ""}{uf ? ` · ${uf}` : ""} · {de === ate ? de : `${de}–${ate}`}{carregando ? " · atualizando…" : ""}</small>
@@ -261,6 +251,7 @@ export default function Painel({ inicial, periodo, soQualisInicial, filtros, con
             selecionado={selecionado} onSelecionar={setSelecionado} destaque={destaque} forma={forma}
             onSelecionarUf={(x) => setUf(uf === x ? "" : x)} />
         </div>
+        {cardSelecionada}
       </section>
     </div>
   );

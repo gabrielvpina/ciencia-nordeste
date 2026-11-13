@@ -531,3 +531,20 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - À esquerda: busca compacta e, abaixo, os cards em duas colunas (áreas e instituição selecionada | seletores, Qualis e produção por ano). À direita: o mapa na altura da janela.
   - Em janelas a partir de 1100 × 620, a página tem a altura da janela, sem rolagem: quem rola, se precisar, é a área dos cards ou cada coluna de resultados. Conferido em 1920 × 1080 e 1366 × 768. No celular, tudo fica empilhado.
 - **Medido (local, depois de aquecer):** a busca de tema levou de 60 a 900 ms na primeira vez e cerca de 10 ms no cache; a de nome, de 6 a 300 ms; as teses, de 2 a 15 ms com o índice.
+
+## D-045 — Revisão de design do painel e da busca
+
+- **Data:** 2026-11-13. Pedido do responsável, seguindo a skill pública `frontend-design` da Anthropic. Usei as partes que valem para revisar uma identidade já definida: estrutura visual só quando informa algo, rótulos sem caixa alta, estado vazio que orienta e autocrítica com capturas de tela.
+- **Painel:**
+  - A instituição selecionada virou um cartão sobre o mapa, no canto inferior esquerdo, com botão de fechar e as 4 principais áreas. Ele só aparece quando há seleção; sai o card vazio "clique numa bolha".
+  - Os cards terminam junto com o mapa: o último card de cada coluna ocupa a altura que sobra.
+  - Em janelas baixas (altura até 820 px, como 1366 × 768), a "Produção por ano" desce para baixo das áreas, as áreas viram linhas de uma só altura e os cards ficam mais compactos. Conferido sem rolagem em 1310 × 665, 1536 × 730, 1440 × 780 e 1920 × 946 (áreas úteis da janela).
+- **Resultados da busca:**
+  - Colunas sem conteúdo não ocupam espaço: viram uma linha de aviso. Se nada aparece, um aviso sugere o que tentar.
+  - Consulta sem sentido no acervo ("xyzqwk") não mostra mais vizinhos aleatórios. A regra exige duas coisas: afinidade do melhor vizinho abaixo de 0,825 e nenhuma coincidência de texto em títulos ou teses. Medido: ruído até 0,821; temas reais a partir de 0,835; "solo" (0,812) passa pelo texto.
+  - O título de exemplo de cada pesquisador só aparece ao passar o mouse.
+  - Títulos e nomes de programas em CAIXA ALTA viram caixa normal.
+- **Ruído:**
+  - Saem as etiquetas "OpenAlex", "filtros", "mapa", "Nordeste" e a do modo do mapa.
+  - Os rótulos "MODO", "ESTADO" e "PERÍODO" e os subtítulos dos resultados ficam em caixa normal.
+  - As setas saem dos textos dos botões ("Ver perfil e rede", "Voltar aos filtros").

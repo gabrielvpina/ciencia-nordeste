@@ -39,7 +39,7 @@ export default function BuscaGeral({ inicial = "", onBuscar, onLimpar, autoFoco,
           onKeyDown={(e) => { if (e.key === "Escape") limpar(); }} maxLength={200}
           placeholder={compacta ? "Pesquisador, instituição, programa ou tema" : "Busque um pesquisador, instituição, programa ou tema de pesquisa"} aria-label="Buscar" />
         {termo && <button type="button" className="limpar" onClick={limpar} aria-label="Limpar busca">×</button>}
-        <button type="submit" className="botao-buscar" disabled={ocupado}>{ocupado ? "Buscando…" : "Buscar"}</button>
+        <button type="submit" className="botao-buscar" disabled={ocupado} aria-busy={ocupado}>Buscar</button>
       </form>
       {exemplos && (
         <p className="exemplos"><span>Experimente:</span>{EXEMPLOS.map((x) => (

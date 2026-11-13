@@ -101,7 +101,38 @@ const Rotulo = ({ children, story }: { children: string; story: boolean }) => (
   <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{children}</div>
 );
 
-export async function GET(req: Request, { params }: { params: { tipo: string } }) {
+/** PNGs já gerados, em memória (D-052): gerar a imagem custa 2–5 s de CPU, e o mesmo banner é pedido de novo ao
+ *  compartilhar e baixar, ao recarregar a página e pelas prévias de redes sociais. A chave normaliza a ordem das respostas e
+ *  só leva o que muda a imagem (instituição, Qualis e texto só valem para o de afinidades). LRU por bytes; reinicia a cada publicação. */
+const PNGS = new Map<string, ArrayBuffer>();
+let bytesPngs = 0;
+const MAX_BYTES_PNGS = 64 * 1024 * 1024;
+const CABECALHOS = { "content-type": "image/png", "cache-control": "public, max-age=86400, stale-while-revalidate=604800" };
+
+export async function GET(req: Request, ctx: { params: { tipo: string } }) {
+  const u = new URL(req.url);
+  const tipo = ctx.params.tipo;
+  const ids = (u.searchParams.get("r") ?? "").split(",").filter(Boolean).sort().join(",");
+  const extra = tipo === "afinidades" ? ["i", "ql", "t"].map((k) => `${k}=${u.searchParams.get(k) ?? ""}`).join("&") : "";
+  const chave = `${tipo}|${u.searchParams.get("f") === "feed" ? "feed" : "story"}|${ids}|${extra}`;
+  const guardado = PNGS.get(chave);
+  if (guardado) {
+    PNGS.delete(chave); PNGS.set(chave, guardado);   // mais recente no fim (LRU)
+    return new Response(guardado, { headers: { ...CABECALHOS, "x-cache": "hit" } });
+  }
+  const res = await gerar(req, ctx);
+  if (!res.ok || !res.headers.get("content-type")?.startsWith("image/")) return res;
+  const buf = await res.arrayBuffer();
+  PNGS.set(chave, buf);
+  bytesPngs += buf.byteLength;
+  while (bytesPngs > MAX_BYTES_PNGS && PNGS.size > 1) {
+    const [k, v] = PNGS.entries().next().value!;
+    PNGS.delete(k); bytesPngs -= v.byteLength;
+  }
+  return new Response(buf, { headers: { ...CABECALHOS, "x-cache": "miss" } });
+}
+
+async function gerar(req: Request, { params }: { params: { tipo: string } }) {
   const u = new URL(req.url);
   const tipo = params.tipo === "afinidades" ? "afinidades" : params.tipo === "perfil" ? "perfil" : null;
   if (!tipo) return Response.json({ erro: "tipo inválido" }, { status: 404 });

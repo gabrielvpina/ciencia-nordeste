@@ -274,15 +274,16 @@ async function alinharCom(nicho: Map<string, Opcao>, opts: OpcoesAlinhar, semTem
                 HAVING count(*) FILTER (WHERE qw.opcao_id = ANY($4::text[])) = cardinality($4::text[]))
      SELECT r.rid,
             -- exemplos: as publicações do nicho mais próximas da descrição livre (D-040), se houver; senão, as que mais casam o nicho
+            -- (pontuação arredondada e desempate por id: a soma em ponto flutuante varia na última casa conforme o plano, D-052)
             (SELECT json_agg(json_build_object('titulo', x.title, 'ano', x.year, 'doi', x.doi) ORDER BY x.ord) FROM (
-               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, n.v DESC, w.year DESC, w.id) AS ord
+               SELECT w.title, w.year, w.doi, row_number() OVER (ORDER BY (we.embedding <=> $6::halfvec) NULLS LAST, round(n.v::numeric, 4) DESC, w.year DESC, w.id) AS ord
                  FROM (SELECT DISTINCT a.work_id FROM work_authorships a WHERE a.researcher_id = r.rid) aw JOIN nicho n ON n.work_id = aw.work_id
                  JOIN works w ON w.id = aw.work_id LEFT JOIN work_embeddings we ON we.work_id = w.id AND $6::halfvec IS NOT NULL
                 WHERE NOT $5 OR EXISTS (SELECT 1 FROM mv_work_qualis mq WHERE mq.work_id = w.id)
                 ORDER BY ord LIMIT 2) x) AS exemplos,
             (SELECT min(w.year) FROM work_authorships a JOIN nicho n ON n.work_id = a.work_id JOIN works w ON w.id = a.work_id WHERE a.researcher_id = r.rid) AS desde,
-            (SELECT g.name FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC LIMIT 1) AS programa,
-            (SELECT g.id::text FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC LIMIT 1) AS programa_id
+            (SELECT g.name FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC, g.grade DESC, g.id LIMIT 1) AS programa,
+            (SELECT g.id::text FROM program_faculty f JOIN graduate_programs g ON g.id = f.program_id WHERE f.researcher_id = r.rid ORDER BY f.base_year DESC, g.grade DESC, g.id LIMIT 1) AS programa_id
        FROM unnest($1::uuid[]) AS r(rid)`,
     [ids_mostrar, ids, pesos, nuc.map((o) => o.id), opts.soQualis, vTexto]) : [];
   const t3 = Date.now();

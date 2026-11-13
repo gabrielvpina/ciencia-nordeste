@@ -1,167 +1,207 @@
 // GET /api/quiz/banner/perfil|afinidades?r=<ids das opções, separados por vírgula>&i=<instituição>&ql=0|1&f=story|feed&t=<código do texto, D-040>
 // Gera o banner em PNG no próprio servidor (next/og). A URL leva só ids: o servidor recalcula tudo e não grava nada.
-// Visual provisório (etapa 13): só cores e formas simples, sem ilustração.
+// Arte "Registro de campo" (D-049, docs/arte-banners.md): ficha de catálogo, só cores e formas retas, sem ilustração.
 import { ImageResponse } from "next/og";
 import { alinhar } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
 import { montarTitulo } from "@/lib/quiz/titulo";
-import { ACENTO, DESTAQUE, FUNDO, INICIAIS, LIMA, MUDO, PAINEL, PROPORCAO_MAPA, TINTA, TITULO, carregarFontes, corta, iniciais, logoSvg, miniMapa } from "@/lib/quiz/visual";
+import { ACENTO, FUNDO, LIMA, MUDO, PAINEL, PROPORCAO_MAPA, TINTA, TITULO, carregarFontes, corta, logoSvg, miniMapa } from "@/lib/quiz/visual";
 
 export const dynamic = "force-dynamic";
 const UUID = /^[0-9a-f-]{36}$/i;
 const TAMANHOS = { story: [1080, 1920], feed: [1080, 1350] } as const;
 
-const cartao = (extra: Record<string, unknown> = {}) => ({
-  display: "flex", flexDirection: "column" as const, background: PAINEL, border: `6px solid ${TINTA}`, borderRadius: 36,
-  boxShadow: `14px 14px 0 ${TINTA}`, ...extra,
-});
+const RAIO = 28;
+const SOMBRA = (n: number) => `${n}px ${n}px 0 ${TINTA}`;
 
 /** Tamanho da fonte do nicho pelo comprimento: o nicho sai sempre inteiro (até ~95 caracteres), quebrando em linhas. */
 function tamNicho(n: number, base: number): number {
   return Math.round(base * (n <= 36 ? 1 : n <= 52 ? 0.9 : n <= 70 ? 0.8 : 0.7));
 }
 
-function Cabecalho({ texto }: { texto: string }) {
+/** Gerador determinístico (mulberry32) a partir das respostas: as mesmas respostas desenham sempre o mesmo código. */
+function sorteio(semente: string) {
+  let h = 2166136261;
+  for (const c of semente) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  let a = h >>> 0;
+  const prox = () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  return { prox, codigo: `CN-${String((h >>> 0) % 10000).padStart(4, "0")}·${String(((h >>> 0) / 10000 | 0) % 10000).padStart(4, "0")}` };
+}
+
+/** Código de barras das respostas: barras de 1 a 4 unidades, quase todas na tinta, poucas no acento. */
+function CodigoBarras({ semente, largura, altura, acento }: { semente: string; largura: number; altura: number; acento: string }) {
+  const { prox } = sorteio(semente);
+  const barras: { w: number; vazio: number; cor: string; h: number }[] = [];
+  let usado = 0;
+  const u = 6;   // unidade, em px
+  while (true) {
+    const w = (1 + Math.floor(prox() * 4)) * u, vazio = (1 + Math.floor(prox() * 3)) * u;
+    if (usado + w > largura) break;
+    barras.push({ w, vazio, cor: prox() < 0.14 ? acento : TINTA, h: prox() < 0.12 ? 0.78 : 1 });
+    usado += w + vazio;
+  }
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-        <img src={logoSvg()} width={96} height={120} alt="" />
-        <div style={{ display: "flex", gap: 12, fontSize: 52, color: TINTA }}><span>Ciência</span><span style={{ fontWeight: 700, fontFamily: TITULO }}>Nordeste</span></div>
-      </div>
-      <div style={{ display: "flex", flexShrink: 0, whiteSpace: "nowrap", fontSize: 26, color: TINTA, background: LIMA, border: `4px solid ${TINTA}`, borderRadius: 999, padding: "8px 20px" }}>{texto}</div>
+    <div style={{ display: "flex", alignItems: "flex-end", width: largura, height: altura }}>
+      {barras.map((b, i) => <div key={i} style={{ display: "flex", width: b.w, height: altura * b.h, background: b.cor, marginRight: i < barras.length - 1 ? b.vazio : 0 }} />)}
     </div>
   );
 }
 
-function Rodape() {
+function Cabecalho({ texto, story }: { texto: string; story: boolean }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", fontSize: 30, color: TINTA }}>
-      <div style={{ display: "flex" }}>ciencianordeste.com.br</div>
-      <div style={{ display: "flex", color: MUDO }}>descubra o seu perfil de cientista</div>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", paddingBottom: story ? 28 : 20, borderBottom: `4px solid ${TINTA}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <img src={logoSvg()} width={story ? 58 : 50} height={story ? 72 : 62} alt="" />
+        <div style={{ display: "flex", gap: 10, fontSize: story ? 40 : 34, color: TINTA }}><span>Ciência</span><span style={{ fontWeight: 700, fontFamily: TITULO }}>Nordeste</span></div>
+      </div>
+      <div style={{ display: "flex", fontSize: story ? 28 : 24, color: MUDO }}>{texto}</div>
     </div>
   );
 }
+
+function Rodape({ story, codigo }: { story: boolean; codigo?: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", paddingTop: story ? 24 : 16, borderTop: `4px solid ${TINTA}`, fontSize: story ? 30 : 26, color: TINTA }}>
+      <div style={{ display: "flex", fontWeight: 700, fontFamily: TITULO }}>ciencianordeste.com.br</div>
+      <div style={{ display: "flex", color: MUDO }}>{codigo ?? "descubra o seu perfil de cientista"}</div>
+    </div>
+  );
+}
+
+/** Rótulo pequeno de catálogo. */
+const Rotulo = ({ children, story }: { children: string; story: boolean }) => (
+  <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{children}</div>
+);
 
 export async function GET(req: Request, { params }: { params: { tipo: string } }) {
   const u = new URL(req.url);
   const tipo = params.tipo === "afinidades" ? "afinidades" : params.tipo === "perfil" ? "perfil" : null;
   if (!tipo) return Response.json({ erro: "tipo inválido" }, { status: 404 });
-  const { respostas, erros } = interpretar((u.searchParams.get("r") ?? "").split(",").filter(Boolean));
+  const ids = (u.searchParams.get("r") ?? "").split(",").filter(Boolean);
+  const { respostas, erros } = interpretar(ids);
   if (erros.length) return Response.json({ erro: "respostas inválidas", detalhes: erros.slice(0, 5) }, { status: 400 });
   const inst = UUID.test(u.searchParams.get("i") ?? "") ? u.searchParams.get("i") : null;
   const [W, H] = TAMANHOS[u.searchParams.get("f") === "feed" ? "feed" : "story"];
   const story = H === 1920;
+  const M = story ? 80 : 64;   // margem
   const t = montarTitulo(respostas);
   const fundo = FUNDO[t.cor] ?? FUNDO.neutro, acento = ACENTO[t.acento] ?? ACENTO.neutro;
-
-  // formas de fundo (só geometria): dois círculos e uma faixa no acento do ambiente
-  const formas = (
-    <>
-      <div style={{ position: "absolute", top: -160, right: -160, width: 560, height: 560, borderRadius: 999, background: acento, border: `6px solid ${TINTA}` }} />
-      <div style={{ position: "absolute", bottom: story ? 260 : 200, left: -120, width: 300, height: 300, borderRadius: 999, background: DESTAQUE, border: `6px solid ${TINTA}` }} />
-      <div style={{ position: "absolute", bottom: story ? 520 : 380, right: -40, width: 520, height: 46, background: LIMA, border: `6px solid ${TINTA}`, transform: "rotate(-8deg)" }} />
-    </>
-  );
+  const semente = [...ids].sort().join(",");
+  const { codigo } = sorteio(semente);
+  const fontes = await carregarFontes();
 
   if (tipo === "perfil") {
-    const tam = Math.round((t.principal.length > 26 ? 112 : t.principal.length > 18 ? 132 : 150) * (story ? 1 : 0.76));
-    const nTrilha = story ? 6 : 3;
+    const n = t.principal.length;
+    const tam = Math.round((n > 26 ? 118 : n > 18 ? 138 : 160) * (story ? 1 : 0.78));
+    const trilha = t.trilha.slice(0, 6);
     return new ImageResponse(
       (
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "DM Sans" }}>
-          {formas}
-          <Cabecalho texto="Que cientista você é" />
-          <div style={cartao({ padding: story ? "64px 56px" : "40px 48px", gap: story ? 28 : 16 })}>
-            <div style={{ display: "flex", fontSize: 30, letterSpacing: 4, color: MUDO }}>SEU TÍTULO</div>
-            <div style={{ display: "flex", fontSize: tam, fontWeight: 700, fontFamily: TITULO, lineHeight: 1.02, color: TINTA }}>{t.principal}</div>
-            {t.secundario && <div style={{ display: "flex", fontSize: story ? 48 : 40, color: TINTA }}>{t.secundario}</div>}
-            <div style={{ display: "flex", height: 6, width: "100%", background: TINTA, borderRadius: 3, margin: "12px 0" }} />
-            <div style={{ display: "flex", fontSize: 30, letterSpacing: 4, color: MUDO }}>SEU NICHO</div>
-            <div style={{ display: "flex", fontSize: tamNicho(t.nicho.length, story ? 56 : 44), fontWeight: 700, fontFamily: TITULO, lineHeight: 1.12, color: TINTA }}>{t.nicho}</div>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: M, background: fundo, fontFamily: "DM Sans", color: TINTA }}>
+          <Cabecalho texto="Perfil de cientista" story={story} />
+
+          {/* o único gesto grande: o título */}
+          <div style={{ display: "flex", flexDirection: "column", gap: story ? 12 : 8 }}>
+            <Rotulo story={story}>seu título</Rotulo>
+            <div style={{ display: "flex", fontSize: tam, fontWeight: 700, fontFamily: TITULO, lineHeight: 0.98, letterSpacing: -3 }}>{t.principal}</div>
+            {t.secundario && <div style={{ display: "flex", fontSize: story ? 46 : 36, color: TINTA, marginTop: 6 }}>{t.secundario}</div>}
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 18 }}>
-            {t.trilha.slice(0, nTrilha).map((x, i) => (
-              <div key={x} style={{ display: "flex", fontSize: story ? 34 : 28, color: TINTA, background: i === 0 ? LIMA : PAINEL, border: `5px solid ${TINTA}`,
-                borderRadius: 999, padding: story ? "12px 28px" : "8px 22px", boxShadow: `5px 5px 0 ${TINTA}` }}>{corta(x, 34)}</div>
+
+          {/* ficha: código das respostas e nicho */}
+          <div style={{ display: "flex", flexDirection: "column", background: PAINEL, border: `5px solid ${TINTA}`, borderRadius: RAIO, boxShadow: SOMBRA(12),
+            padding: story ? "36px 44px" : "26px 34px", gap: story ? 22 : 16 }}>
+            <CodigoBarras semente={semente} largura={W - 2 * M - (story ? 98 : 78)} altura={story ? 128 : 92} acento={acento} />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: story ? 24 : 20, color: MUDO }}>
+              <span>{codigo}</span><span>{ids.length} respostas</span>
+            </div>
+            <div style={{ display: "flex", height: 3, background: TINTA }} />
+            <Rotulo story={story}>nicho</Rotulo>
+            <div style={{ display: "flex", fontSize: tamNicho(t.nicho.length, story ? 54 : 40), fontWeight: 700, fontFamily: TITULO, lineHeight: 1.12, marginTop: -8 }}>{t.nicho}</div>
+          </div>
+
+          {/* registro numerado das escolhas */}
+          <div style={{ display: "flex", flexDirection: story ? "column" : "row", flexWrap: "wrap" }}>
+            {trilha.map((x, i) => (
+              <div key={x} style={{ display: "flex", alignItems: "baseline", gap: 20, width: story ? "100%" : "50%", padding: story ? "13px 0" : "10px 0",
+                borderTop: `2px solid ${TINTA}`, paddingRight: story ? 0 : 20 }}>
+                <div style={{ display: "flex", fontSize: story ? 24 : 20, color: MUDO, width: story ? 40 : 32 }}>{String(i + 1).padStart(2, "0")}</div>
+                <div style={{ display: "flex", fontSize: story ? 32 : 26, background: i === 0 ? LIMA : "transparent", padding: i === 0 ? "0 8px" : 0 }}>{corta(x, story ? 44 : 26)}</div>
+              </div>
             ))}
           </div>
-          <Rodape />
+
+          <Rodape story={story} />
         </div>
       ),
-      { width: W, height: H, fonts: await carregarFontes(), headers: { "cache-control": "public, max-age=3600" } },
+      { width: W, height: H, fonts: fontes, headers: { "cache-control": "public, max-age=3600" } },
     );
   }
 
-  // afinidades: o match (só facetas de nicho), desenhado
+  // afinidades: o match (só facetas de nicho), como levantamento de campo
   const ql = u.searchParams.get("ql");
   const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: ql !== "0", texto: u.searchParams.get("t") });
   const lista = r.banner;
   const mapa = miniMapa(lista.map((x) => ({ lat: x.lat, lon: x.lon })));
-  const mapaW = story ? 330 : 190, mapaH = mapaW * PROPORCAO_MAPA;
+  const mapaW = story ? 360 : 230, mapaH = mapaW * PROPORCAO_MAPA, marca = Math.round(mapaW * 0.105);   // marcadores proporcionais ao mapa
+  const nome = (s: string) => s.replace(/\u00ad/g, "");
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: 72, background: fundo, position: "relative", fontFamily: "DM Sans" }}>
-        <div style={{ position: "absolute", top: story ? 820 : 600, right: -230, width: 520, height: 520, borderRadius: 999, background: acento, border: `6px solid ${TINTA}` }} />
-        <Cabecalho texto="Afinidades no Nordeste" />
-        <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
-            <div style={{ display: "flex", fontSize: story ? 62 : 48, fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1.05 }}>
-              {lista.length ? `${lista.length === 5 ? "Seus 5" : `${lista.length}`} pesquisador${lista.length > 1 ? "es" : ""} de afinidade` : "Ninguém no seu nicho, ainda"}
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: W, height: H, padding: M, background: fundo, fontFamily: "DM Sans", color: TINTA }}>
+        <Cabecalho texto="Afinidades no Nordeste" story={story} />
+
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: story ? 16 : 10, flex: 1 }}>
+            <Rotulo story={story}>nicho</Rotulo>
+            <div style={{ display: "flex", fontSize: tamNicho(t.nicho.length, story ? 56 : 42), fontWeight: 700, fontFamily: TITULO, lineHeight: 1.08, letterSpacing: -1 }}>{t.nicho}</div>
+            <div style={{ display: "flex", fontSize: story ? 30 : 24, color: MUDO, marginTop: 6 }}>
+              {lista.length ? `${lista.length} pesquisador${lista.length > 1 ? "es" : ""} com afinidade` : "Ninguém no seu nicho, ainda"}
             </div>
           </div>
           {lista.length > 0 && (
-            <div style={{ display: "flex", position: "relative", width: mapaW, height: mapaH }}>
+            <div style={{ display: "flex", position: "relative", width: mapaW, height: mapaH, flexShrink: 0 }}>
               <img src={mapa.src} width={mapaW} height={mapaH} alt="" />
               {mapa.pos.map((p, i) => p && (
-                <div key={i} style={{ position: "absolute", left: p.x * mapaW - 22, top: p.y * mapaH - 22, width: 44, height: 44, borderRadius: 999, background: acento, border: `5px solid ${TINTA}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, fontFamily: TITULO, color: TINTA }}>{i + 1}</div>
+                <div key={i} style={{ position: "absolute", left: p.x * mapaW - marca / 2, top: p.y * mapaH - marca / 2, width: marca, height: marca, borderRadius: 999, background: acento, border: `${story ? 4 : 3}px solid ${TINTA}`,
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: marca * 0.52, fontWeight: 700, fontFamily: TITULO }}>{i + 1}</div>
               ))}
             </div>
           )}
         </div>
-        {/* nicho inteiro numa faixa própria, na largura do banner (antes era cortado numa pílula ao lado do mapa) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 4, background: PAINEL, border: `5px solid ${TINTA}`, borderRadius: 22,
-          boxShadow: `8px 8px 0 ${TINTA}`, padding: story ? "16px 28px 18px" : "10px 24px 12px" }}>
-          <div style={{ display: "flex", fontSize: story ? 22 : 18, letterSpacing: 4, color: MUDO }}>SEU NICHO</div>
-          <div style={{ display: "flex", fontSize: tamNicho(t.nicho.length, story ? 50 : 38), fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1.15 }}>{t.nicho}</div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: story ? 22 : 10 }}>
+
+        {/* a lista como prancha: uma ficha, linhas separadas por réguas */}
+        <div style={{ display: "flex", flexDirection: "column", background: PAINEL, border: `5px solid ${TINTA}`, borderRadius: RAIO, boxShadow: SOMBRA(12),
+          padding: story ? "8px 40px" : "4px 30px" }}>
           {lista.map((x, i) => {
-            // cartão como figurinha colada: inclinação alternada, selo da posição saltando do canto, índice num "ticket"
-            // e um medidor em 10 blocos — tudo forma e cor, na linguagem neo-brutalista do site
-            const giro = i % 2 ? 1.2 : -1.2, blocos = Math.round(x.indice / 10);
+            const blocos = Math.round(x.indice / 10);
             return (
-              <div key={x.id} style={{ display: "flex", position: "relative", transform: `rotate(${giro}deg)`, marginLeft: i % 2 ? 26 : 0, marginRight: i % 2 ? 0 : 26 }}>
-                <div style={cartao({ flexDirection: "row", alignItems: "center", gap: 24, flex: 1, padding: story ? "20px 28px 20px 64px" : "6px 20px 6px 56px", borderRadius: 24,
-                  boxShadow: `10px 10px 0 ${TINTA}`, border: `5px solid ${TINTA}` })}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: story ? 84 : 58, height: story ? 84 : 58, borderRadius: 999, background: INICIAIS[i % INICIAIS.length],
-                    border: `5px solid ${TINTA}`, boxShadow: `5px 5px 0 ${TINTA}`, fontSize: story ? 34 : 26, fontWeight: 700, fontFamily: TITULO, color: TINTA }}>{iniciais(x.nome.replace(/\u00ad/g, ""))}</div>
-                  <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
-                    <div style={{ display: "flex", fontSize: story ? 33 : 29, fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1.1 }}>{corta(x.nome.replace(/\u00ad/g, ""), story ? 28 : 32)}</div>
-                    <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 40)}</div>
-                    <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
-                      {Array.from({ length: 10 }, (_, k) => (
-                        <div key={k} style={{ display: "flex", width: story ? 26 : 22, height: story ? 16 : 12, borderRadius: 4, border: `3px solid ${TINTA}`, background: k < blocos ? acento : PAINEL }} />
-                      ))}
-                    </div>
+              <div key={x.id} style={{ display: "flex", alignItems: "center", gap: story ? 28 : 22, padding: story ? "30px 0" : "14px 0", borderTop: i ? `2px solid ${TINTA}` : "none" }}>
+                <div style={{ display: "flex", width: story ? 56 : 44, fontSize: story ? 64 : 46, fontWeight: 400, fontFamily: TITULO, color: acento, lineHeight: 1 }}>{i + 1}</div>
+                <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: story ? 8 : 4 }}>
+                  <div style={{ display: "flex", fontSize: story ? 36 : 28, fontWeight: 700, fontFamily: TITULO, lineHeight: 1.12 }}>{nome(x.nome)}</div>
+                  <div style={{ display: "flex", fontSize: story ? 25 : 21, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 46)}</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: story ? 10 : 6, flexShrink: 0 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                    <span style={{ fontSize: story ? 54 : 40, fontWeight: 700, fontFamily: TITULO, lineHeight: 1 }}>{x.indice}</span>
+                    <span style={{ fontSize: story ? 22 : 18, color: MUDO }}>/100</span>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: story ? 128 : 108, padding: story ? "10px 0" : "6px 0", background: LIMA,
-                    border: `5px solid ${TINTA}`, borderRadius: 16, boxShadow: `6px 6px 0 ${TINTA}`, transform: `rotate(${-giro * 2}deg)` }}>
-                    <div style={{ display: "flex", fontSize: story ? 54 : 44, fontWeight: 700, fontFamily: TITULO, color: TINTA, lineHeight: 1 }}>{x.indice}</div>
-                    <div style={{ display: "flex", fontSize: 18, color: TINTA, letterSpacing: 2 }}>COMPAT.</div>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {Array.from({ length: 10 }, (_, k) => (
+                      <div key={k} style={{ display: "flex", width: story ? 14 : 11, height: story ? 22 : 16, background: k < blocos ? acento : "transparent", border: `2.5px solid ${TINTA}` }} />
+                    ))}
                   </div>
                 </div>
-                <div style={{ position: "absolute", top: story ? -22 : -14, left: -18, width: story ? 70 : 56, height: story ? 70 : 56, display: "flex", alignItems: "center", justifyContent: "center",
-                  background: acento, border: `5px solid ${TINTA}`, borderRadius: 14, boxShadow: `5px 5px 0 ${TINTA}`, transform: "rotate(-10deg)",
-                  fontSize: story ? 38 : 30, fontWeight: 700, fontFamily: TITULO, color: TINTA }}>{i + 1}</div>
               </div>
             );
           })}
-          {!lista.length && <div style={cartao({ padding: 40, fontSize: 36, color: TINTA })}>Tente pular uma das perguntas mais específicas e refazer.</div>}
+          {!lista.length && <div style={{ display: "flex", padding: 36, fontSize: 34 }}>Tente pular uma das perguntas mais específicas e refazer.</div>}
         </div>
-        {story && <div style={{ display: "flex", fontSize: 26, color: MUDO, marginTop: 20 }}>Índice de compatibilidade 0–100 · publicações abertas (OpenAlex, CAPES)</div>}
-        <Rodape />
+
+        <div style={{ display: "flex", flexDirection: "column", gap: story ? 22 : 14 }}>
+          {lista.length > 0 && <div style={{ display: "flex", fontSize: story ? 24 : 20, color: MUDO }}>Índice de compatibilidade de 0 a 100, calculado só com publicações abertas (OpenAlex, CAPES).</div>}
+          <Rodape story={story} codigo={codigo} />
+        </div>
       </div>
     ),
-    { width: W, height: H, fonts: await carregarFontes(), headers: { "cache-control": "public, max-age=3600" } },
+    { width: W, height: H, fonts: fontes, headers: { "cache-control": "public, max-age=3600" } },
   );
 }

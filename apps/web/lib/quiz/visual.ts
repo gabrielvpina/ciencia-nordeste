@@ -51,7 +51,7 @@ export function miniMapa(pontos: { lat: number | null; lon: number | null }[]): 
     const [x, y] = projetar(p.lat, p.lon);
     const k = `${Math.round(x / 40)}:${Math.round(y / 40)}`, n = usados.get(k) ?? 0;   // mesma cidade: espalha em anel
     usados.set(k, n + 1);
-    const a = -Math.PI / 2 + n * 2.1, r = n ? 130 : 0;   // em unidades do mapa (~1000 de largura)
+    const a = -Math.PI / 2 + n * 2.1, r = n ? 165 : 0;   // em unidades do mapa (~1000 de largura)
     return { x: (x + r * Math.cos(a) - x0) / W, y: (y + r * Math.sin(a) - y0) / H };
   });
   return { src: `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`, pos };

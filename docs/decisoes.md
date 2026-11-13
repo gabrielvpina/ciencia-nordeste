@@ -632,3 +632,24 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Destaque cruzado: passar o mouse numa linha realça o retângulo, e vice-versa.
   - No celular, cada instituição ocupa duas linhas (nome e publicações; áreas).
 - Conferido sem rolagem da página em 1920 × 946, 1310 × 665 e 1024 × 700, e sem rolagem lateral em 390 px.
+
+## D-049 — Arte final dos banners do quiz ("Registro de campo") e resultado no celular
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Método:** seguindo a skill pública *canvas-design*, primeiro uma filosofia visual (`docs/arte-banners.md`), depois a arte e uma segunda passada só de refinamento.
+- **Restrições mantidas:** só cores e formas simples, sem ilustração; títulos neutros; nicho sempre inteiro; paleta do site.
+- **Banner de perfil:**
+  - É uma ficha de catálogo: cabeçalho e rodapé com réguas, o título como único gesto grande e uma ficha com um código de barras gerado pelas respostas.
+  - O código é determinístico: as mesmas respostas desenham sempre as mesmas barras e o mesmo número `CN-xxxx·xxxx`, que aparece também no banner de afinidades.
+  - Abaixo, o nicho e o registro numerado (01–06) das escolhas.
+  - Saem os círculos decorativos, as pílulas inclinadas e os rótulos em caixa alta.
+- **Banner de afinidades:**
+  - Nicho e mapa de localização no alto, com marcadores proporcionais ao mapa.
+  - Uma única ficha com as 5 pessoas em linhas separadas por réguas: número na cor da paisagem, nome inteiro (quebra linha em vez de cortar), instituição e cidade, índice "/100" e medidor de 10 blocos.
+  - Saem os cartões inclinados, os selos e as iniciais.
+- **Os dois formatos** (story e feed) distribuem os blocos com espaços iguais; nada sai da borda.
+- **Resultado no celular:**
+  - Os dois cartões ficam num carrossel de deslizar, com o próximo aparecendo pela borda.
+  - Cabeçalho mais compacto.
+  - A lista "Quem pesquisa como você" mostra 5 pessoas, e as outras ficam em "Mostrar mais"; cada pessoa tem um título de exemplo.
+  - Altura: de 8.400 para 3.200 px. O cadastro e as perguntas já estavam alinhados.

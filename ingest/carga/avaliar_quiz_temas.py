@@ -23,7 +23,7 @@ from .validar_arvore_quiz import DIR_RELATORIOS, _lit, carregar, psql
 # método mais típico para cada objeto (o tema não depende do método, mas o núcleo sim)
 METODO = {"objeto.plantas": "metodo.campo", "objeto.insetos": "metodo.campo", "objeto.producao": "metodo.bancada", "objeto.fauna": "metodo.campo",
           "objeto.micro": "metodo.bancada", "objeto.humanos": "metodo.epidemio", "objeto.alimentos": "metodo.bancada", "objeto.ambiente": "metodo.campo",
-          "objeto.servicos": "metodo.epidemio"}
+          "objeto.servicos": "metodo.epidemio", "objeto.pets": "metodo.clinica"}
 
 
 def aderentes(ids: list[str], topicos: list[str]) -> set[str]:

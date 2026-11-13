@@ -721,3 +721,37 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Verificação:** banners, ordem e índices são idênticos aos de antes do cache nos 15 caminhos de `avaliar_quiz`.
 - **Resultado estável:** a "coerência" (títulos de exemplo) variava entre execuções, já antes do cache. A pontuação dos exemplos é uma soma em ponto flutuante que muda na última casa conforme o plano da consulta, e o programa de pós exibido não tinha desempate. Agora a pontuação é arredondada e há desempate por id (e por conceito no programa). Duas execuções seguidas, com reinício no meio, dão resultados idênticos.
 - **PNGs dos banners em cache no servidor:** gerar a imagem custa de 2 a 5 s de CPU, mais que o próprio match (~0,5 s). Os bytes ficam num LRU de até 64 MB. A chave usa as respostas em ordem normalizada e só o que muda a imagem: instituição, Qualis e texto valem só para o de afinidades. Um banner repetido sai em ~0,015 s. O cache HTTP passa a `max-age` de 1 dia, com `stale-while-revalidate` de 7 dias. Os caches reiniciam a cada publicação, quando os dados mudam.
+
+## D-053 — Quiz: reavaliação dos temas, pergunta de técnica e novos nichos
+
+- **Data:** 2026-11-13 (pedido do responsável, branch `quiz`).
+- **Reavaliação** (seção 4 de `auditar_quiz`, cobertura dos temas):
+  - Antes, 85% dos 35.724 pesquisadores ativos tinham pelo menos 2 publicações em algum tema.
+  - O que ficava de fora era sobretudo clínica médica por especialidade e veterinária de pequenos animais.
+- **Novos nichos:**
+  - Em Saúde humana (agora com 10 sub-objetos):
+    - "Rins, pulmões e digestão": rins e diálise; transplantes; asma, respiração e sono; fígado e intestino.
+    - "Imunidade e doenças autoimunes": lúpus, artrite reumatoide, esclerose múltipla, esclerose sistêmica.
+  - Objeto novo "Cães, gatos e animais de companhia", com três sub-objetos:
+    - clínica e cirurgia;
+    - zoonoses e doenças;
+    - anatomia e reprodução.
+  - Temas novos em sub-objetos existentes:
+    - linfomas, mieloma e transplante de medula; cuidados paliativos;
+    - assoalho pélvico e saúde ginecológica; prematuridade;
+    - depressão; dor e anestesia;
+    - processo de enfermagem; bioética; envelhecimento e incapacidade.
+  - Temas ampliados: feridas e estomias, pré-eclâmpsia, telessaúde.
+  - No total, 228 temas em 50 sub-objetos.
+  - Cobertura dos temas: de 85% para 92% dos pesquisadores ativos; sub-objetos, 98%.
+- **Pergunta nova: técnica** ("E qual técnica você mais usa?"), logo depois do método (`ingest/carga/quiz_tecnicas.py`).
+  - Foram 46 técnicas candidatas, medidas nas publicações de cada método. Entraram as 38 com pelo menos 40 pesquisadores do Nordeste, em 8 métodos (relatório `quiz_tecnicas.md`).
+  - Exemplos: genômica, metagenômica e filogenia; marcadores moleculares e citogenética; cultura de células e nanotecnologia; docking (em Química, com 1.016 pesquisadores); aprendizado de máquina e estatística espacial; transversais, coortes e revisões sistemáticas; ensaios clínicos e relatos de caso; inventários e monitoramento.
+  - Ficaram de fora por falta de gente: docking em bioinformática, geoprocessamento em dados, pesquisa qualitativa e quatro técnicas de campo.
+  - A técnica pesa 1,5 na cobertura, não entra no núcleo, e substitui o método no nicho escrito ("Metagenômica dos arbovírus da caatinga").
+- **Estrutura:** versão 7 da árvore, com 12 perguntas (13 telas com a instituição), 10 objetos e 868 títulos principais possíveis.
+- **Avaliação:**
+  - Caminhos antigos: sem regressão (coerência média de 87%, exclusão e diversidade ok).
+  - Temas (60 casos): aderência do banner de 33% para 67%; lista de 29% para 65%; 58 de 60 banners com 5 pessoas.
+  - Técnicas (38 casos, `avaliar_quiz_tecnicas`): ganho médio de +13 pontos no banner e +15 na lista; os 38 banners com 5 pessoas.
+  - As técnicas sem ganho são combinações raras no caminho fixo de teste (ex.: ensaios clínicos em "boca e dentes").

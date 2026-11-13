@@ -1,9 +1,10 @@
 {
- "versao": 6,
+ "versao": 7,
  "estrutura": "facetas (v2 do desenho, docs/etapas/13-quiz-alinhamento.md)",
  "telas": [
   "habitat",
   "metodo",
+  "tecnica",
   "objeto",
   "sub_objeto",
   "tema",
@@ -26,7 +27,8 @@
   "escala": 0.6,
   "ambiente": 0.8,
   "impacto": 0.5,
-  "tema": 2.5
+  "tema": 2.5,
+  "tecnica": 1.5
  },
  "perguntas": {
   "habitat": {
@@ -577,6 +579,40 @@
       "metodo.clinica",
       "metodo.dados",
       "metodo.campo"
+     ]
+    },
+    {
+     "id": "objeto.pets",
+     "rotulo": "Cães, gatos e animais de companhia",
+     "sinais": {
+      "topics": [
+       "T11580",
+       "T11905",
+       "T13100"
+      ],
+      "termos": [
+       "dog",
+       "cão",
+       "cães",
+       "canine",
+       "canin",
+       "cat",
+       "gato",
+       "feline",
+       "felin",
+       "companion animal",
+       "animais de companhia"
+      ],
+      "frase": "cães, gatos e animais de companhia"
+     },
+     "metodos": [
+      "metodo.bancada",
+      "metodo.genetica",
+      "metodo.bioinfo",
+      "metodo.dados",
+      "metodo.quimica",
+      "metodo.clinica",
+      "metodo.epidemio"
      ]
     }
    ],
@@ -1672,6 +1708,78 @@
        "nome": "nutrição"
       },
       "nicho": "da nutrição humana"
+     },
+     {
+      "id": "sub.orgaos",
+      "rotulo": "Rins, pulmões e digestão",
+      "sinais": {
+       "topics": [
+        "T10684",
+        "T10291",
+        "T10408",
+        "T10641",
+        "T11163",
+        "T10373",
+        "T10999",
+        "T10051",
+        "T10322",
+        "T10234",
+        "T10134",
+        "T10151"
+       ],
+       "termos": [
+        "kidney",
+        "renal",
+        "dialysis",
+        "diálise",
+        "transplant",
+        "transplante",
+        "asthma",
+        "asma",
+        "respiratory",
+        "respiratóri",
+        "liver",
+        "fígado",
+        "hepatitis",
+        "hepatite"
+       ],
+       "frase": "rins, pulmões, transplantes, fígado e intestino"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "órgãos"
+      },
+      "nicho": "dos rins, dos pulmões e da digestão"
+     },
+     {
+      "id": "sub.imunidade",
+      "rotulo": "Imunidade e doenças autoimunes",
+      "sinais": {
+       "topics": [
+        "T10308",
+        "T10200",
+        "T10137",
+        "T11330"
+       ],
+       "termos": [
+        "lupus",
+        "lúpus",
+        "rheumatoid",
+        "reumatoide",
+        "autoimmune",
+        "autoimun",
+        "multiple sclerosis",
+        "esclerose múltipla",
+        "rheumatolog",
+        "reumatolog"
+       ],
+       "frase": "doenças autoimunes e reumatológicas"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "imunidade"
+      },
+      "nicho": "das doenças autoimunes"
      }
     ],
     "objeto.alimentos": [
@@ -2078,6 +2186,89 @@
       },
       "nicho": "da saúde do trabalhador"
      }
+    ],
+    "objeto.pets": [
+     {
+      "id": "sub.pets_clinica",
+      "rotulo": "Clínica e cirurgia de pequenos animais",
+      "sinais": {
+       "topics": [
+        "T11580",
+        "T11905",
+        "T11149"
+       ],
+       "termos": [
+        "small animal",
+        "pequenos animais",
+        "canine",
+        "canin",
+        "feline",
+        "felin",
+        "veterinary surgery",
+        "cirurgia veterinária"
+       ],
+       "frase": "clínica e cirurgia de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "clínica veterinária"
+      },
+      "nicho": "da clínica de cães e gatos"
+     },
+     {
+      "id": "sub.pets_doencas",
+      "rotulo": "Zoonoses e doenças de cães e gatos",
+      "sinais": {
+       "topics": [
+        "T10823",
+        "T10815",
+        "T10695"
+       ],
+       "termos": [
+        "canine leishmaniasis",
+        "leishmaniose canina",
+        "zoonos",
+        "zoonót",
+        "zoonot",
+        "dogs",
+        "cães",
+        "cats",
+        "gatos"
+       ],
+       "frase": "zoonoses e doenças infecciosas e parasitárias de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "as",
+       "nome": "zoonoses"
+      },
+      "nicho": "das doenças de cães e gatos"
+     },
+     {
+      "id": "sub.pets_anatomia",
+      "rotulo": "Anatomia e reprodução animal",
+      "sinais": {
+       "topics": [
+        "T13100",
+        "T10364"
+       ],
+       "termos": [
+        "anatomy",
+        "anatomia",
+        "morpholog",
+        "morfolog",
+        "canine",
+        "canin",
+        "feline",
+        "felin"
+       ],
+       "frase": "anatomia e reprodução de cães, gatos e outros animais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anatomia animal"
+      },
+      "nicho": "da anatomia e da reprodução de cães e gatos"
+     }
     ]
    },
    "filtra_por": "metodo"
@@ -2140,7 +2331,8 @@
      "objetos": [
       "objeto.plantas",
       "objeto.producao",
-      "objeto.insetos"
+      "objeto.insetos",
+      "objeto.pets"
      ]
     },
     {
@@ -2173,7 +2365,8 @@
       "objeto.producao",
       "objeto.insetos",
       "objeto.micro",
-      "objeto.fauna"
+      "objeto.fauna",
+      "objeto.pets"
      ]
     },
     {
@@ -2208,7 +2401,8 @@
      "objetos": [
       "objeto.plantas",
       "objeto.producao",
-      "objeto.ambiente"
+      "objeto.ambiente",
+      "objeto.pets"
      ]
     },
     {
@@ -2274,7 +2468,8 @@
       "objeto.alimentos",
       "objeto.micro",
       "objeto.producao",
-      "objeto.fauna"
+      "objeto.fauna",
+      "objeto.pets"
      ]
     },
     {
@@ -2331,7 +2526,8 @@
       "objeto.humanos",
       "objeto.micro",
       "objeto.producao",
-      "objeto.servicos"
+      "objeto.servicos",
+      "objeto.pets"
      ]
     },
     {
@@ -2388,7 +2584,8 @@
       "objeto.producao",
       "objeto.micro",
       "objeto.fauna",
-      "objeto.servicos"
+      "objeto.servicos",
+      "objeto.pets"
      ]
     }
    ]
@@ -3420,6 +3617,39 @@
        "nome": "oncologia veterinária"
       },
       "nicho": "da oncologia veterinária"
+     },
+     {
+      "id": "tema.linfomas",
+      "rotulo": "Linfomas, mieloma e transplante de medula",
+      "sinais": {
+       "topics": [
+        "T10649",
+        "T10185",
+        "T10345"
+       ],
+       "frase": "linfomas, mieloma múltiplo e transplante de medula"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "linfomas"
+      },
+      "nicho": "dos linfomas, do mieloma e do transplante de medula"
+     },
+     {
+      "id": "tema.paliativos",
+      "rotulo": "Cuidados paliativos",
+      "sinais": {
+       "topics": [
+        "T13340",
+        "T10177"
+       ],
+       "frase": "cuidados paliativos e oncológicos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "cuidados paliativos"
+      },
+      "nicho": "dos cuidados paliativos"
      }
     ],
     "sub.caprinos": [
@@ -4757,7 +4987,8 @@
       "sinais": {
        "topics": [
         "T10453",
-        "T12741"
+        "T12741",
+        "T10290"
        ],
        "frase": "gestação, parto e cuidado neonatal"
       },
@@ -4826,6 +5057,39 @@
        "nome": "autismo"
       },
       "nicho": "do autismo e do desenvolvimento infantil"
+     },
+     {
+      "id": "tema.ginecologia",
+      "rotulo": "Assoalho pélvico e saúde ginecológica",
+      "sinais": {
+       "topics": [
+        "T10418",
+        "T10935",
+        "T10459"
+       ],
+       "frase": "assoalho pélvico, endometriose e saúde sexual"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "assoalho pélvico"
+      },
+      "nicho": "do assoalho pélvico e da saúde ginecológica"
+     },
+     {
+      "id": "tema.prematuros",
+      "rotulo": "Prematuridade e primeira infância",
+      "sinais": {
+       "topics": [
+        "T11060",
+        "T11629"
+       ],
+       "frase": "prematuridade e desenvolvimento na primeira infância"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "prematuros"
+      },
+      "nicho": "da prematuridade e da primeira infância"
      }
     ],
     "sub.medicinais": [
@@ -5013,6 +5277,22 @@
        "nome": "drogas"
       },
       "nicho": "do uso de álcool e outras drogas"
+     },
+     {
+      "id": "tema.depressao",
+      "rotulo": "Depressão e tratamento em saúde mental",
+      "sinais": {
+       "topics": [
+        "T11071",
+        "T10272"
+       ],
+       "frase": "depressão e tratamento em saúde mental"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "depressão"
+      },
+      "nicho": "da depressão e do tratamento em saúde mental"
      }
     ],
     "sub.microbiota": [
@@ -5152,6 +5432,22 @@
        "nome": "atividade física"
       },
       "nicho": "da atividade física"
+     },
+     {
+      "id": "tema.dor_anestesia",
+      "rotulo": "Dor e anestesia",
+      "sinais": {
+       "topics": [
+        "T10189",
+        "T10196"
+       ],
+       "frase": "mecanismos da dor e anestesia"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "dor"
+      },
+      "nicho": "da dor e da anestesia"
      }
     ],
     "sub.nativas": [
@@ -5735,10 +6031,12 @@
      },
      {
       "id": "tema.lesao_pressao",
-      "rotulo": "Lesões por pressão e feridas",
+      "rotulo": "Lesões, feridas e estomias",
       "sinais": {
        "topics": [
-        "T11670"
+        "T11670",
+        "T10771",
+        "T12769"
        ],
        "frase": "prevenção de lesões por pressão e cuidado de feridas"
       },
@@ -5780,6 +6078,37 @@
        "nome": "prontuários"
       },
       "nicho": "da informação e da qualidade em saúde"
+     },
+     {
+      "id": "tema.processo_enfermagem",
+      "rotulo": "Diagnóstico e processo de enfermagem",
+      "sinais": {
+       "topics": [
+        "T13111",
+        "T12790"
+       ],
+       "frase": "diagnóstico e processo de enfermagem"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "processo de enfermagem"
+      },
+      "nicho": "do processo de enfermagem"
+     },
+     {
+      "id": "tema.bioetica",
+      "rotulo": "Ética e bioética",
+      "sinais": {
+       "topics": [
+        "T13147"
+       ],
+       "frase": "ética e bioética na saúde"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "bioética"
+      },
+      "nicho": "da bioética"
      }
     ],
     "sub.envelhecimento": [
@@ -5842,6 +6171,21 @@
        "nome": "memória"
       },
       "nicho": "da demência na velhice"
+     },
+     {
+      "id": "tema.incapacidade",
+      "rotulo": "Envelhecimento e incapacidade",
+      "sinais": {
+       "topics": [
+        "T12811"
+       ],
+       "frase": "envelhecimento, saúde e incapacidade"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "autonomia na velhice"
+      },
+      "nicho": "do envelhecimento e da incapacidade"
      }
     ],
     "sub.formacao": [
@@ -5895,7 +6239,10 @@
       "rotulo": "Tecnologia e IA na saúde",
       "sinais": {
        "topics": [
-        "T11636"
+        "T11636",
+        "T10912",
+        "T11446",
+        "T11396"
        ],
        "frase": "inteligência artificial e tecnologia na saúde e no ensino"
       },
@@ -5953,6 +6300,928 @@
        "nome": "segurança no trabalho"
       },
       "nicho": "da segurança no trabalho"
+     }
+    ],
+    "sub.orgaos": [
+     {
+      "id": "tema.rins",
+      "rotulo": "Rins e diálise",
+      "sinais": {
+       "topics": [
+        "T10684",
+        "T10291",
+        "T10408",
+        "T10641"
+       ],
+       "frase": "doença renal, lesão renal aguda e diálise"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "rins"
+      },
+      "nicho": "dos rins e da diálise"
+     },
+     {
+      "id": "tema.transplantes",
+      "rotulo": "Transplantes e doação de órgãos",
+      "sinais": {
+       "topics": [
+        "T11163",
+        "T10373",
+        "T10999"
+       ],
+       "frase": "transplante e doação de órgãos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "transplantes"
+      },
+      "nicho": "dos transplantes e da doação de órgãos"
+     },
+     {
+      "id": "tema.respiracao",
+      "rotulo": "Asma, respiração e sono",
+      "sinais": {
+       "topics": [
+        "T10051",
+        "T10322",
+        "T10234"
+       ],
+       "frase": "asma, ventilação e apneia do sono"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "respiração"
+      },
+      "nicho": "da asma, da respiração e do sono"
+     },
+     {
+      "id": "tema.figado_intestino",
+      "rotulo": "Fígado e intestino",
+      "sinais": {
+       "topics": [
+        "T10134",
+        "T10151"
+       ],
+       "frase": "doença inflamatória intestinal e hepatites"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "fígado"
+      },
+      "nicho": "do fígado e do intestino"
+     }
+    ],
+    "sub.imunidade": [
+     {
+      "id": "tema.lupus",
+      "rotulo": "Lúpus",
+      "sinais": {
+       "topics": [
+        "T10308"
+       ],
+       "frase": "lúpus eritematoso sistêmico"
+      },
+      "sintagma": {
+       "artigo": "o",
+       "nome": "lúpus"
+      },
+      "nicho": "do lúpus"
+     },
+     {
+      "id": "tema.artrite",
+      "rotulo": "Artrite reumatoide",
+      "sinais": {
+       "topics": [
+        "T10200"
+       ],
+       "frase": "artrite reumatoide"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "artrite"
+      },
+      "nicho": "da artrite reumatoide"
+     },
+     {
+      "id": "tema.esclerose_multipla",
+      "rotulo": "Esclerose múltipla",
+      "sinais": {
+       "topics": [
+        "T10137"
+       ],
+       "frase": "esclerose múltipla"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "esclerose múltipla"
+      },
+      "nicho": "da esclerose múltipla"
+     },
+     {
+      "id": "tema.esclerose_sistemica",
+      "rotulo": "Esclerose sistêmica e outras",
+      "sinais": {
+       "topics": [
+        "T11330"
+       ],
+       "frase": "esclerose sistêmica e doenças do tecido conjuntivo"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "esclerose sistêmica"
+      },
+      "nicho": "da esclerose sistêmica"
+     }
+    ],
+    "sub.pets_clinica": [
+     {
+      "id": "tema.cirurgia_vet",
+      "rotulo": "Clínica e cirurgia",
+      "sinais": {
+       "topics": [
+        "T11580"
+       ],
+       "frase": "clínica e cirurgia de pequenos animais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "cirurgia veterinária"
+      },
+      "nicho": "da clínica e da cirurgia de cães e gatos"
+     },
+     {
+      "id": "tema.anestesia_vet",
+      "rotulo": "Farmacologia e anestesia veterinária",
+      "sinais": {
+       "topics": [
+        "T11905"
+       ],
+       "frase": "farmacologia e anestesia veterinária"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anestesia veterinária"
+      },
+      "nicho": "da farmacologia e da anestesia veterinária"
+     },
+     {
+      "id": "tema.cancer_pets",
+      "rotulo": "Câncer em cães e gatos",
+      "sinais": {
+       "topics": [
+        "T11149"
+       ],
+       "frase": "oncologia veterinária de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "oncologia veterinária"
+      },
+      "nicho": "do câncer em cães e gatos"
+     }
+    ],
+    "sub.pets_doencas": [
+     {
+      "id": "tema.leish_canina",
+      "rotulo": "Leishmaniose canina",
+      "sinais": {
+       "topics": [
+        "T10823"
+       ],
+       "frase": "leishmaniose canina"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "leishmaniose canina"
+      },
+      "nicho": "da leishmaniose canina"
+     },
+     {
+      "id": "tema.parasitos_pets",
+      "rotulo": "Parasitos de cães e gatos",
+      "sinais": {
+       "topics": [
+        "T10815",
+        "T10695"
+       ],
+       "frase": "parasitos de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "os",
+       "nome": "parasitos dos pets"
+      },
+      "nicho": "dos parasitos de cães e gatos"
+     }
+    ],
+    "sub.pets_anatomia": [
+     {
+      "id": "tema.anatomia_comparada",
+      "rotulo": "Anatomia comparada",
+      "sinais": {
+       "topics": [
+        "T13100"
+       ],
+       "frase": "anatomia comparada de animais"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "anatomia comparada"
+      },
+      "nicho": "da anatomia comparada"
+     },
+     {
+      "id": "tema.reproducao_pets",
+      "rotulo": "Reprodução",
+      "sinais": {
+       "topics": [
+        "T10364"
+       ],
+       "frase": "reprodução de cães e gatos"
+      },
+      "sintagma": {
+       "artigo": "a",
+       "nome": "reprodução animal"
+      },
+      "nicho": "da reprodução de cães e gatos"
+     }
+    ]
+   }
+  },
+  "tecnica": {
+   "bloco": "nicho",
+   "faceta": "tecnica",
+   "texto": "E qual técnica você mais usa?",
+   "depende_de": "metodo",
+   "opcoes_por": {
+    "metodo.bioinfo": [
+     {
+      "id": "tec.genomica",
+      "rotulo": "Genômica e sequenciamento",
+      "sinais": {
+       "termos": [
+        "genome",
+        "genoma",
+        "genomic",
+        "genômic",
+        "whole-genome",
+        "sequencing",
+        "sequenciamento"
+       ],
+       "frase": "genômica e sequenciamento de genomas"
+      },
+      "nicho": "Genômica"
+     },
+     {
+      "id": "tec.metagenomica",
+      "rotulo": "Metagenômica e microbiomas",
+      "sinais": {
+       "termos": [
+        "metagenom",
+        "16s rrna",
+        "16s rdna",
+        "microbiome",
+        "microbioma",
+        "amplicon"
+       ],
+       "frase": "metagenômica e microbiomas"
+      },
+      "nicho": "Metagenômica"
+     },
+     {
+      "id": "tec.filogenia",
+      "rotulo": "Filogenia e evolução",
+      "sinais": {
+       "termos": [
+        "phylogen",
+        "filogen",
+        "phylogeograph",
+        "filogeogr",
+        "molecular evolution"
+       ],
+       "frase": "filogenia e evolução molecular"
+      },
+      "nicho": "Filogenia"
+     },
+     {
+      "id": "tec.transcriptomica",
+      "rotulo": "Transcriptômica e expressão",
+      "sinais": {
+       "termos": [
+        "transcriptom",
+        "rna-seq",
+        "rnaseq",
+        "differential expression"
+       ],
+       "frase": "transcriptômica e RNA-seq"
+      },
+      "nicho": "Transcriptômica"
+     }
+    ],
+    "metodo.genetica": [
+     {
+      "id": "tec.marcadores",
+      "rotulo": "Marcadores moleculares",
+      "sinais": {
+       "termos": [
+        "microsatellite",
+        "microssatélite",
+        "ssr",
+        "snp",
+        "molecular marker",
+        "marcador molecular",
+        "issr"
+       ],
+       "frase": "marcadores moleculares e genotipagem"
+      },
+      "nicho": "Genética com marcadores moleculares"
+     },
+     {
+      "id": "tec.expressao",
+      "rotulo": "Expressão gênica",
+      "sinais": {
+       "termos": [
+        "gene expression",
+        "expressão gênica",
+        "expressão de genes",
+        "polymorphism",
+        "polimorfismo"
+       ],
+       "frase": "expressão gênica e polimorfismos"
+      },
+      "nicho": "Genética da expressão gênica"
+     },
+     {
+      "id": "tec.citogenetica",
+      "rotulo": "Citogenética",
+      "sinais": {
+       "termos": [
+        "cytogenetic",
+        "citogenét",
+        "karyotype",
+        "cariótipo",
+        "chromosome",
+        "cromossom"
+       ],
+       "frase": "citogenética e cromossomos"
+      },
+      "nicho": "Citogenética"
+     },
+     {
+      "id": "tec.populacoes",
+      "rotulo": "Genética de populações",
+      "sinais": {
+       "termos": [
+        "population structure",
+        "estrutura populacional",
+        "genetic diversity",
+        "diversidade genética",
+        "gene flow"
+       ],
+       "topics": [
+        "T10012"
+       ],
+       "frase": "genética de populações"
+      },
+      "nicho": "Genética de populações"
+     }
+    ],
+    "metodo.bancada": [
+     {
+      "id": "tec.celulas",
+      "rotulo": "Cultura de células",
+      "sinais": {
+       "termos": [
+        "cell culture",
+        "cultura de células",
+        "cell line",
+        "linhagem celular",
+        "cytotoxicity",
+        "citotoxicidade",
+        "in vitro"
+       ],
+       "frase": "cultura de células e ensaios in vitro"
+      },
+      "nicho": "Cultura de células"
+     },
+     {
+      "id": "tec.modelos_animais",
+      "rotulo": "Modelos animais",
+      "sinais": {
+       "termos": [
+        "rats",
+        "ratos",
+        "mice",
+        "camundongos",
+        "wistar",
+        "murine",
+        "murino",
+        "zebrafish"
+       ],
+       "frase": "experimentos com modelos animais"
+      },
+      "nicho": "Experimentação animal"
+     },
+     {
+      "id": "tec.microbiologia",
+      "rotulo": "Ensaios microbiológicos",
+      "sinais": {
+       "termos": [
+        "antimicrobial activity",
+        "atividade antimicrobiana",
+        "minimum inhibitory",
+        "concentração inibitória",
+        "antibacterial",
+        "antibacteriana",
+        "biofilm"
+       ],
+       "frase": "ensaios antimicrobianos e microbiológicos"
+      },
+      "nicho": "Microbiologia de bancada"
+     },
+     {
+      "id": "tec.histologia",
+      "rotulo": "Histologia e patologia",
+      "sinais": {
+       "termos": [
+        "histolog",
+        "histopatol",
+        "histopathol",
+        "immunohistochem",
+        "imuno-histoquím",
+        "morphometr"
+       ],
+       "frase": "histologia e histopatologia"
+      },
+      "nicho": "Histopatologia"
+     },
+     {
+      "id": "tec.bioquimica",
+      "rotulo": "Bioquímica e estresse oxidativo",
+      "sinais": {
+       "termos": [
+        "oxidative stress",
+        "estresse oxidativo",
+        "enzymatic",
+        "enzimátic",
+        "antioxidant",
+        "antioxidante",
+        "biochemical"
+       ],
+       "frase": "bioquímica e estresse oxidativo"
+      },
+      "nicho": "Bioquímica experimental"
+     },
+     {
+      "id": "tec.nano",
+      "rotulo": "Nanotecnologia",
+      "sinais": {
+       "termos": [
+        "nanopartic",
+        "nanoparticle",
+        "nanoemuls",
+        "nanostruct",
+        "nanocomposit",
+        "liposom",
+        "lipossom"
+       ],
+       "topics": [
+        "T10704",
+        "T10256"
+       ],
+       "frase": "nanotecnologia e sistemas de liberação"
+      },
+      "nicho": "Nanotecnologia"
+     }
+    ],
+    "metodo.quimica": [
+     {
+      "id": "tec.produtos_naturais",
+      "rotulo": "Extração e produtos naturais",
+      "sinais": {
+       "termos": [
+        "essential oil",
+        "óleo essencial",
+        "extract",
+        "extrato",
+        "flavonoid",
+        "flavonoide",
+        "phytochemical",
+        "fitoquímic"
+       ],
+       "frase": "extração e química de produtos naturais"
+      },
+      "nicho": "Química de produtos naturais"
+     },
+     {
+      "id": "tec.sintese",
+      "rotulo": "Síntese de compostos",
+      "sinais": {
+       "termos": [
+        "synthesis",
+        "síntese",
+        "synthetic",
+        "sintétic",
+        "derivatives",
+        "derivados"
+       ],
+       "frase": "síntese de compostos e derivados"
+      },
+      "nicho": "Síntese química"
+     },
+     {
+      "id": "tec.complexos",
+      "rotulo": "Complexos metálicos",
+      "sinais": {
+       "termos": [
+        "metal complex",
+        "complexos metálicos",
+        "ruthenium",
+        "rutênio",
+        "copper(ii)",
+        "cobre(ii)",
+        "coordination compound"
+       ],
+       "topics": [
+        "T10163"
+       ],
+       "frase": "complexos metálicos e química de coordenação"
+      },
+      "nicho": "Química de complexos metálicos"
+     },
+     {
+      "id": "tec.analitica",
+      "rotulo": "Cromatografia e análise química",
+      "sinais": {
+       "termos": [
+        "hplc",
+        "chromatograph",
+        "cromatograf",
+        "mass spectrometry",
+        "espectrometria",
+        "lc-ms",
+        "gc-ms",
+        "voltammetr"
+       ],
+       "frase": "cromatografia e química analítica"
+      },
+      "nicho": "Química analítica"
+     },
+     {
+      "id": "tec.nano_q",
+      "rotulo": "Nanomateriais",
+      "sinais": {
+       "termos": [
+        "nanopartic",
+        "nanoparticle",
+        "nanomaterial",
+        "nanocomposit",
+        "graphene",
+        "grafeno"
+       ],
+       "frase": "nanomateriais"
+      },
+      "nicho": "Química de nanomateriais"
+     },
+     {
+      "id": "tec.docking_q",
+      "rotulo": "Docking e modelagem molecular",
+      "sinais": {
+       "termos": [
+        "docking",
+        "molecular dynamics",
+        "dinâmica molecular",
+        "in silico",
+        "virtual screening",
+        "qsar",
+        "dft"
+       ],
+       "topics": [
+        "T10211"
+       ],
+       "frase": "docking, modelagem molecular e química computacional"
+      },
+      "nicho": "Química computacional"
+     },
+     {
+      "id": "tec.alimentos_q",
+      "rotulo": "Análise de alimentos",
+      "sinais": {
+       "termos": [
+        "physicochemical",
+        "físico-químic",
+        "proximate composition",
+        "composição centesimal",
+        "sensory",
+        "sensorial"
+       ],
+       "frase": "análise físico-química de alimentos"
+      },
+      "nicho": "Química de alimentos"
+     }
+    ],
+    "metodo.dados": [
+     {
+      "id": "tec.ml",
+      "rotulo": "Aprendizado de máquina e IA",
+      "sinais": {
+       "termos": [
+        "machine learning",
+        "aprendizado de máquina",
+        "deep learning",
+        "neural network",
+        "redes neurais",
+        "artificial intelligence",
+        "inteligência artificial",
+        "random forest"
+       ],
+       "topics": [
+        "T11396",
+        "T10616"
+       ],
+       "frase": "aprendizado de máquina e inteligência artificial"
+      },
+      "nicho": "Inteligência artificial"
+     },
+     {
+      "id": "tec.espacial",
+      "rotulo": "Estatística espacial",
+      "sinais": {
+       "termos": [
+        "spatial analysis",
+        "análise espacial",
+        "spatial distribution",
+        "distribuição espacial",
+        "scan statistic",
+        "spatiotemporal",
+        "espaço-temporal"
+       ],
+       "topics": [
+        "T11819"
+       ],
+       "frase": "análise espacial e espaço-temporal"
+      },
+      "nicho": "Estatística espacial"
+     },
+     {
+      "id": "tec.modelagem",
+      "rotulo": "Modelos matemáticos",
+      "sinais": {
+       "termos": [
+        "mathematical model",
+        "modelo matemático",
+        "modelagem",
+        "simulation model",
+        "compartmental model",
+        "nonlinear model"
+       ],
+       "frase": "modelagem matemática e simulação"
+      },
+      "nicho": "Modelagem matemática"
+     },
+     {
+      "id": "tec.series",
+      "rotulo": "Séries temporais e previsão",
+      "sinais": {
+       "termos": [
+        "time series",
+        "séries temporais",
+        "série temporal",
+        "forecast",
+        "previsão",
+        "joinpoint",
+        "trend analysis"
+       ],
+       "frase": "séries temporais e previsão"
+      },
+      "nicho": "Séries temporais"
+     }
+    ],
+    "metodo.epidemio": [
+     {
+      "id": "tec.transversal",
+      "rotulo": "Estudos transversais",
+      "sinais": {
+       "termos": [
+        "cross-sectional",
+        "transversal",
+        "prevalence",
+        "prevalência"
+       ],
+       "frase": "estudos transversais de prevalência"
+      },
+      "nicho": "Epidemiologia transversal"
+     },
+     {
+      "id": "tec.coorte",
+      "rotulo": "Coortes e acompanhamento",
+      "sinais": {
+       "termos": [
+        "cohort",
+        "coorte",
+        "longitudinal",
+        "follow-up",
+        "seguimento"
+       ],
+       "frase": "estudos de coorte e longitudinais"
+      },
+      "nicho": "Epidemiologia de coortes"
+     },
+     {
+      "id": "tec.revisao",
+      "rotulo": "Revisões sistemáticas e meta-análises",
+      "sinais": {
+       "termos": [
+        "systematic review",
+        "revisão sistemática",
+        "meta-analysis",
+        "metanálise",
+        "meta-análise",
+        "scoping review",
+        "revisão de escopo"
+       ],
+       "frase": "revisões sistemáticas e meta-análises"
+      },
+      "nicho": "Revisão sistemática"
+     },
+     {
+      "id": "tec.espacial_epi",
+      "rotulo": "Análise espacial e temporal",
+      "sinais": {
+       "termos": [
+        "spatial analysis",
+        "análise espacial",
+        "spatial distribution",
+        "distribuição espacial",
+        "temporal trend",
+        "tendência temporal",
+        "ecological study",
+        "estudo ecológico"
+       ],
+       "topics": [
+        "T11819"
+       ],
+       "frase": "epidemiologia espacial e tendências temporais"
+      },
+      "nicho": "Epidemiologia espacial"
+     },
+     {
+      "id": "tec.inqueritos",
+      "rotulo": "Inquéritos e sistemas de informação",
+      "sinais": {
+       "termos": [
+        "national health survey",
+        "pesquisa nacional de saúde",
+        "vigitel",
+        "datasus",
+        "sinan",
+        "sim",
+        "sinasc",
+        "information system",
+        "sistema de informação"
+       ],
+       "frase": "inquéritos nacionais e sistemas de informação em saúde"
+      },
+      "nicho": "Epidemiologia com bases nacionais"
+     }
+    ],
+    "metodo.clinica": [
+     {
+      "id": "tec.ensaio",
+      "rotulo": "Ensaios clínicos",
+      "sinais": {
+       "termos": [
+        "randomized",
+        "randomizado",
+        "randomised",
+        "clinical trial",
+        "ensaio clínico",
+        "placebo"
+       ],
+       "frase": "ensaios clínicos randomizados"
+      },
+      "nicho": "Ensaios clínicos"
+     },
+     {
+      "id": "tec.caso",
+      "rotulo": "Relatos e séries de casos",
+      "sinais": {
+       "termos": [
+        "case report",
+        "relato de caso",
+        "case series",
+        "série de casos"
+       ],
+       "frase": "relatos e séries de casos clínicos"
+      },
+      "nicho": "Relatos de caso"
+     },
+     {
+      "id": "tec.validacao",
+      "rotulo": "Validação de instrumentos",
+      "sinais": {
+       "termos": [
+        "validation",
+        "validação",
+        "psychometric",
+        "psicométric",
+        "reliability",
+        "confiabilidade",
+        "cross-cultural adaptation",
+        "adaptação transcultural"
+       ],
+       "topics": [
+        "T13117"
+       ],
+       "frase": "validação e adaptação de instrumentos"
+      },
+      "nicho": "Validação de instrumentos"
+     },
+     {
+      "id": "tec.imagem",
+      "rotulo": "Diagnóstico por imagem",
+      "sinais": {
+       "termos": [
+        "ultrasound",
+        "ultrassom",
+        "ultrassonograf",
+        "tomography",
+        "tomografia",
+        "magnetic resonance",
+        "ressonância magnética",
+        "radiograph"
+       ],
+       "frase": "diagnóstico por imagem"
+      },
+      "nicho": "Diagnóstico por imagem"
+     },
+     {
+      "id": "tec.intervencao",
+      "rotulo": "Intervenções educativas e de cuidado",
+      "sinais": {
+       "termos": [
+        "educational intervention",
+        "intervenção educativa",
+        "educational technology",
+        "tecnologia educacional",
+        "health education",
+        "educação em saúde"
+       ],
+       "frase": "intervenções educativas e de cuidado"
+      },
+      "nicho": "Intervenções em saúde"
+     },
+     {
+      "id": "tec.exercicio",
+      "rotulo": "Exercício e reabilitação",
+      "sinais": {
+       "termos": [
+        "therapeutic exercise",
+        "exercício terapêutico",
+        "training program",
+        "programa de treinamento",
+        "physical therapy",
+        "fisioterapia"
+       ],
+       "frase": "exercício terapêutico e reabilitação"
+      },
+      "nicho": "Reabilitação clínica"
+     }
+    ],
+    "metodo.campo": [
+     {
+      "id": "tec.inventario",
+      "rotulo": "Levantamentos e inventários",
+      "sinais": {
+       "termos": [
+        "inventory",
+        "inventário",
+        "checklist",
+        "species richness",
+        "riqueza de espécies",
+        "levantamento florístico",
+        "floristic survey",
+        "new records",
+        "novos registros"
+       ],
+       "frase": "levantamentos e inventários de espécies"
+      },
+      "nicho": "Inventário de campo"
+     },
+     {
+      "id": "tec.monitoramento",
+      "rotulo": "Monitoramento ambiental",
+      "sinais": {
+       "termos": [
+        "monitoring",
+        "monitoramento",
+        "seasonal variation",
+        "variação sazonal",
+        "long-term"
+       ],
+       "frase": "monitoramento ambiental"
+      },
+      "nicho": "Monitoramento ambiental"
      }
     ]
    }

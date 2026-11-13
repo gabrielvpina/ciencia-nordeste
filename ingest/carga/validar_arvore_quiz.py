@@ -41,7 +41,7 @@ MAX_TELAS = 20                                   # contando a instituição (D-0
 RAROS = 5                                        # pares do núcleo com menos que isto vão para revisão (o banner mostra "até 5")
 MAX_JACCARD = 0.5                                # top 10 de sub-objetos irmãos (mesmo método e objeto)
 MAX_TITULO = 42                                  # caracteres
-FACETAS_NICHO = {"metodo", "objeto", "sub_objeto", "tema", "foco", "escala", "ambiente", "impacto"}
+FACETAS_NICHO = {"metodo", "tecnica", "objeto", "sub_objeto", "tema", "foco", "escala", "ambiente", "impacto"}
 FACETAS_PERFIL = {"habitat", "estilo", "vinculo"}
 RE_TOPIC, RE_NUM = re.compile(r"^T\d+$"), re.compile(r"^\d+$")
 CONTRACAO = {"o": "do", "a": "da", "os": "dos", "as": "das"}
@@ -126,7 +126,7 @@ def estatico(arv: dict[str, Any]) -> list[str]:
                 erros.append(f"{oid}: sem sintagma (artigo + nome) para o título")
             if "sintagma" in o and o["sintagma"].get("artigo") not in CONTRACAO:
                 erros.append(f"{oid}: artigo do sintagma inválido")
-            if faceta in ("metodo", "sub_objeto", "tema") and not o.get("nicho"):
+            if faceta in ("metodo", "tecnica", "sub_objeto", "tema") and not o.get("nicho"):
                 erros.append(f"{oid}: sem fragmento do nicho escrito")
             erros += [f"{oid}: objeto desconhecido {x!r}" for x in o.get("objetos", []) if x not in obj_ids]
             met_ids = {m["id"] for m in opcoes(P["metodo"])}

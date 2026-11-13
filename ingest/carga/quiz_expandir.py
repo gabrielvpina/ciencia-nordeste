@@ -338,6 +338,83 @@ SUBS_SERVICOS = [
      "sinais": {"topics": ["T12869", "T10795", "T12704", "T13315", "T13233"], "termos": ["burnout", "occupational health", "saúde do trabalhador", "occupational", "ocupacional", "workers", "trabalhadores"],
                 "frase": "saúde do trabalhador, estresse e burnout"}, "sintagma": {"artigo": "o", "nome": "trabalho"}, "nicho": "da saúde do trabalhador"},
 ]
+
+# D-053: temas e sub-objetos para o que a cobertura dos temas deixou de fora (auditoria, seção 4)
+TEMAS_EXTRA: dict[str, list[T]] = {
+    "sub.cancer": [
+        ("tema.linfomas", "Linfomas, mieloma e transplante de medula", ["T10649", "T10185", "T10345"], "os", "linfomas", "dos linfomas, do mieloma e do transplante de medula", "linfomas, mieloma múltiplo e transplante de medula"),
+        ("tema.paliativos", "Cuidados paliativos", ["T13340", "T10177"], "os", "cuidados paliativos", "dos cuidados paliativos", "cuidados paliativos e oncológicos"),
+    ],
+    "sub.materno": [
+        ("tema.ginecologia", "Assoalho pélvico e saúde ginecológica", ["T10418", "T10935", "T10459"], "o", "assoalho pélvico", "do assoalho pélvico e da saúde ginecológica", "assoalho pélvico, endometriose e saúde sexual"),
+        ("tema.prematuros", "Prematuridade e primeira infância", ["T11060", "T11629"], "os", "prematuros", "da prematuridade e da primeira infância", "prematuridade e desenvolvimento na primeira infância"),
+    ],
+    "sub.mente": [
+        ("tema.depressao", "Depressão e tratamento em saúde mental", ["T11071", "T10272"], "a", "depressão", "da depressão e do tratamento em saúde mental", "depressão e tratamento em saúde mental"),
+    ],
+    "sub.movimento": [
+        ("tema.dor_anestesia", "Dor e anestesia", ["T10189", "T10196"], "a", "dor", "da dor e da anestesia", "mecanismos da dor e anestesia"),
+    ],
+    "sub.cuidado": [
+        ("tema.processo_enfermagem", "Diagnóstico e processo de enfermagem", ["T13111", "T12790"], "o", "processo de enfermagem", "do processo de enfermagem", "diagnóstico e processo de enfermagem"),
+        ("tema.bioetica", "Ética e bioética", ["T13147"], "a", "bioética", "da bioética", "ética e bioética na saúde"),
+    ],
+    "sub.envelhecimento": [
+        ("tema.incapacidade", "Envelhecimento e incapacidade", ["T12811"], "a", "autonomia na velhice", "do envelhecimento e da incapacidade", "envelhecimento, saúde e incapacidade"),
+    ],
+    "sub.orgaos": [
+        ("tema.rins", "Rins e diálise", ["T10684", "T10291", "T10408", "T10641"], "os", "rins", "dos rins e da diálise", "doença renal, lesão renal aguda e diálise"),
+        ("tema.transplantes", "Transplantes e doação de órgãos", ["T11163", "T10373", "T10999"], "os", "transplantes", "dos transplantes e da doação de órgãos", "transplante e doação de órgãos"),
+        ("tema.respiracao", "Asma, respiração e sono", ["T10051", "T10322", "T10234"], "a", "respiração", "da asma, da respiração e do sono", "asma, ventilação e apneia do sono"),
+        ("tema.figado_intestino", "Fígado e intestino", ["T10134", "T10151"], "o", "fígado", "do fígado e do intestino", "doença inflamatória intestinal e hepatites"),
+    ],
+    "sub.imunidade": [
+        ("tema.lupus", "Lúpus", ["T10308"], "o", "lúpus", "do lúpus", "lúpus eritematoso sistêmico"),
+        ("tema.artrite", "Artrite reumatoide", ["T10200"], "a", "artrite", "da artrite reumatoide", "artrite reumatoide"),
+        ("tema.esclerose_multipla", "Esclerose múltipla", ["T10137"], "a", "esclerose múltipla", "da esclerose múltipla", "esclerose múltipla"),
+        ("tema.esclerose_sistemica", "Esclerose sistêmica e outras", ["T11330"], "a", "esclerose sistêmica", "da esclerose sistêmica", "esclerose sistêmica e doenças do tecido conjuntivo"),
+    ],
+    "sub.pets_clinica": [
+        ("tema.cirurgia_vet", "Clínica e cirurgia", ["T11580"], "a", "cirurgia veterinária", "da clínica e da cirurgia de cães e gatos", "clínica e cirurgia de pequenos animais"),
+        ("tema.anestesia_vet", "Farmacologia e anestesia veterinária", ["T11905"], "a", "anestesia veterinária", "da farmacologia e da anestesia veterinária", "farmacologia e anestesia veterinária"),
+        ("tema.cancer_pets", "Câncer em cães e gatos", ["T11149"], "a", "oncologia veterinária", "do câncer em cães e gatos", "oncologia veterinária de cães e gatos"),
+    ],
+    "sub.pets_doencas": [
+        ("tema.leish_canina", "Leishmaniose canina", ["T10823"], "a", "leishmaniose canina", "da leishmaniose canina", "leishmaniose canina"),
+        ("tema.parasitos_pets", "Parasitos de cães e gatos", ["T10815", "T10695"], "os", "parasitos dos pets", "dos parasitos de cães e gatos", "parasitos de cães e gatos"),
+    ],
+    "sub.pets_anatomia": [
+        ("tema.anatomia_comparada", "Anatomia comparada", ["T13100"], "a", "anatomia comparada", "da anatomia comparada", "anatomia comparada de animais"),
+        ("tema.reproducao_pets", "Reprodução", ["T10364"], "a", "reprodução animal", "da reprodução de cães e gatos", "reprodução de cães e gatos"),
+    ],
+}
+SUBS_HUMANOS_NOVOS = [
+    {"id": "sub.orgaos", "rotulo": "Rins, pulmões e digestão",
+     "sinais": {"topics": ["T10684", "T10291", "T10408", "T10641", "T11163", "T10373", "T10999", "T10051", "T10322", "T10234", "T10134", "T10151"],
+                "termos": ["kidney", "renal", "dialysis", "diálise", "transplant", "transplante", "asthma", "asma", "respiratory", "respiratóri", "liver", "fígado", "hepatitis", "hepatite"],
+                "frase": "rins, pulmões, transplantes, fígado e intestino"}, "sintagma": {"artigo": "os", "nome": "órgãos"}, "nicho": "dos rins, dos pulmões e da digestão"},
+    {"id": "sub.imunidade", "rotulo": "Imunidade e doenças autoimunes",
+     "sinais": {"topics": ["T10308", "T10200", "T10137", "T11330"],
+                "termos": ["lupus", "lúpus", "rheumatoid", "reumatoide", "autoimmune", "autoimun", "multiple sclerosis", "esclerose múltipla", "rheumatolog", "reumatolog"],
+                "frase": "doenças autoimunes e reumatológicas"}, "sintagma": {"artigo": "a", "nome": "imunidade"}, "nicho": "das doenças autoimunes"},
+]
+OBJ_PETS = {"id": "objeto.pets", "rotulo": "Cães, gatos e animais de companhia",
+            "sinais": {"topics": ["T11580", "T11905", "T13100"], "termos": ["dog", "cão", "cães", "canine", "canin", "cat", "gato", "feline", "felin", "companion animal", "animais de companhia"],
+                       "frase": "cães, gatos e animais de companhia"},
+            "metodos": ["metodo.bancada", "metodo.genetica", "metodo.bioinfo", "metodo.dados", "metodo.quimica", "metodo.clinica", "metodo.epidemio"]}
+SUBS_PETS = [
+    {"id": "sub.pets_clinica", "rotulo": "Clínica e cirurgia de pequenos animais",
+     "sinais": {"topics": ["T11580", "T11905", "T11149"], "termos": ["small animal", "pequenos animais", "canine", "canin", "feline", "felin", "veterinary surgery", "cirurgia veterinária"],
+                "frase": "clínica e cirurgia de cães e gatos"}, "sintagma": {"artigo": "a", "nome": "clínica veterinária"}, "nicho": "da clínica de cães e gatos"},
+    {"id": "sub.pets_doencas", "rotulo": "Zoonoses e doenças de cães e gatos",
+     "sinais": {"topics": ["T10823", "T10815", "T10695"], "termos": ["canine leishmaniasis", "leishmaniose canina", "zoonos", "zoonót", "zoonot", "dogs", "cães", "cats", "gatos"],
+                "frase": "zoonoses e doenças infecciosas e parasitárias de cães e gatos"}, "sintagma": {"artigo": "as", "nome": "zoonoses"}, "nicho": "das doenças de cães e gatos"},
+    {"id": "sub.pets_anatomia", "rotulo": "Anatomia e reprodução animal",
+     "sinais": {"topics": ["T13100", "T10364"], "termos": ["anatomy", "anatomia", "morpholog", "morfolog", "canine", "canin", "feline", "felin"],
+                "frase": "anatomia e reprodução de cães, gatos e outros animais"}, "sintagma": {"artigo": "a", "nome": "anatomia animal"}, "nicho": "da anatomia e da reprodução de cães e gatos"},
+]
+EXTRA_TOPICOS_TEMA = {"tema.parto": ["T10290"], "tema.lesao_pressao": ["T10771", "T12769"], "tema.tecnologia_saude": ["T10912", "T11446", "T11396"]}
+
 MAR_TOPICOS = ["T10230", "T12319", "T11390", "T11088", "T11505"]
 
 
@@ -352,6 +429,20 @@ def main() -> int:
     for o in P["foco"]["opcoes"]:
         if "objeto.humanos" in o.get("objetos", []) and OBJ_SERVICOS["id"] not in o["objetos"]:
             o["objetos"].append(OBJ_SERVICOS["id"])
+    # D-053: novos sub-objetos em saúde humana e o objeto de animais de companhia
+    hum = P["sub_objeto"]["opcoes_por"]["objeto.humanos"]
+    for sub in SUBS_HUMANOS_NOVOS:
+        if not any(x["id"] == sub["id"] for x in hum):
+            hum.append(sub)
+    if not any(o["id"] == OBJ_PETS["id"] for o in P["objeto"]["opcoes"]):
+        P["objeto"]["opcoes"].append(OBJ_PETS)
+    P["sub_objeto"]["opcoes_por"][OBJ_PETS["id"]] = SUBS_PETS
+    for o in P["foco"]["opcoes"]:   # os focos de animais de produção valem também para os de companhia
+        if "objeto.producao" in o.get("objetos", []) and OBJ_PETS["id"] not in o["objetos"]:
+            o["objetos"].append(OBJ_PETS["id"])
+    for sub, lista in TEMAS_EXTRA.items():
+        atual = TEMAS.setdefault(sub, [])
+        atual += [t for t in lista if t[0] not in {x[0] for x in atual}]
     # 2. pergunta de tema
     subs = {s["id"] for g in P["sub_objeto"]["opcoes_por"].values() for s in g}
     faltam = sorted(set(TEMAS) - subs)
@@ -363,6 +454,12 @@ def main() -> int:
         "opcoes_por": {sub: [{"id": i, "rotulo": r, "sinais": {"topics": tp, "frase": fr}, "sintagma": {"artigo": art, "nome": nome}, "nicho": nicho}
                              for i, r, tp, art, nome, nicho, fr in lista] for sub, lista in TEMAS.items()},
     }
+    for grupo in P["tema"]["opcoes_por"].values():
+        for t in grupo:
+            if t["id"] in EXTRA_TOPICOS_TEMA:
+                t["sinais"]["topics"] = list(dict.fromkeys(t["sinais"]["topics"] + EXTRA_TOPICOS_TEMA[t["id"]]))
+                if t["id"] == "tema.lesao_pressao":
+                    t["rotulo"] = "Lesões, feridas e estomias"
     if "tema" not in a["telas"]:
         a["telas"].insert(a["telas"].index("sub_objeto") + 1, "tema")
     a["pesos_faceta"]["tema"] = 2.5
@@ -370,10 +467,10 @@ def main() -> int:
     for o in P["ambiente"]["opcoes"]:
         if o["id"] == "ambiente.mar":
             o["sinais"]["topics"] = list(dict.fromkeys(o["sinais"].get("topics", []) + MAR_TOPICOS))
-    a["versao"] = 6
+    a["versao"] = max(a["versao"], 7)
     ARQ_ARVORE.write_text(json.dumps(a, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     n = sum(len(v) for v in TEMAS.values())
-    print(f"arvore.json versão 6: {n} temas em {len(TEMAS)} sub-objetos, objeto {OBJ_SERVICOS['id']} com {len(SUBS_SERVICOS)} sub-objetos")
+    print(f"arvore.json versão {a['versao']}: {n} temas em {len(TEMAS)} sub-objetos, objeto {OBJ_SERVICOS['id']} com {len(SUBS_SERVICOS)} sub-objetos")
     return 0
 
 

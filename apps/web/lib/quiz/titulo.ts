@@ -35,7 +35,8 @@ export function montarTitulo({ nicho, perfil }: Respostas): Titulo {
     if (frase) doVinculo = v.modelo.replace("{de}", frase);
   }
 
-  const partes = [metodo?.nicho ?? "Ciência", sub?.nicho ?? (objeto ? `de ${objeto.rotulo.toLowerCase()}` : ""), ambiente?.nicho ?? ""];
+  // a técnica (D-053), quando respondida, substitui o método no nicho escrito: "Metagenômica dos arbovírus"
+  const partes = [nicho.get("tecnica")?.nicho ?? metodo?.nicho ?? "Ciência", sub?.nicho ?? (objeto ? `de ${objeto.rotulo.toLowerCase()}` : ""), ambiente?.nicho ?? ""];
   const nichoEscrito = partes.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
 
   return {

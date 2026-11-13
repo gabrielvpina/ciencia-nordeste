@@ -558,3 +558,34 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - A produção por ano deixa de ser um card e vira um histograma pequeno, só com as barras preenchidas, sobre o controle de período. Cada barra fica acima do seu ano; clicar filtra o ano.
   - O espaço vai para o card **Instituições com mais publicações**: o ranking que o mapa desenha, em duas colunas, reagindo a estado, área e período. Clicar seleciona a instituição no mapa, e passar o mouse destaca a bolha.
   - Com um estado em destaque, o mapa mostra o botão **Ver todo o Nordeste**.
+
+## D-046 — Perfis de pesquisador e programa: conexões legíveis
+
+- **Data:** 2026-11-13 (pedido do responsável).
+- **Abas:**
+  - Pesquisador: **Mapa | Coautores | Produção**.
+  - Programa: **Mapa | Docentes | Produção**.
+  - Endereços `?ver=coautores` e `?ver=producao`; continuam funcionando sem JavaScript.
+- **Mapa da rede:**
+  - A coautoria fora do Nordeste deixou de ser um conjunto de linhas em posição ilustrativa sobre o mapa. Virou uma lista com números na legenda ("Outros estados", países).
+  - O desenho ganhou a largura que as âncoras ocupavam.
+  - Outras partes da página realçam uma instituição no mapa com o evento `cn:destaque`.
+- **Coautores:**
+  - Lista ordenada (nome, instituição, publicações em comum, barra) no lugar da nuvem de nomes. Passar o mouse realça a instituição do coautor no mapa.
+  - Contagem feita direto das autorias, porque a tabela `coauthorships` não foi recalculada na última carga.
+- **Rede de coautoria em anel** (`/api/coautoria`, `lib/coautoria.ts`, `components/RedeCoautoria.tsx`):
+  - Pesquisador no centro; os 30 coautores mais frequentes em volta, agrupados e coloridos por instituição.
+  - Linhas entre coautores = também publicaram juntos.
+  - Acima de 80 linhas, só as mais fortes, com o corte informado na legenda.
+  - Mouse ou foco isola as ligações de uma pessoa. No toque, o primeiro toque mostra as ligações e o segundo abre o perfil.
+  - No celular: enquadramento mais largo, rótulos curtos ("Marcelo S.") e nome só para os 12 maiores.
+- **Programa:**
+  - Aba "Docentes": a mesma rede, com os docentes do último ano-base agrupados por vínculo. Ela mostra a colaboração interna e quantos docentes não publicam com colegas. Ao lado fica uma tabela ordenável (publicações, % em A1–A2, orientações no programa, bolsa PQ).
+  - Na visão padrão: resumo dos vínculos, os 5 docentes com mais publicações, teses e dissertações por ano (colunas empilhadas, só preenchimento) e defesas recentes recolhíveis.
+  - Nomes, cidades e títulos da CAPES em maiúsculas viram caixa normal.
+- **Altura:**
+  - No desktop, as páginas de perfil têm a altura da janela; quem rola é a coluna lateral.
+  - Listas longas mostram os primeiros itens e o resto num `<details>`.
+  - No celular: indicadores em 3 colunas, avatar menor, listas de revistas e de publicações recolhidas.
+  - Corrigido: o mapa da rede sumia no celular, porque o `flex: 1` anulava a altura.
+- **Texto:** "filtro na tela inicial" virou "filtro do painel"; os links "← mapa geral" viraram "Painel".

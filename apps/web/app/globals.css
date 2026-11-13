@@ -1098,3 +1098,118 @@ main:has(.pn) { max-width: none; padding: 12px 16px 16px; }
 }
 @media (max-width: 1279px) { .pn-ranking { max-height: 360px; } }
 @media (min-width: 1280px) and (max-height: 720px) { .fa-hist { height: 44px; } .fa-hist-val { display: none; } }
+
+/* ===== Perfis de pesquisador e programa (D-046) ===== */
+:root { --coaut-0: var(--area-2); --coaut-1: var(--area-3); --coaut-2: var(--area-1); --coaut-3: var(--area-0); --coaut-4: var(--area-4);
+  --coaut-5: var(--area-6); --coaut-6: var(--area-5); --coaut-outros: var(--sand-2); }
+
+/* a página do perfil tem a altura da janela no desktop: rolam a coluna lateral e a de produção, não a página */
+@media (min-width: 861px) {
+  body:has(.explorar) { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(.explorar) > main { flex: 1; min-height: 0; width: 100%; }
+  body:has(.explorar) > footer { width: 100%; max-width: none; padding: 6px 16px; font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .explorar { height: 100%; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+}
+@media (max-width: 860px) { .mapa-area { flex: none; height: min(62vh, 520px); } }
+.mapa-cabecalho .voltar { font-size: .85rem; }
+
+/* lista de coautores (e de docentes no resumo do programa): nome, instituição, número e barra */
+.lista-coautores { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+.lista-coautores li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto 5px; column-gap: 10px; padding: 5px 8px; margin: 0 -8px; border-radius: 8px; }
+.lista-coautores li:hover, .lista-coautores li:focus-within { background: var(--accent-soft); }
+.lista-coautores a { grid-column: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 500; }
+.lista-coautores .meta { grid-column: 1; grid-row: 2; font-size: .76rem; }
+.lista-coautores em { grid-column: 2; grid-row: 1 / 3; align-self: center; font: 600 .95rem var(--font-display); font-style: normal; font-variant-numeric: tabular-nums; }
+.lista-coautores i { grid-column: 1 / -1; grid-row: 3; height: 5px; border-radius: 3px; background: var(--bg); overflow: hidden; margin-top: 3px; }
+.lista-coautores i b { display: block; height: 100%; background: var(--accent-vivo); border-radius: 3px; }
+
+/* listas recolhíveis */
+.recolhivel > summary { cursor: pointer; color: var(--accent); font-size: .84rem; font-weight: 500; padding: 6px 0; list-style: none; }
+.recolhivel > summary::-webkit-details-marker { display: none; }
+.recolhivel > summary::before { content: "+ "; }
+.recolhivel[open] > summary::before { content: "− "; }
+.recolhivel > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+ul.lista li.recolhivel-li { padding: 0; border-bottom: 0; }
+
+.tags-linha { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0 0; }
+.tags-linha .tag { margin: 0; }
+.resumo-docentes { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 6px; font-size: .86rem; color: var(--muted); }
+.resumo-docentes b { color: var(--fg); font-family: var(--font-display); }
+a.mais-itens { display: inline-block; margin-top: 6px; font-size: .84rem; }
+
+/* teses e dissertações por ano: colunas empilhadas, só o preenchimento */
+.hist-teses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; align-items: end; height: 110px; margin-top: 6px; }
+.ht-col { display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; height: 100%; min-width: 0; }
+.ht-col i { display: block; border: 1.5px solid var(--stroke); border-bottom-width: 0; }
+.ht-col i:first-of-type { border-radius: 4px 4px 0 0; }
+.ht-col i[style*="height: 0%"] { display: none; }
+.ht-tese, .ht-legenda .ht-tese { background: var(--accent-vivo); }
+.ht-diss, .ht-legenda .ht-diss { background: var(--flow); }
+.ht-val { font: 600 .62rem var(--font-display); color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+.ht-ano { font: 600 .62rem var(--font-display); text-align: center; border-top: 1.5px solid var(--stroke); padding-top: 2px; }
+.ht-legenda { display: flex; gap: 14px; margin: 6px 0 0; font-size: .76rem; color: var(--muted); }
+.ht-legenda span { display: inline-flex; align-items: center; gap: 5px; }
+.ht-legenda i { width: 10px; height: 10px; border: 1.5px solid var(--stroke); border-radius: 2px; }
+
+/* tabela de docentes */
+.tab-docentes-caixa { margin-top: 6px; }
+.tab-docentes { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.tab-docentes th { position: sticky; top: 0; z-index: 1; background: var(--panel); border-bottom: 2px solid var(--stroke); padding: 0; }
+.tab-docentes th button { width: 100%; padding: 6px 4px; border: 0; background: none; font: 600 .78rem var(--font-body); color: var(--fg); cursor: pointer; text-align: inherit; white-space: nowrap; }
+.tab-docentes th button:hover { color: var(--accent); }
+.tab-docentes th button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tab-docentes .txt { text-align: left; } .tab-docentes .num { text-align: right; font-variant-numeric: tabular-nums; }
+.tab-docentes td { padding: 6px 4px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+.tab-docentes td.txt:first-child { min-width: 0; }
+.tab-docentes td a { font-weight: 500; }
+.tab-docentes .tag-pq { margin-left: 6px; font-size: .66rem; padding: 0 5px; border: 1.5px solid var(--stroke); border-radius: 4px; background: var(--flow); color: var(--on-hl); white-space: nowrap; }
+.tab-docentes .barra-mini { display: block; height: 4px; margin-top: 4px; border-radius: 2px; background: var(--bg); overflow: hidden; }
+.tab-docentes .barra-mini b { display: block; height: 100%; background: var(--accent-vivo); }
+.tab-docentes td.meta { font-size: .76rem; }
+
+/* rede de coautoria em anel */
+.coaut { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 12px; padding: 8px 16px 12px; }
+.coaut-svg { width: 100%; height: 100%; min-height: 0; display: block; touch-action: manipulation; }
+.coaut-lado { display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow-y: auto; font-size: .84rem; }
+.coaut-lado > .meta { margin: 0; font-size: .8rem; }
+.coaut-foco { display: grid; gap: 2px; padding: 10px 12px; border: var(--b) solid var(--stroke); border-radius: var(--r-md); background: var(--panel); box-shadow: var(--hard-s); min-height: 76px; }
+.coaut-foco b { font-family: var(--font-display); }
+.coaut-foco span { font-size: .8rem; color: var(--muted); }
+.coaut-legenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.coaut-legenda li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.coaut-legenda i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--stroke); }
+.coaut-legenda em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; }
+.coaut-raio { opacity: .28; stroke-linecap: round; }
+.coaut-aresta { fill: none; stroke: var(--fg); opacity: .16; stroke-linecap: round; }
+.coaut-grafo.com-foco .coaut-raio, .coaut-grafo.com-foco .coaut-aresta { opacity: .05; }
+.coaut-grafo.com-foco .coaut-raio.on { opacity: .8; }
+.coaut-grafo.com-foco .coaut-aresta.on { opacity: .75; stroke: var(--accent-vivo); }
+.coaut-no circle { stroke: var(--stroke); stroke-width: 1.5; }
+.coaut-no text { font: 500 15px var(--font-body); fill: var(--fg); }
+.coaut-no:hover text, .coaut-no.on text, .coaut-no:focus-visible text { font-weight: 700; }
+.coaut-no:focus { outline: none; }
+.coaut-no:focus-visible circle { stroke-width: 4; stroke: var(--accent-vivo); }
+.coaut-no.apagado { opacity: .22; }
+.coaut-centro circle { fill: var(--flow); stroke: var(--stroke); stroke-width: 2.5; }
+.coaut-centro text { font: 700 17px var(--font-display); fill: var(--fg); paint-order: stroke; stroke: var(--panel); stroke-width: 5px; }
+@media (max-width: 1100px) {
+  .coaut { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .coaut-lado { overflow: visible; }
+  .coaut-legenda { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+@media (max-width: 860px) { .coaut-svg { height: auto; aspect-ratio: 1320 / 1040; } .coaut { padding: 6px 8px 12px; } .coaut-no text { font-size: 38px; } .coaut-no text.secundario { display: none; } .coaut-no.on text.secundario { display: inline; } .coaut-centro text { font-size: 38px; } }
+@media (prefers-reduced-motion: reduce) { .coaut-no, .coaut-aresta, .coaut-raio { transition: none; } }
+.coaut-legenda li span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* perfis no celular: menos altura sem perder informação */
+@media (max-width: 600px) {
+  .kpis-tres { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .kpis-tres .kpi { padding: 8px; }
+  .kpis-tres .kpi b { font-size: 1.05rem; }
+  .kpis-tres .kpi span { font-size: .68rem; line-height: 1.25; }
+  .painel-perfil .perfil-topo { gap: 12px; flex-wrap: nowrap; }
+  .painel-perfil .perfil-topo .avatar, .painel-perfil .perfil-topo .avatar-fig img { width: 64px !important; height: 64px !important; font-size: 1.3rem; }
+  .painel-perfil .perfil-topo .avatar-fig figcaption { display: none; }
+  .painel-perfil .perfil-topo .tag { font-size: .68rem; }
+  .painel-perfil h2 { margin-top: 18px; }
+  .producao-area { padding: 10px 10px 20px; }
+}

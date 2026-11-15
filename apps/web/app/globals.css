@@ -1429,3 +1429,12 @@ main:has(.lp) { max-width: none; padding: 14px 16px 16px; }
   .qr-banner { scroll-snap-align: center; min-width: 0; }
   .qr-pessoas li .qr-ex + .qr-ex { display: none; }
 }
+
+/* biografia pública do ORCID na página do pesquisador (D-055) */
+.bio-orcid { margin-top: 18px; }
+.bio-orcid h2 { margin-bottom: 4px; }
+.bio-texto p { margin: 0 0 8px; font-size: .9rem; line-height: 1.55; }
+.bio-texto.recolhida { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.bio-texto.recolhida p { margin: 0; display: inline; }
+.bio-texto.recolhida p + p::before { content: " "; }
+.bio-fonte { margin: 6px 0 0; font-size: .74rem; }

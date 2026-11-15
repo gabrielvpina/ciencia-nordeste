@@ -49,6 +49,7 @@ export default async function Sobre() {
         <li><b>CAPES Dados Abertos</b> (CC-BY): programas de pós-graduação, docentes, teses e dissertações.</li>
         <li><b>INEP</b> (Censo da Educação Superior) e <b>IBGE</b>: instituições de ensino, municípios, coordenadas e o contorno dos estados usado no mapa (malha oficial, gravada no próprio site).</li>
         <li><b>Wikidata / Wikimedia Commons</b>: algumas fotos, sempre com licença livre e crédito ao autor.</li>
+        <li><b>ORCID</b> (dados públicos, CC0): a biografia que o próprio pesquisador publicou no seu registro, quando é pública.</li>
       </ul>
       <p className="meta">Não usamos dados da Plataforma Lattes nem do Google Acadêmico. Última atualização da base: {new Date(r.atualizado_em).toLocaleDateString("pt-BR")}.</p>
       <h2>Como os perfis são montados</h2>
@@ -58,7 +59,7 @@ export default async function Sobre() {
 
       <h3 id="privacidade-pesquisadores">Dados dos pesquisadores</h3>
       <ul>
-        <li><b>O que mostramos:</b> só informações públicas sobre atividade científica: nome como aparece nas publicações, vínculos institucionais, publicações, orientações e participação em programas de pós (OpenAlex, ROR, CAPES Dados Abertos) e, em poucos perfis, uma foto com licença livre (Wikimedia Commons). Não exibimos CPF, data de nascimento, endereço nem contatos.</li>
+        <li><b>O que mostramos:</b> só informações públicas sobre atividade científica: nome como aparece nas publicações, vínculos institucionais, publicações, orientações e participação em programas de pós (OpenAlex, ROR, CAPES Dados Abertos) e, em poucos perfis, uma foto com licença livre (Wikimedia Commons) e a biografia que a pessoa publicou no ORCID, com a fonte e a data da última atualização. Não exibimos CPF, data de nascimento, endereço nem contatos.</li>
         <li><b>Por quê:</b> divulgação e mapeamento da ciência produzida no Nordeste, com dados que os próprios pesquisadores tornaram públicos ao publicar (LGPD, art. 7º, §§ 3º, 4º e 7º; interesse legítimo, art. 7º, IX).</li>
         <li><b>No quiz:</b> os cartões e a lista mostram pesquisadores com publicações próximas às respostas, com um índice de compatibilidade calculado <i>só</i> a partir dessas publicações. Não é avaliação de mérito nem de pessoas.</li>
         <li><b>Correção, ocultação ou remoção:</b> se um perfil seu tem erro, ou se você não quer aparecer no site nem no quiz, peça por {canal}. Perfis ocultados saem das páginas, das buscas e do quiz.</li>

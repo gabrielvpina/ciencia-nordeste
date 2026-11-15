@@ -9,6 +9,7 @@
 | Dado | De quem | Origem | Onde fica | Quem lê | Prazo |
 |---|---|---|---|---|---|
 | Nome, vínculos, publicações, orientações e participação em programas de pós | pesquisadores do NE (~145 mil) | fontes abertas: OpenAlex (CC0), ROR (CC0), CAPES Dados Abertos (CC-BY) | banco do site, público nas páginas | qualquer pessoa | enquanto o projeto existir |
+| Biografia (D-055) | pesquisadores com ORCID e biografia pública (~11% dos que têm ORCID) | ORCID, dados públicos do registro (CC0), texto escrito pela própria pessoa | `researcher_bios`, público na página do pesquisador, com fonte, data e link | qualquer pessoa | renovada a cada 90 dias; sai na hora se o perfil for ocultado e, se a pessoa a tirar do ORCID, na renovação seguinte (até 90 dias) |
 | Foto | 43 pesquisadores | Wikimedia Commons, com licença livre | arquivos do servidor | qualquer pessoa | idem |
 | Cadastro do quiz: nome, instituição, filiação, curso ou programa, data, versão do consentimento | quem faz o quiz | a própria pessoa, com consentimento | `quiz_participantes`, gravada pelo papel `quiz_escrita`, que só tem `INSERT` | só o responsável, via `psql` | 24 meses (expurgo automático) |
 | Respostas do quiz, pesquisadores indicados (posição e índice) e código numérico da descrição (D-042) | quem conclui o quiz com cadastro | a própria pessoa, com consentimento (termos, revisão "e") | `quiz_alinhamentos` e `quiz_matches`, ligados ao cadastro (`ON DELETE CASCADE`), só `INSERT` | só o responsável | junto com o cadastro (24 meses ou até a remoção) |

@@ -24,6 +24,7 @@
 #   embeddings     Parte 8 — vetores (só textos novos ou alterados; para os containers para liberar memória)
 #   banco          migrações + carga dos CSVs + visões materializadas (scripts/carregar_banco.sh)
 #   vetores        Parte 8 — grava os vetores no pgvector e reconstrói o índice HNSW
+#   bios           Parte 10 — biografias públicas do ORCID (incremental: até 25 mil por vez, renovadas a cada 90 dias; ~5/s)
 #   app            sobe de novo os serviços embed e web
 #   conferencia    compara contagens antes/depois, testa o app e grava o relatório
 #   backup-final   novo backup, já com a base atualizada
@@ -34,7 +35,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-ETAPAS=(backup instituicoes capes producao qualis pesquisadores revisao complementos fotos keywords embeddings banco vetores app conferencia backup-final)
+ETAPAS=(backup instituicoes capes producao qualis pesquisadores revisao complementos fotos keywords embeddings banco vetores bios app conferencia backup-final)
 SIM=0; A_PARTIR=""; SO=""; MANTER_CACHE=0; SEM_EMB=0
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -120,6 +121,7 @@ for e in "${PLANO[@]}"; do
     banco)         ./scripts/carregar_banco.sh ;;
     vetores)       "$PY" -m ingest.carga.parte8_embeddings carregar
                    docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f ingest/sql/perfis_tematicos.sql' ;;
+    bios)          "$PY" -m ingest.carga.parte10_bios ;;
     app)           docker compose up -d --wait embed web ;;
     conferencia)
       contar > ingest/dados/.contagem-depois

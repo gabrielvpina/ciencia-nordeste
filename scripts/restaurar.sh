@@ -45,6 +45,13 @@ if [ "$BANCO" = 1 ]; then
   [ -f "$TMP/banco.dump" ] || { echo "ERRO: este backup não tem banco.dump." >&2; exit 1; }
   [ "$FORCAR" = 1 ] || { echo "ERRO: restaurar o banco apaga o conteúdo atual. Repita com --forcar." >&2; exit 1; }
   docker compose up -d --wait db > /dev/null
+  # Papéis são do servidor Postgres, não do banco: o dump traz os GRANTs para quiz_escrita (migração 0014), mas não o papel.
+  # Sem ele, o pg_restore falha e desfaz tudo (--single-transaction). Criado sem login; o migrar.sh liga o login com a senha do .env.
+  docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -q -U "$POSTGRES_USER" -d "$POSTGRES_DB"' <<'SQL'
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'quiz_escrita') THEN CREATE ROLE quiz_escrita NOLOGIN; END IF;
+END $$;
+SQL
   docker compose exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --single-transaction' < "$TMP/banco.dump"
   echo "banco restaurado"
 fi

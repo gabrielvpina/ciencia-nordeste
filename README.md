@@ -19,29 +19,36 @@ Site: **[ciencianordeste.com.br](https://ciencianordeste.com.br)**
 </p>
 
 <p align="center">
-  <img src="assets/telas/painel.webp" alt="Painel: áreas, mapa de publicações por instituição no Nordeste e seletores do mapa" width="900">
-  <br><sub>Painel (<code>/painel</code>): mapa da produção por instituição, áreas, produção por ano e filtros por estado e período.</sub>
+  <img src="assets/telas/painel.webp" alt="Painel: áreas, filtros do mapa e mapa de publicações por instituição no Nordeste" width="900">
+  <br><sub>Painel (<code>/painel</code>): mapa da produção por instituição, áreas, instituições com mais publicações e filtros por estado e período.</sub>
 </p>
 
 <p align="center">
-  <img src="assets/telas/quiz.webp" alt="Quiz Que cientista é você: abertura, resultado com o título e cartão de afinidades com cinco pesquisadores" width="900">
-  <br><sub>Quiz "Que cientista é você?" no celular: abertura, resultado e cartão de afinidades para compartilhar (etapa 13).</sub>
+  <img src="assets/telas/quiz.webp" alt="Quiz Que cientista é você no celular: abertura, resultado e os dois cartões para compartilhar, perfil e afinidades" width="900">
+  <br><sub>Quiz "Que cientista é você?" no celular: abertura, resultado e os dois cartões para stories e status, o perfil e quem pesquisa como você (D-049 a D-056).</sub>
 </p>
 
 <p align="center">
-  <img src="assets/telas/programa-producao.webp" alt="Programa de pós-graduação, aba Produção: publicações por ano e estrato Qualis" width="900">
-  <br><sub>Programa de pós-graduação, aba <b>Produção</b>: publicações por ano e estrato Qualis Periódicos 2021–2024 (D-033).</sub>
+  <img src="assets/telas/busca.webp" alt="Busca por tema: pesquisadores, instituições, publicações e teses sobre arboviroses" width="900">
+  <br><sub>Busca por tema (<code>/busca</code>): busca vetorial multilíngue e por texto, com pesquisadores, instituições, publicações e teses (D-028).</sub>
 </p>
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/telas/programa-rede.webp" alt="Programa de pós-graduação, aba Rede de colaboração"><br><sub>Aba <b>Rede de colaboração</b>: parceiras no Nordeste e coautorias externas.</sub></td>
-    <td width="50%"><img src="assets/telas/instituicao.webp" alt="Página de instituição com rede de colaboração e publicações por área"><br><sub>Instituição: rede de colaboração, números e publicações por área.</sub></td>
+    <td width="50%"><img src="assets/telas/instituicoes.webp" alt="Instituições: treemap por estado e lista ordenável"><br><sub><b>Instituições</b>: visão geral por estado e tipo, ao lado da lista ordenável (D-048).</sub></td>
+    <td width="50%"><img src="assets/telas/programas.webp" alt="Programas de pós-graduação: matriz área de avaliação por conceito CAPES e lista"><br><sub><b>Programas de pós</b>: área de avaliação × conceito CAPES, ao lado da lista (D-048).</sub></td>
   </tr>
   <tr>
-    <td colspan="2"><img src="assets/telas/programas.webp" alt="Programas de pós-graduação: matriz área de avaliação por conceito CAPES"><br><sub>Programas de pós-graduação: área de avaliação × conceito CAPES, com filtros por estado e nível.</sub></td>
+    <td width="50%"><img src="assets/telas/programa-producao.webp" alt="Programa de pós-graduação, aba Produção: publicações por ano e estrato Qualis"><br><sub>Programa, aba <b>Produção</b>: publicações por ano e estrato Qualis 2021–2024 (D-033).</sub></td>
+    <td width="50%"><img src="assets/telas/programa-rede.webp" alt="Programa de pós-graduação, aba Docentes: rede de coautoria entre os docentes"><br><sub>Programa, aba <b>Docentes</b>: rede de coautoria e lista dos docentes.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="assets/telas/instituicao.webp" alt="Página de instituição com mapa da colaboração e publicações por área"><br><sub><b>Instituição</b>: mapa da colaboração, números e publicações por área.</sub></td>
+    <td width="50%"><img src="assets/telas/pesquisador.webp" alt="Página de pesquisador com mapa da colaboração, tópicos e biografia do ORCID"><br><sub><b>Pesquisador</b>: colaboração, tópicos e a biografia pública do ORCID (D-055).</sub></td>
   </tr>
 </table>
+
+Peças de divulgação para redes sociais (Instagram, TikTok, LinkedIn): [assets/divulgacao](assets/divulgacao/README.md).
 
 ## Números atuais
 

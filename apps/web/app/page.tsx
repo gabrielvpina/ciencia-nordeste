@@ -44,7 +44,7 @@ export default async function Inicio({ searchParams }: { searchParams: Record<st
         <a className="caminho caminho-quiz" href="/quiz">
           <span className="caminho-icone" aria-hidden>?</span>
           <b>Descobrir meu perfil de cientista</b>
-          <span>Dez perguntas rápidas: o seu título de cientista e quem no Nordeste pesquisa como você.</span>
+          <span>Perguntas rápidas, uns 2 minutos: o seu título de cientista e quem no Nordeste pesquisa como você.</span>
         </a>
       </nav>
 

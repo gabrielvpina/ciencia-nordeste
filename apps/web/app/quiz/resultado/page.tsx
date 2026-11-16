@@ -50,6 +50,8 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
   const extra = { ql: sq ? "1" : "0" };
   const bPerfil = `/api/quiz/banner/perfil?${qsBanner(ids, inst, extra)}`;
   const bAfin = `/api/quiz/banner/afinidades?${qsBanner(ids, inst, extra, texto)}`;
+  const sPerfil = { story: bPerfil, feed: `/api/quiz/banner/perfil?${qsBanner(ids, inst, { ...extra, f: "feed" })}` };
+  const sAfin = { story: bAfin, feed: `/api/quiz/banner/afinidades?${qsBanner(ids, inst, { ...extra, f: "feed" }, texto)}` };
   const base = qsBanner(ids, inst);
 
   return (
@@ -66,12 +68,12 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
         <figure className="qr-banner">
           <div className="qr-img" data-espera="gerando o cartão…">{/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={bPerfil} alt={`Cartão: ${t.principal}. ${t.nicho}.`} width={1080} height={1920} /></div>
-          <CompartilharBanner src={bPerfil} nome="meu-perfil-de-cientista" texto={`Sou "${t.principal}" no Ciência Nordeste. E você?`} />
+          <CompartilharBanner src={sPerfil} nome="meu-perfil-de-cientista" texto={`Sou "${t.principal}" no Ciência Nordeste. E você?`} />
         </figure>
         <figure className="qr-banner">
           <div className="qr-img" data-espera="gerando o cartão…">{/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={bAfin} alt={`Cartão: pesquisadores de afinidade no Nordeste — ${r.banner.map((x) => x.nome).join(", ") || "nenhum ainda"}.`} width={1080} height={1920} /></div>
-          <CompartilharBanner src={bAfin} nome="minhas-afinidades-no-nordeste" texto="Meus pesquisadores de afinidade no Nordeste, pelo Ciência Nordeste." />
+          <CompartilharBanner src={sAfin} nome="minhas-afinidades-no-nordeste" texto="Meus pesquisadores de afinidade no Nordeste, pelo Ciência Nordeste." />
         </figure>
       </div>
       <div className="qr-acoes qr-acoes-geral"><CopiarLink /><Refazer /></div>
@@ -90,10 +92,9 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
           </form>
         )}
         {!r.lista.length && <p className="meta">Ninguém no Nordeste combina com todas as suas respostas{filtro.tipo !== "ne" ? " nesse filtro de distância" : ""}. Tente pular uma das perguntas mais específicas, como escala ou ambiente.</p>}
-        <ol className="qr-pessoas">
-          <Recolhivel visiveis={5} rotulo="Mostrar mais" lista>{r.lista.map((x, k) => (
+        <ul className="qr-pessoas">
+          <Recolhivel visiveis={5} rotulo="Mostrar mais" lista>{r.lista.map((x) => (
             <li key={x.id}>
-              <span className="qr-pos">{k + 1}</span>
               <Avatar id={x.id} nome={x.nome} tamanho={52} />
               <div className="qr-corpo">
                 <a href={`/pesquisador/${x.id}`} className="qr-nome">{x.nome}</a>
@@ -107,7 +108,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
               <span className="qr-indice" title="índice de compatibilidade (0–100)">{x.indice}</span>
             </li>
           ))}</Recolhivel>
-        </ol>
+        </ul>
       </section>
 
       {(r.instituicoes.length > 0 || r.programas.length > 0) && (

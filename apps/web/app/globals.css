@@ -740,8 +740,7 @@ main:has(.quiz) { max-width: none; padding: 0; }
 .qr-filtro { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .86rem; margin-bottom: 10px; }
 .qr-filtro input[type="number"] { width: 72px; margin: 0 4px; padding: 4px 6px; border: 1.5px solid var(--stroke); border-radius: 8px; font: inherit; }
 .qr-pessoas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.qr-pessoas li { display: grid; grid-template-columns: auto auto 1fr auto; gap: 10px; align-items: start; padding: 12px; border: var(--b) solid var(--stroke); border-radius: 14px; background: var(--panel); box-shadow: var(--hard-s); }
-.qr-pos { width: 30px; height: 30px; display: grid; place-items: center; border: var(--b) solid var(--stroke); border-radius: 8px; background: var(--flow); font: 700 .85rem var(--font-display); transform: rotate(-5deg); }
+.qr-pessoas li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; padding: 12px; border: var(--b) solid var(--stroke); border-radius: 14px; background: var(--panel); box-shadow: var(--hard-s); }
 .qr-corpo { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .qr-nome { font: 600 1rem var(--font-display); }
 .qr-porque { font-size: .84rem; }
@@ -752,7 +751,7 @@ main:has(.quiz) { max-width: none; padding: 0; }
 @media (min-width: 760px) { .qr-duas { grid-template-columns: 1fr 1fr; } }
 .qr-simples { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .qr-aviso { font-size: .8rem; }
-@media (max-width: 420px) { .qr-pessoas li { grid-template-columns: auto 1fr auto; } .qr-pessoas .avatar-ini { display: none; } }
+@media (max-width: 420px) { .qr-pessoas li { grid-template-columns: 1fr auto; } .qr-pessoas .avatar-ini { display: none; } }
 
 /* ===== Tela inicial (D-039): busca + dois caminhos (painel e quiz) + números da base ===== */
 main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
@@ -817,6 +816,15 @@ main:has(.abertura) { max-width: 980px; padding: 28px 16px 48px; }
 .qr-icone:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .qr-icone svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .qr-icone.principal { background: var(--accent-vivo); color: var(--on-accent); }
+.qr-destino { min-height: 52px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border: var(--b) solid var(--stroke); border-radius: 14px;
+  background: var(--panel); color: var(--fg); box-shadow: var(--hard-s); cursor: pointer; font: 700 .95rem var(--font-display); transition: transform .08s, box-shadow .08s; }
+.qr-destino:hover { background: var(--accent-soft); }
+.qr-destino:active { transform: translate(2px, 2px); box-shadow: none; }
+.qr-destino:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.qr-destino svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.qr-destino.principal { background: var(--accent-vivo); color: var(--on-accent); }
+.qr-destino.principal:hover { filter: brightness(1.08); }
+.qr-estado { flex-basis: 100%; text-align: center; }
 .qr-icone.feito { background: var(--flow); color: var(--on-hl); }
 @media (prefers-reduced-motion: reduce) { .quiz-selo.girando { animation: none; } .quiz-progresso.grande i, .qr-icone { transition: none; } }
 /* opções logo abaixo da pergunta (sem o vão que sobrava em telas altas) */

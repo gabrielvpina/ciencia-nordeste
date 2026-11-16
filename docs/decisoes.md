@@ -792,3 +792,10 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
   - Linha de fonte: "Texto do próprio pesquisador no ORCID · atualizado em mm/aaaa · ver no ORCID", com "em inglês" quando for o caso.
   - O texto é mostrado como a pessoa escreveu. Perfis ocultos não mostram a biografia.
 - **Privacidade:** inventário de `docs/revisao-lgpd.md` e `/sobre` (fontes e "Dados dos pesquisadores") atualizados.
+
+## D-056 — Cartões do quiz prontos para stories, status e feed
+- **Diagnóstico:** o tamanho de origem já é o nativo (1080 × 1920 e 1080 × 1350, PNG de cores chapadas); a perda vem da recompressão JPEG do Instagram e do WhatsApp, que borra textos pequenos e traços finos. Gerar em 2× não ajuda (as plataformas reduzem para 1080).
+- **Legibilidade sob compressão:** textos de no mínimo 28 px no story (rótulos, instituição, `/100`, código, nota de rodapé, "faça o seu"); réguas e separadores de 4 px; medidores 15 × 26 px com borda de 4 px; contornos do mapa de ~3 px; mapa maior no feed (marcadores de 29 px). Verificado com recompressão JPEG de qualidade 70.
+- **Numeração sem ranking:** a seleção do banner é por diversidade de instituições, então as notas não ficam em ordem. Os 5 do banner passam a ser listados de norte a sul (empate: oeste → leste), e o número vira o marcador do mapa (redondo, mesma forma), com a nota "nº = local no mapa". Na página de resultado, a lista perde o número de posição.
+- **Zona segura:** com 3 ou mais linhas extras de nomes, a lista fica compacta e o mapa menor; nenhum caso testado passa da zona segura de baixo (só a sombra da barra, 7 px).
+- **Compartilhar:** dois botões, "Stories / status" (9:16) e "Feed" (4:5). A imagem é baixada antes do toque (o story ao abrir; o feed 2,5 s depois), porque o Safari do iOS recusa o `navigator.share` depois de uma espera longa. A legenda leva o link do quiz (o WhatsApp usa; o Instagram ignora); depois de compartilhar no story, a página lembra de adicionar o adesivo de link.

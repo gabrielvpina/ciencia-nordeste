@@ -43,7 +43,7 @@ const projetar = (lat: number, lon: number): [number, number] => [P.margem + (lo
 export function miniMapa(pontos: { lat: number | null; lon: number | null }[]): { src: string; pos: ({ x: number; y: number } | null)[] } {
   const [, , w, h] = geo.viewBox;
   const x0 = -20, y0 = -20, W = w + 60, H = h + 60;
-  const estados = geo.estados.map((e) => `<path d="${e.path}" fill="${PAINEL}" stroke="${TINTA}" stroke-width="5" stroke-linejoin="round"/>`).join("");
+  const estados = geo.estados.map((e) => `<path d="${e.path}" fill="${PAINEL}" stroke="${TINTA}" stroke-width="11" stroke-linejoin="round"/>`).join("");
   const sombra = geo.estados.map((e) => `<path d="${e.path}" fill="${TINTA}" transform="translate(14 14)"/>`).join("");
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0} ${y0} ${W} ${H}">${sombra}${estados}</svg>`;
   const pos = pontos.map((p) => {

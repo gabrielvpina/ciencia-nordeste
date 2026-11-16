@@ -81,14 +81,14 @@ function Manchete({ story }: { story: boolean }) {
 function Chamada({ story, codigo }: { story: boolean; codigo?: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {codigo && <div style={{ display: "flex", justifyContent: "flex-end", fontSize: story ? 22 : 18, color: MUDO }}>{codigo}</div>}
+      {codigo && <div style={{ display: "flex", justifyContent: "flex-end", marginTop: story ? 14 : 10, fontSize: story ? 28 : 22, color: MUDO }}>{codigo}</div>}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: TINTA, color: PAINEL, borderRadius: 22, padding: story ? "20px 28px" : "14px 22px", boxShadow: `8px 8px 0 ${LIMA}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <img src={logoSvg()} width={story ? 44 : 38} height={story ? 55 : 48} alt="" />
           <div style={{ display: "flex", gap: 8, fontSize: story ? 30 : 26 }}><span>Ciência</span><span style={{ fontWeight: 700, fontFamily: TITULO }}>Nordeste</span></div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-          <span style={{ fontSize: story ? 22 : 19, color: "#c9cde0" }}>faça o seu</span>
+          <span style={{ fontSize: story ? 28 : 22, color: "#c9cde0" }}>faça o seu</span>
           <span style={{ fontSize: story ? 30 : 26, fontWeight: 700, fontFamily: TITULO, color: LIMA }}>ciencianordeste.com.br/quiz</span>
         </div>
       </div>
@@ -98,7 +98,7 @@ function Chamada({ story, codigo }: { story: boolean; codigo?: string }) {
 
 /** Rótulo pequeno de catálogo. */
 const Rotulo = ({ children, story }: { children: string; story: boolean }) => (
-  <div style={{ display: "flex", fontSize: story ? 26 : 22, color: MUDO }}>{children}</div>
+  <div style={{ display: "flex", fontSize: story ? 30 : 24, color: MUDO }}>{children}</div>
 );
 
 /** PNGs já gerados, em memória (D-052): gerar a imagem custa 2–5 s de CPU, e o mesmo banner é pedido de novo ao
@@ -172,11 +172,11 @@ async function gerar(req: Request, { params }: { params: { tipo: string } }) {
           {/* ficha: o "DNA científico" (código das respostas) e o nicho */}
           <div style={{ display: "flex", flexDirection: "column", background: PAINEL, border: `5px solid ${TINTA}`, borderRadius: RAIO, boxShadow: SOMBRA(12),
             padding: story ? "32px 40px" : "22px 30px", gap: story ? 18 : 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: story ? 24 : 20, color: MUDO }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: story ? 28 : 22, color: MUDO }}>
               <span>meu DNA científico</span><span>{codigo}</span>
             </div>
             <CodigoBarras semente={semente} largura={W - 2 * Z.lado - (story ? 90 : 70)} altura={story ? 110 : 76} acento={acento} />
-            <div style={{ display: "flex", height: 3, background: TINTA, marginTop: 4 }} />
+            <div style={{ display: "flex", height: 4, background: TINTA, marginTop: 4 }} />
             <Rotulo story={story}>meu nicho</Rotulo>
             <div style={{ display: "flex", fontSize: tamNicho(t.nicho.length, story ? 50 : 38), fontWeight: 700, fontFamily: TITULO, lineHeight: 1.12, marginTop: -6 }}>{t.nicho}</div>
           </div>
@@ -199,9 +199,13 @@ async function gerar(req: Request, { params }: { params: { tipo: string } }) {
   // afinidades: o match (só facetas de nicho), como levantamento de campo
   const ql = u.searchParams.get("ql");
   const r = await alinhar(respostas.nicho, { instituicao: inst, soQualis: ql !== "0", texto: u.searchParams.get("t") });
-  const lista = r.banner;
+  // ordem geográfica (norte → sul; empate, oeste → leste): o número segue o mapa e não sugere colocação (a seleção é por diversidade)
+  const lista = [...r.banner].sort((a, b) => Number(b.lat ?? -99) - Number(a.lat ?? -99) || Number(a.lon ?? 0) - Number(b.lon ?? 0));
   const mapa = miniMapa(lista.map((x) => ({ lat: x.lat, lon: x.lon })));
-  const mapaW = story ? 300 : 210, mapaH = mapaW * PROPORCAO_MAPA, marca = Math.round(mapaW * 0.11);
+  // nomes longos quebram linha: com muitas linhas a mais, a lista fica compacta e o mapa menor, para não invadir a zona segura de baixo
+  const linhasExtras = lista.reduce((n, x) => n + Math.max(0, Math.ceil(x.nome.length / (story ? 26 : 34)) - 1), 0);
+  const compacto = linhasExtras >= 3;
+  const mapaW = story ? (compacto ? 250 : 300) : (compacto ? 220 : 260), mapaH = mapaW * PROPORCAO_MAPA, marca = Math.round(mapaW * 0.11);
   // marcadores na posição exata; quem fica a menos de um marcador de distância vira um só ("2·3·5")
   const grupos = agruparPontos(mapa.pos.map((p) => p && { x: p.x * mapaW, y: p.y * mapaH }), marca * 0.8);
   const nome = (s: string) => s.replace(/\u00ad/g, "");
@@ -238,22 +242,22 @@ async function gerar(req: Request, { params }: { params: { tipo: string } }) {
           {lista.map((x, i) => {
             const blocos = Math.round(x.indice / 10);
             return (
-              <div key={x.id} style={{ display: "flex", alignItems: "center", gap: story ? 24 : 18, padding: story ? "19px 0" : "11px 0", borderTop: i ? `2px solid ${TINTA}` : "none" }}>
-                {/* número em tinta sobre o acento: o acento nunca é cor de texto (contraste) */}
+              <div key={x.id} style={{ display: "flex", alignItems: "center", gap: story ? 24 : 18, padding: story ? (compacto ? "12px 0" : "19px 0") : (compacto ? "7px 0" : "11px 0"), borderTop: i ? `${story ? 4 : 3}px solid ${TINTA}` : "none" }}>
+                {/* número = marcador do mapa (mesma forma e cor), não colocação: a lista vai de norte a sul. Tinta sobre o acento (contraste) */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: story ? 58 : 46, height: story ? 58 : 46, flexShrink: 0, background: acento,
-                  border: `4px solid ${TINTA}`, borderRadius: 14, boxShadow: SOMBRA(4), fontSize: story ? 32 : 26, fontWeight: 700, fontFamily: TITULO }}>{i + 1}</div>
+                  border: `${story ? 4 : 3}px solid ${TINTA}`, borderRadius: 999, fontSize: story ? 30 : 24, fontWeight: 700, fontFamily: TITULO }}>{i + 1}</div>
                 <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: story ? 6 : 3 }}>
                   <div style={{ display: "flex", fontSize: story ? 34 : 27, fontWeight: 700, fontFamily: TITULO, lineHeight: 1.12 }}>{nome(x.nome)}</div>
-                  <div style={{ display: "flex", fontSize: story ? 24 : 20, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), 44)}</div>
+                  <div style={{ display: "flex", fontSize: story ? 28 : 22, color: MUDO }}>{corta([x.sigla ?? x.instituicao, x.municipio && `${x.municipio}/${x.uf}`].filter(Boolean).join(" · "), story ? 36 : 40)}</div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: story ? 8 : 5, flexShrink: 0 }}>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
                     <span style={{ fontSize: story ? 48 : 38, fontWeight: 700, fontFamily: TITULO, lineHeight: 1 }}>{x.indice}</span>
-                    <span style={{ fontSize: story ? 20 : 17, color: MUDO }}>/100</span>
+                    <span style={{ fontSize: story ? 28 : 22, color: MUDO }}>/100</span>
                   </div>
-                  <div style={{ display: "flex", gap: 3 }}>
+                  <div style={{ display: "flex", gap: story ? 4 : 3 }}>
                     {Array.from({ length: 10 }, (_, k) => (
-                      <div key={k} style={{ display: "flex", width: story ? 13 : 10, height: story ? 20 : 15, background: k < blocos ? acento : "transparent", border: `2.5px solid ${TINTA}` }} />
+                      <div key={k} style={{ display: "flex", width: story ? 15 : 11, height: story ? 26 : 19, background: k < blocos ? acento : "transparent", border: `${story ? 4 : 3}px solid ${TINTA}` }} />
                     ))}
                   </div>
                 </div>
@@ -263,7 +267,7 @@ async function gerar(req: Request, { params }: { params: { tipo: string } }) {
           {!lista.length && <div style={{ display: "flex", padding: 32, fontSize: 32 }}>Tente pular uma das perguntas mais específicas e refazer.</div>}
         </div>
 
-        <Chamada story={story} codigo={lista.length ? "compatibilidade 0–100 · publicações abertas (OpenAlex, CAPES)" : undefined} />
+        <Chamada story={story} codigo={lista.length ? "nº = local no mapa · compatibilidade 0–100 · OpenAlex, CAPES" : undefined} />
       </div>
     ),
     { width: W, height: H, fonts: fontes, headers: { "cache-control": "public, max-age=3600" } },

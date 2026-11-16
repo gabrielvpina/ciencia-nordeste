@@ -1,6 +1,6 @@
 "use client";
-// Compartilhar um banner: no celular, envia a imagem pela Web Share API (WhatsApp, Instagram…); sem suporte, baixa o PNG.
-import { useState } from "react";
+// Compartilhar um banner: no celular, envia a imagem pela Web Share API (WhatsApp, Instagram…), no formato do destino; sem suporte, baixa o PNG.
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ícones simples (traço), herdam a cor do botão
 const Icone = {
@@ -11,21 +11,40 @@ const Icone = {
   refazer: <svg viewBox="0 0 24 24" aria-hidden><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5" /></svg>,
 };
 
-export function CompartilharBanner({ src, nome, texto }: { src: string; nome: string; texto: string }) {
+type Formato = "story" | "feed";
+const ROTULO: Record<Formato, string> = { story: "Stories / status", feed: "Feed" };
+
+/** Dois destinos, cada um no seu formato: 9:16 para stories e status, 4:5 para o feed. A imagem é baixada antes do toque:
+ *  o navigator.share precisa vir logo depois do toque (no Safari do iOS, uma espera de 1–2 s faz o pedido ser recusado). */
+export function CompartilharBanner({ src, nome, texto }: { src: Record<Formato, string>; nome: string; texto: string }) {
   const [estado, setEstado] = useState<string | null>(null);
-  const compartilhar = async () => {
-    setEstado("preparando…");
+  const blobs = useRef<Partial<Record<Formato, Promise<Blob>>>>({});
+  const prontos = useRef<Partial<Record<Formato, Blob>>>({});
+  const buscar = useCallback((f: Formato) => {
+    blobs.current[f] ??= fetch(src[f]).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.blob(); })
+      .then((b) => (prontos.current[f] = b), (e) => { delete blobs.current[f]; throw e; });
+    return blobs.current[f]!;
+  }, [src]);
+  useEffect(() => {
+    buscar("story").catch(() => {});
+    // o feed é gerado sob demanda no servidor: pede depois, sem disputar com a primeira imagem
+    const t = window.setTimeout(() => buscar("feed").catch(() => {}), 2500);
+    return () => window.clearTimeout(t);
+  }, [buscar]);
+
+  const compartilhar = async (f: Formato) => {
     try {
-      const blob = await (await fetch(src)).blob();
-      const arquivo = new File([blob], `${nome}.png`, { type: "image/png" });
+      const blob = prontos.current[f] ?? (setEstado("preparando…"), await buscar(f));
+      const arquivo = new File([blob], `${nome}-${f}.png`, { type: "image/png" });
       const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
+      const legenda = `${texto} ${window.location.origin}/quiz`;   // o WhatsApp usa como legenda; o Instagram ignora
       if (nav.canShare?.({ files: [arquivo] })) {
-        await nav.share({ files: [arquivo], text: texto });
-        setEstado(null);
+        await nav.share({ files: [arquivo], text: legenda });
+        setEstado(f === "story" ? "no Instagram, adicione o adesivo de link" : null);
         return;
       }
       const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement("a"), { href: url, download: `${nome}.png` });
+      const a = Object.assign(document.createElement("a"), { href: url, download: arquivo.name });
       document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
       setEstado("imagem baixada");
@@ -35,9 +54,14 @@ export function CompartilharBanner({ src, nome, texto }: { src: string; nome: st
   };
   return (
     <div className="qr-acoes">
-      <button type="button" className="qr-icone principal" onClick={compartilhar} aria-label="Compartilhar imagem" title="Compartilhar">{Icone.compartilhar}</button>
-      <a className="qr-icone" href={src} download={`${nome}.png`} aria-label="Baixar imagem (PNG)" title="Baixar">{Icone.baixar}</a>
-      {estado && <small className="meta" role="status">{estado}</small>}
+      {(["story", "feed"] as const).map((f) => (
+        <button key={f} type="button" className={`qr-destino${f === "story" ? " principal" : ""}`} onClick={() => compartilhar(f)}
+          aria-label={`Compartilhar imagem para ${ROTULO[f].toLowerCase()} (${f === "story" ? "9:16" : "4:5"})`}>
+          {Icone.compartilhar}<span>{ROTULO[f]}</span>
+        </button>
+      ))}
+      <a className="qr-icone" href={src.story} download={`${nome}-story.png`} aria-label="Baixar imagem (PNG, 9:16)" title="Baixar">{Icone.baixar}</a>
+      {estado && <small className="meta qr-estado" role="status">{estado}</small>}
     </div>
   );
 }

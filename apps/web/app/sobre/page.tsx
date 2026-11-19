@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { q } from "@/lib/db";
+import { Apoio } from "@/components/Apoio";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Sobre — Ciência Nordeste" };
@@ -39,6 +40,8 @@ export default async function Sobre() {
           </ul>
         </div>
       </section>
+
+      <Apoio id="apoie" />
 
       <h2>Sobre os dados</h2>
       <p>O Ciência Nordeste reúne, a partir de dados abertos, a pesquisa em ciências da vida (saúde, biomedicina, biotecnologia, genética, microbiologia, ciências agrárias e biológicas e veterinária) de instituições com sede nos nove estados do Nordeste, de 2022 em diante.</p>

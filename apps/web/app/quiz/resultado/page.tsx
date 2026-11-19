@@ -5,6 +5,7 @@ import Recolhivel from "@/components/Recolhivel";
 import type { Metadata } from "next";
 import Avatar from "@/components/Avatar";
 import { CompartilharBanner, CopiarLink, Refazer } from "@/components/quiz/Compartilhar";
+import { Apoio } from "@/components/Apoio";
 import { nomePrograma } from "@/lib/programas";
 import { alinhar, type Filtro } from "@/lib/quiz/alinhamento";
 import { interpretar } from "@/lib/quiz/estrutura";
@@ -77,6 +78,7 @@ export default async function Resultado({ searchParams }: { searchParams: SP }) 
         </figure>
       </div>
       <div className="qr-acoes qr-acoes-geral"><CopiarLink /><Refazer /></div>
+      <Apoio compacto />
 
       <section className="painel-card qr-lista">
         <h2>Quem pesquisa como você <small>{r.lista.length ? `${r.lista.length} pesquisadores · índice de compatibilidade 0–100` : ""}</small></h2>

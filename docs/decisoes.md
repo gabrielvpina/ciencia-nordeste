@@ -799,3 +799,9 @@ Formato: cada decisão tem um ID, data, contexto, decisão e consequências. Dec
 - **Numeração sem ranking:** a seleção do banner é por diversidade de instituições, então as notas não ficam em ordem. Os 5 do banner passam a ser listados de norte a sul (empate: oeste → leste), e o número vira o marcador do mapa (redondo, mesma forma), com a nota "nº = local no mapa". Na página de resultado, a lista perde o número de posição.
 - **Zona segura:** com 3 ou mais linhas extras de nomes, a lista fica compacta e o mapa menor; nenhum caso testado passa da zona segura de baixo (só a sombra da barra, 7 px).
 - **Compartilhar:** dois botões, "Stories / status" (9:16) e "Feed" (4:5). A imagem é baixada antes do toque (o story ao abrir; o feed 2,5 s depois), porque o Safari do iOS recusa o `navigator.share` depois de uma espera longa. A legenda leva o link do quiz (o WhatsApp usa; o Instagram ignora); depois de compartilhar no story, a página lembra de adicionar o adesivo de link.
+
+## D-057 — Apoio por Pix
+- **Onde:** na página Sobre (logo após o autor, âncora `#apoie`) e no resultado do quiz, logo abaixo dos cartões e dos botões de compartilhar.
+- **O quê:** QR code Pix estático, botão "copia e cola", botão para copiar a chave (chave aleatória, para não expor e-mail na página) e um texto curto: o site é gratuito e independente; qualquer valor ajuda a pagar a hospedagem.
+- **Como:** BR Code estático sem valor (a pessoa escolhe quanto no app do banco), gerado por `scripts/gerar_pix.py`, que escreve `apps/web/lib/pix.ts`. O QR é codificado no próprio script (sem dependência nova) e vai inline como SVG; conferido com o leitor de QR do macOS (o texto decodificado é idêntico ao copia e cola) e o CRC-16 com o vetor de teste padrão.
+- **Privacidade:** nada é registrado no site; a doação acontece só no app do banco.
